@@ -73,3 +73,37 @@
     Pitfalls and Common Mistakes | NGINX
     This page outlines some of the NGINX configuration issues that we see frequently and then explains how to resolve them.
 - http://nginx.org/en/docs/http/ngx_http_core_module.html#try_files
+
+
+# 1 Fork a repository on GitHub
+
+# 2 Clone it onto your computer
+
+# 3 Make a branch and move to it: 
+    git checkout -b fixingBranch
+# 4 Make changes to the files
+
+# 5 Commit the changes to the history
+
+# 6 Push the branch up to your forked version: 
+    git push origin fixingBranch
+
+# 7 On GitHub, submit a Pull Request of your fixingBranch
+
+# 8 Once the pull request is merged, delete the fixingBranch on your forked repo on GitHub and on your computer 
+    git checkout master && git pull upstream master && - git branch -d fixingBranch
+______________________________________
+
+cd - change directory
+directory - the same thing as a folder
+mkdir - make a directory
+echo - print a message to the screen or to a file if > (redirect) is present.
+git init - start or initialize a git repository
+git add - put a file into the staging area, so that git starts tracking it
+git commit - send files in the staging/index area into the history (the git repository)
+git log --graph --oneline --decorate --all - view the commit history in the git repository and the branches, with each commit as one line.
+# This command is long, so shorten it using aliases
+    git config --global alias.lg 'log --graph --oneline --decorate --all'
+git branch - An individual line of commit history that contains files that may differ from other branches.
+git checkout - A way to move across the git commits and branches.
+git merge - Combine a branch into the current checked out branch (i.e. the branch you are on).
