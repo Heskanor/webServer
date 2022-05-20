@@ -1,13 +1,12 @@
-#ifndef MUTANT_STACK_HPP
-# define MUTANT_STACK_HPP
+#ifndef SERVER_HPP
+# define SERVER_HPP
 
 #include <iostream>
 #include <stack>
 #include <list>
 #include <vector>
 #include <string>
-
-
+#include "location.hpp"
 
 class Server
 {
@@ -18,9 +17,7 @@ class Server
         std::string _root;
         int _port;
         int _bodySizeLimit;
-        
-
-
+        std::vector<Location> _locations;
         
     public:
         Server() {}

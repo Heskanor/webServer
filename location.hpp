@@ -1,5 +1,5 @@
-#ifndef MUTANT_STACK_HPP
-# define MUTANT_STACK_HPP
+#ifndef LOCATION_HPP
+# define LOCATION_HPP
 
 #include <iostream>
 #include <stack>
@@ -22,6 +22,7 @@ class Location
         std::string _uploadDir;
         std::string _cgiPath;
         std::vector<std::string> _cgiExt;
+        
         
     public:
         Location() {}
