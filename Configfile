@@ -22,45 +22,32 @@ defaultErrorPages
 
 ___
 servers:   # list of servers
-        # sdfsdaf
-  - server: # server
-        server_name: 127.0.0.1
-        listen: 80
-        root: ./root
-        client_max_body_size: 1000
-        locations:
-          - /the7:
-              auto_index: true
-              index:
-                - index.html
-                - index.htm
-                - index.php
-              error_page:
-                - code: 500
-                  content: ./Networking/index.html
-                - code: 502
-                  content: ./Networking/index.html
-              upload_directory: /var/www/html/public/uploads
-              allowed_methods:
-                  - POST
-                  - GET
-                  - DELETE
-              cgi:
-                  path: ./Networking/index.html
-                  ext:
-                    - .php
-                    - .php5
-                    - .php7
-                    - .php-cgi
-                    - .php3
-                    - .php4
-                    - .php5
-                    - .php6
+  index: index.html index.htm index.php
+  server: # server
+  {
+      server_name: 127.0.0.1
+      listen: 80
+      root: ./root
+      bodySizeLimit: 1000
+      locations: /the7
+      {
+        auto_index: true
+        index: index.html index.htm index.php
+        error_page_500: ./Networking/index.html
+        error_page_502: ./Networking/index.html
+        upload_directory: /var/www/html/public/uploads
+        allowed_methods: POST GET DELETE
+        #make sure you have php-cgi installed on your system
+        # put the php-cgi absolute path here
+        cgipath: ./Networking/index.html
+        cgiext: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6
+      }
+  }
   - server: # server
       server_name: 127.0.0.1
       listen: 8080
 
-      root: /Users/aait-ham/Desktop/webserv/root/php-website
+      root: /Users/ashite/Desktop/webserv/root/php-website
 
       client_max_body_size: 1000
       locations:
@@ -83,7 +70,7 @@ servers:   # list of servers
               cgi:
                 #make sure you have php-cgi installed on your system
                 # put the php-cgi absolute path here
-                path: /Users/aait-ham/.brew/bin/php-cgi
+                path: /Users/ashite/.brew/bin/php-cgi
 
                 ext:
                   - .php

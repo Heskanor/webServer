@@ -4,12 +4,23 @@
 #include <iostream>
 #include <stack>
 #include <list>
+#include <vector>
+#include <string>
+
+
 
 class Server
 {
     private:
         std::string _name;
-        std::string _listen;
+        std::vector<std::string> _index;
+        bool _autoIndex;
+        std::string _root;
+        int _port;
+        int _bodySizeLimit;
+        
+
+
         
     public:
         Server() {}

@@ -5,17 +5,22 @@
 #include <stack>
 #include <list>
 
-class Server
+class ConfigParser
 {
     private:
-        std::string _name;
-        std::string _listen;
+        std::string _current_line;
+        std::string _cursor;
+        std::string _current_key;
+        std::string _previoua_key;
+        
+
+
         
     public:
-        Server() {}
-        Server(const Server &src){}
-        virtual ~Server() {}
-        Server &operator=( Server const & rhs );
+        ConfigParser() {}
+        ConfigParser(const ConfigParser &src){}
+        virtual ~ConfigParser() {}
+        ConfigParser &operator=( ConfigParser const & rhs );
     
 };
 
