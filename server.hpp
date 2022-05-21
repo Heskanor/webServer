@@ -11,7 +11,7 @@
 class Server
 {
     private:
-        std::string _name;
+        std::string server_name;
         std::vector<std::string> _index;
         bool _autoIndex;
         std::string _root;

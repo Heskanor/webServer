@@ -14,14 +14,13 @@ class Location
     private:
         std::string _path;
         std::vector<std::string> _index;
-        bool _autoIndex;
+        bool _auto_index;
         std::string _error500;
         std::string _error502;
-        std::string _uploadDir;
-        std::vector<std::string> _methods;
-        std::string _uploadDir;
-        std::string _cgiPath;
-        std::vector<std::string> _cgiExt;
+        std::string _upload_directory;
+        std::vector<std::string> _allowed_methods;
+        std::string _cgi_path;
+        std::vector<std::string> _cgi_ext;
         
         
     public:
