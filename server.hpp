@@ -8,17 +8,19 @@
 #include <string>
 #include "location.hpp"
 
-class Server
+class Server : virtual public Root
 {
     private:
         std::string _server_name;
-        std::vector<std::string> _index;
-        bool _auto_index;
         std::string _root;
         int _port;
         int _bodySizeLimit;
         std::vector<Location> _locations;
-        
+
+    protected: // inherited by Location
+        bool _auto_index;
+        std::vector<std::string> _index;
+
     public:
         Server() {}
         Server(const Server &src){}
@@ -49,8 +51,6 @@ class Server
         // void add_location(std::string path, std::string root);
         // void add_location(std::string path);
         // void add_location();
-
-
     
 };
 

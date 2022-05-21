@@ -32,6 +32,7 @@ class ConfigParser
         void set_current_key(std::string key);
         void set_current_line(std::string line);
         void set_cursor(std::string cursor);
+        Server
 
 };
 

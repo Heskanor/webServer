@@ -50,5 +50,5 @@ class Location : virtual public Server
         void add_cgi_ext(std::string ext);
     
 };
-
+ 
 #endif
