@@ -35,6 +35,7 @@ class Root
         void set_root(std::string root);
         int get_bodySizeLimit();
         void set_bodySizeLimit(int bodySizeLimit);
+        void parser(std::string file);
 };
 
 #endif
