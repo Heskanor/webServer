@@ -48,7 +48,6 @@ class Location : virtual public Server
         void add_index(std::string index);
         void add_allowed_method(std::string method);
         void add_cgi_ext(std::string ext);
-    
 };
  
 #endif

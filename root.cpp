@@ -60,44 +60,7 @@ std::vector<Server> Root::get_servers()
     return _servers;
 }
 
-void Root::parse_servers(std::string file)
+void Root::add_index(std::string index)
 {
-    std::ifstream ifs(file);
-    std::string line;
-    std::string server_name;
-    std::string root;
-    int port;
-    int bodySizeLimit;
-    std::vector<Location> locations;
-    std::vector<std::string> index;
-    bool autoIndex;
-    std::string error500;
-    std::string error502;
-    std::string upload_directory;
-    std::vector<std::string> allowed_methods;
-    std::string cgi_path;
-    std::vector<std::string> cgi_ext;
-
-    while (std::getline(ifs, line))
-    {
-        if (line.find("server_name") != std::string::npos)
-        {
-            server_name = line.substr(line.find("\"") + 1, line.rfind("\"") - line.find("\"") - 1);
-        }
-        else if (line.find("root") != std::string::npos)
-        {
-            root = line.substr(line.find("\"") + 1, line.rfind("\"") - line.find("\"") - 1);
-        }
-        else if (line.find("port") != std::string::npos)
-        {
-            port = std::stoi(line.substr(line.find("\"") + 1, line.rfind("\"") - line.find("\"") - 1));
-        }
-        else if (line.find("bodySizeLimit") != std::string::npos)
-        {
-            bodySizeLimit = std::stoi(line.substr(line.find("\"") + 1, line.rfind("\"") - line.find("\"") - 1));
-        }
-        else if (line.find("autoIndex") != std::string::npos)
-        {
-            autoIndex = std::stoi(line.substr(line.find("\"") + 1, line.rfind("\"") - line.find("\"") - 1));
-        }
-        else if (line
+    _index.push_back(index);
+}

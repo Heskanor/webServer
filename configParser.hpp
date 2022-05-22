@@ -5,6 +5,7 @@
 #include <stack>
 #include <list>
 #include "server.hpp"
+#include "root.hpp"
 
 
 class ConfigParser
@@ -23,7 +24,7 @@ class ConfigParser
         ConfigParser(const ConfigParser &src){}
         ~ConfigParser() {}
         ConfigParser &operator=( ConfigParser const & rhs );
-        Server * parser(std::string file);
+        Root parser(std::string file);
         std::string get_current_key();
         std::string get_current_line();
         std::string get_cursor();
@@ -32,7 +33,6 @@ class ConfigParser
         void set_current_key(std::string key);
         void set_current_line(std::string line);
         void set_cursor(std::string cursor);
-        Server
 
 };
 

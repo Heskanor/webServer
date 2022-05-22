@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <sstream>  
 //webserv config file parser
 ConfigParser::ConfigParser()
 {
@@ -51,55 +52,99 @@ std::string ConfigParser::get_previous_key()
     return _previous_key;
 }
 
-Server * parser(std::string file)
+Root parser(std::string file)
 {
-    std::ifstream config_file;
+    Root root;
+    std::ifstream configFile(file);
     std::string line;
-    config_file.open(file);
-    if (config_file.is_open())
+    std::string cursor;
+    std::string current_key;   
+    std::string previous_key;
+    std::string current_line;
+    std::string root_name;
+    std::string token;
+    std::vector<std::string> index;
+    bool auto_index = false;
+    int bodySizeLimit = 0;
+    std::vector<Server> servers;
+    size_t pos;
+    if (configFile.is_open())
     {
-        while (getline(config_file, line))
+        while (getline(configFile, line) && line.find("server:") == std::string::npos)
         {
-            parser_line(line);
+            std::stringstream X(line);
+            if ((pos = line.find("index:")) != std::string::npos)
+            {
+                while (getline(X, token,' '))
+                {
+                    if (token != "" && token.find("index:") == std::string::npos)
+                        root.add_index(token); //call index setter
+                }
+            }
+            else if ((pos = line.find("index:")) != std::string::npos)
+            {
+                while (getline(X, token,' '))
+                {
+                    if (token != "" && token.find("index:") == std::string::npos)
+                        root.add_index(token); //call index setter
+                }
+            }
         }
-        config_file.close();
-    }
-    else
-    {
-        std::cerr << "ERROR: Failed to open file" << std::endl;
-    }
-    return _server;
+    }   
 }
 
-void parser_line(std::string line)
-{
-    ConfigParser config_parser;
-    config_parser.set_current_line(line);
-    config_parser.set_cursor("");
-    config_parser.set_current_key("");
-    config_parser.set_previous_key("");
-    parser_config_line(config_parser);
-}
-
-void parser_config_line(ConfigParser config_parser)
-{
-    if (config_parser.get_current_line() == "")
-        return;
-    if (config_parser.get_cursor() == "")
-    {
-        if (config_parser.get_current_line()[0] == '#')
-            return;
-        if (config_parser.get_current_line()[0] == ' ')
-            config_parser.set_cursor(config_parser.get_current_line().substr(1, config_parser.get_current_line().length()));
-        else
-            config_parser.set_cursor(config_parser.get_current_line());
-    }
-    if (config_parser.get_current_key() == "")
-    {
-        if (config_parser.get_cursor()[0] == ' ')
-            config_parser.set_current_key(config_parser.get_cursor().substr(1, config_parser.get_cursor().length()));
-        else
-            config_parser.set_current_key(config_parser.get_cursor());
-    }
-    if (config_parser.get_current_key()[0] == '
-}
+// current_line = line;
+//             cursor = line;
+//             while ((pos = cursor.find("index")) != std::string::npos)
+//             {
+//                 cursor.erase(pos, cursor.find(" ") + 1);
+//             }
+//             if (cursor.find("#") != std::string::npos)
+//             {
+//                 cursor.erase(cursor.find("#"), cursor.length());
+//             }
+//             if (cursor.find("=") != std::string::npos)
+//             {
+//                 current_key = cursor.substr(0, cursor.find("="));
+//                 cursor.erase(0, cursor.find("=") + 1);
+//                 if (current_key == "root")
+//                 {
+//                     root_name = cursor;
+//                     root.set_root(root_name);
+//                 }
+//                 else if (current_key == "auto_index")
+//                 {
+//                     if (cursor == "true")
+//                     {
+//                         auto_index = true;
+//                     }
+//                     else
+//                     {
+//                         auto_index = false;
+//                     }
+//                     root.set_auto_index(auto_index);
+//                 }
+//                 else if (current_key == "index")
+//                 {
+//                     index.push_back(cursor);
+//                     root.set_index(index);
+//                 }
+//                 else if (current_key == "body_size_limit")
+//                 {
+//                     bodySizeLimit = std::stoi(cursor);
+//                     root.set_bodySizeLimit(bodySizeLimit);
+//                 }
+//                 else
+//                 {
+//                     Server server;
+//                     server.set_name(current_key);
+//                     server.set_root(root_name);
+//                     server.set_auto_index(auto_index);
+//                     server.set_index(index);
+//                     server.set_bodySizeLimit(bodySizeLimit);
+//                     servers.push_back(server);
+//                 }
+//             }
+//         }
+//         root.set_servers(servers);
+//         configFile.close();

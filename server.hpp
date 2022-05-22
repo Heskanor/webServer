@@ -25,17 +25,7 @@ class Server : virtual public Root
         int get_port();
         void set_port(int port);
         std::vector<Location> get_locations();
-        void set_locations(std::vector<Location> locations);
-        //methods
         void add_location(Location location);
-        void add_location(std::string path, std::string root, std::vector<std::string> index, bool autoIndex, std::string error500, std::string error502, std::string upload_directory, std::vector<std::string> allowed_methods, std::string cgi_path, std::vector<std::string> cgi_ext);
-        // void add_location(std::string path, std::string root, std::vector<std::string> index, bool autoIndex, std::string error500, std::string error502, std::string upload_directory, std::vector<std::string> allowed_methods);
-        // void add_location(std::string path, std::string root, std::vector<std::string> index, bool autoIndex, std::string error500, std::string error502);
-        // void add_location(std::string path, std::string root, std::vector<std::string> index, bool autoIndex);
-        // void add_location(std::string path, std::string root, std::vector<std::string> index);
-        // void add_location(std::string path, std::string root);
-        // void add_location(std::string path);
-        // void add_location();
 };
 
 #endif

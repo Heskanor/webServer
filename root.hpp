@@ -29,6 +29,7 @@ class Root
         void set_Root(std::string name);
         std::vector<std::string> get_index();
         void set_index(std::vector<std::string> index);
+        void add_index(std::string index);
         bool get_auto_index();
         void set_auto_index(bool autoIndex);
         std::string get_root();
@@ -37,7 +38,6 @@ class Root
         void set_bodySizeLimit(int bodySizeLimit);
         void parse_servers(std::string file);
         std::vector<Server> get_servers(); 
-
 };
 
 #endif

@@ -26,23 +26,17 @@ void Server::set_port(int port)
     _port = port;
 }
 
-// geters
-std::string Server::get_host()
-{
-    return _host;
-}
-
 int Server::get_port()
 {
     return _port;
 }
 
-void Server::set_location(Location *location)
+void Server::add_location(Location location)
 {
-    _locations = location;
+    _locations.push_back(location);
 }
 
-Location *Server::get_location()
+std::vector<Location> Server::get_locations()
 {
     return _locations;
 }
