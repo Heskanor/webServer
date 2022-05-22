@@ -81,15 +81,104 @@ Root parser(std::string file)
                         root.add_index(token); //call index setter
                 }
             }
-            else if ((pos = line.find("index:")) != std::string::npos)
+            else if ((pos = line.find("auto_index:")) != std::string::npos)
             {
+                getline(X, token,' ');
                 while (getline(X, token,' '))
                 {
-                    if (token != "" && token.find("index:") == std::string::npos)
-                        root.add_index(token); //call index setter
+                    if (token != "")
+                    {
+                        if (token.find("true") == std::string::npos && token.find("false") == std::string::npos)
+                        {
+                            std::cout << "Error: Auto-Index must be true or false" << std::endl;
+                            exit(1);
+                        }
+                        else if (token.find("true") != std::string::npos)
+                            root.set_auto_index(true);
+                        else if (token.find("false") != std::string::npos)
+                            root.set_auto_index(false);
+                    }
+                }
+            }
+            else if ((pos = line.find("bodySizeLimit:")) != std::string::npos)
+            {
+                getline(X, token,' ');
+                if (getline(X, token,' ') && (token.find_first_not_of("0123456789") == std::string::npos))
+                    root.set_bodySizeLimit(std::stoi(token));
+                else
+                {
+                    std::cout << "Error: BodySizeLimit must be a number" << std::endl;
+                    exit(1);
+                }
+            }
+            if ((pos = line.find("root:")) != std::string::npos)
+            {
+                getline(X, token,' ');
+                if (getline(X, token,' '))
+                    root.set_root(token);
+                else
+                {
+                    std::cout << "Error: Root must be a string" << std::endl;
+                    exit(1);
                 }
             }
         }
+        if (line.find("server:") != std::string::npos)
+        {
+            while(getline(configFile, line))
+            {
+                if (line.find("server:") != std::string::npos)
+                {
+                    Server server;
+                    std::stringstream X(line);
+                    getline(X, token,' ');
+                    if (getline(X, token,' '))
+                        server.set_name(token);
+                    else
+                    {
+                        std::cout << "Error: Server name must be a string" << std::endl;
+                        exit(1);
+                    }
+                    getline(X, token,' ');
+                    if (getline(X, token,' '))
+                        server.set_port(std::stoi(token));
+                    else
+                    {
+                        std::cout << "Error: Server port must be a number" << std::endl;
+                        exit(1);
+                    }
+                    getline(X, token,' ');
+                    if (getline(X, token,' '))
+                        server.set_ip(token);
+                    else
+                    {
+                        std::cout << "Error: Server ip must be a string" << std::endl;
+                        exit(1);
+                    }
+                    getline(X, token,' ');
+                    if (getline(X, token,' '))
+                        server.set_root(token);
+                    else
+                    {
+                        std::cout << "Error: Server root must be a string" << std::endl;
+                        exit(1);
+                    }
+                    getline(X, token,' ');
+                    if (getline(X, token,' '))
+                        server.set_index(token);
+                    else
+                    {
+                        std::cout << "Error: Server index must be a string" << std::endl;
+                        exit(1);
+                    }
+                    getline(X, token,' ');
+                    if (getline(X, token,' '))
+                    {
+                        if (token.find("true") == std::string::npos && token.find("false") == std::string::npos)
+                        {
+                            std::cout << "Error: Server auto-index must be true or false" << std::
+        }
+
     }   
 }
 
