@@ -12,15 +12,8 @@ class Server : virtual public Root
 {
     private:
         std::string _server_name;
-        std::string _root;
         int _port;
-        int _bodySizeLimit;
         std::vector<Location> _locations;
-
-    protected: // inherited by Location
-        bool _auto_index;
-        std::vector<std::string> _index;
-
     public:
         Server() {}
         Server(const Server &src){}
@@ -29,16 +22,8 @@ class Server : virtual public Root
         //geters and seters
         std::string get_server_name();
         void set_server_name(std::string name);
-        std::vector<std::string> get_index();
-        void set_index(std::vector<std::string> index);
-        bool get_autoIndex();
-        void set_autoIndex(bool autoIndex);
-        std::string get_root();
-        void set_root(std::string root);
         int get_port();
         void set_port(int port);
-        int get_bodySizeLimit();
-        void set_bodySizeLimit(int bodySizeLimit);
         std::vector<Location> get_locations();
         void set_locations(std::vector<Location> locations);
         //methods
@@ -51,7 +36,6 @@ class Server : virtual public Root
         // void add_location(std::string path, std::string root);
         // void add_location(std::string path);
         // void add_location();
-    
 };
 
 #endif

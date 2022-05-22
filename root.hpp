@@ -6,7 +6,7 @@
 #include <list>
 #include <vector>
 #include <string>
-#include "location.hpp"
+#include "server.hpp"
 
 class Root
 {
@@ -29,13 +29,15 @@ class Root
         void set_Root(std::string name);
         std::vector<std::string> get_index();
         void set_index(std::vector<std::string> index);
-        bool get_autoIndex();
-        void set_autoIndex(bool autoIndex);
+        bool get_auto_index();
+        void set_auto_index(bool autoIndex);
         std::string get_root();
         void set_root(std::string root);
         int get_bodySizeLimit();
         void set_bodySizeLimit(int bodySizeLimit);
-        void parser(std::string file);
+        void parse_servers(std::string file);
+        std::vector<Server> get_servers(); 
+
 };
 
 #endif
