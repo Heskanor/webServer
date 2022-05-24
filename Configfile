@@ -1,22 +1,21 @@
-Root:   # list of servers
-  index: index.html index.htm index.php
-  server: # server
-  {
-      server_name: 127.0.0.1
-      listen_port: 80
-      root: ./root
-      bodySizeLimit: 1000
-      locations: /the7
-      {
-        auto_index: true
-        index: index.html index.htm index.php
-        error500: ./Networking/index.html
-        error502: ./Networking/index.html
-        upload_directory: /var/www/html/public/uploads
-        allowed_methods: POST GET DELETE
-        #make sure you have php-cgi installed on your system
-        # put the php-cgi absolute path here
-        cgi_path: ./Networking/index.html
-        cgi_ext: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6
-      }
-  } 
+Root:   #list of servers
+	index: index.html index.htm index.php
+	error500: index:fuckyou
+	server: # server
+		server_name: 127.0.0.1
+		listen_port: 80:127.0.0.1
+		root: ./root
+	    bodySizeLimit: 1000
+	    locations: /the7
+	    	auto_index: true
+	    	index: index.html index.htm
+	    	error500: ./Networking/index.html
+	    	error502: ./Networking/index.html
+	    	upload_directory: /var/www/html/public/uploads
+	    	allowed_methods: POST GET DELETE
+	    	#make sure you have php-cgi installed on your system
+	    	# put the php-cgi absolute path here
+	    	cgi_path: ./Networking/index.html
+	    	cgi_ext: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6
+
+	
