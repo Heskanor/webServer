@@ -7,8 +7,9 @@
 #include <vector>
 #include <string>
 #include "location.hpp"
+#include "root.hpp"
 
-class Server : virtual public Root
+class Server : public Root
 {
     private:
         std::string _server_name;

@@ -10,9 +10,6 @@
 
 class Root
 {
-    private:
-        std::vector<Server> _servers;
-
     protected:
         std::string _root;
         int _bodySizeLimit;

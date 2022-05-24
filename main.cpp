@@ -5,8 +5,8 @@
 #include <string>
 #include <fstream>
 #include <sstream>
-#include "server.hpp"
 #include "root.hpp"
+#include "server.hpp"
 #include "location.hpp"
 
 bool isComment(std::string line)
@@ -93,7 +93,6 @@ int main()
                             exit(1);
                         }
                         /* code */
-
                     }else
                     {
                         std::cout << "|"<< "FUCK OFF" << "|"<<std::endl;

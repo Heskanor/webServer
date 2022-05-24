@@ -1,18 +1,14 @@
 #ifndef LOCATION_HPP
 # define LOCATION_HPP
 
-#include <iostream>
-#include <stack>
-#include <list>
-#include <vector>
-#include <string>
+
 #include <iterator>
 #include <map>
 #include "server.hpp"
 
 
 
-class Location : virtual public Server
+class Location : public Server
 {
     private:
         std::string _path;
