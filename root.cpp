@@ -64,3 +64,12 @@ void Root::add_index(std::string index)
 {
     _index.push_back(index);
 }
+
+void set_servers(std::vector<Server> servers)
+{
+    _servers = servers;
+}
+void add_server(Server server)
+{
+    _servers.push_back(server);
+}

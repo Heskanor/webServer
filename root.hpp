@@ -36,8 +36,9 @@ class Root
         void set_root(std::string root);
         int get_bodySizeLimit();
         void set_bodySizeLimit(int bodySizeLimit);
-        void parse_servers(std::string file);
-        std::vector<Server> get_servers(); 
+        std::vector<Server> get_servers();
+        void set_servers(std::vector<Server> servers);
+        void add_server(Server server);
 };
 
 #endif

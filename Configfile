@@ -17,5 +17,3 @@ Root:   #list of servers
 	    	# put the php-cgi absolute path here
 	    	cgi_path: ./Networking/index.html
 	    	cgi_ext: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6
-
-	
