@@ -19,9 +19,23 @@ bool isComment(std::string line)
     return false;
 }
 
+void skipSpaces(std::string &line)
+{
+    int i = 0;
+    while ( (line[i] == 32 || (line[i] < 14 && line[i] > 8))&& i< line.length())
+        i++;
+    line.erase(0, i);
+}
+// i is the token length
+void skipFirstToken(std::string &line,int i)
+{
+    while ( (line[i] == 32 || (line[i] < 14 && line[i] > 8))&& i< line.length())
+        i++;
+    line.erase(0, i);
+}
+
 int main()
 {
-   
     std::ifstream ifs("Configfile");
     std::string line;
     size_t pos;
@@ -57,6 +71,7 @@ int main()
             {
                 if (!isComment(line))
                 {
+                    //skip empty spaces
                     i = 0;
                     while ( (line[i] == 32 || (line[i] < 14 && line[i] > 8))&& i< line.length())
                         i++;
@@ -67,6 +82,13 @@ int main()
                     getline(Y, token,' ');
                     if (token =="index:")
                     {
+                        // I'm not sure if getline will use the new trimed line or not!
+                        skipFirstToken(line, token.length() - 1);
+                        while (getline(Y, token, ' ') && !isComment(line))
+                        {
+                            root.add_index(token);
+                            skipFirstToken(line, token.length() - 1);
+                        }
                         //Parse index
                     }else if (token =="auto_index:")
                     {
