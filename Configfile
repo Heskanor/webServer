@@ -1,5 +1,5 @@
 Root:   #list of servers
-	index: index.html index.htm index.php
+	index: #index.html index.htm index.php
 	error: 
 		code:500
 		content:./Networking/fuckyou.html

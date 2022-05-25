@@ -24,60 +24,32 @@ ConfigParser::ConfigParser()
     this->_keys[12] = "redirection:";//str
     this->_keys[11] = "locations:";//str
 
-	this->direcriveParser[0] = &ConfigParser::strTabParser;
-    this->direcriveParser[1] = &ConfigParser::strParser;
-    this->direcriveParser[2] = &ConfigParser::mapParser;
-    this->direcriveParser[3] = &ConfigParser::intParser;
-    this->direcriveParser[4] = &ConfigParser::intParser;
-    this->direcriveParser[5] = &ConfigParser::strParser;
-    this->direcriveParser[6] = &ConfigParser::strTabParser;
-    this->direcriveParser[7] = &ConfigParser::strParser;
-    this->direcriveParser[8] = &ConfigParser::strTabParser;
-    this->direcriveParser[9] = &ConfigParser::strParser;
-    this->direcriveParser[10] = &ConfigParser::strTabPortParser;
-    this->direcriveParser[11] = &ConfigParser::strParser;
-    this->direcriveParser[12] = &ConfigParser::strParser;
+	this->t_direcriveParser.push_back(&ConfigParser::strTabParser);
+    this->t_direcriveParser.push_back(&ConfigParser::strTabParser);
+    this->t_direcriveParser.push_back(&ConfigParser::mapParser);
+    this->t_direcriveParser.push_back(&ConfigParser::intParser);
+    this->t_direcriveParser.push_back(&ConfigParser::intParser);
+    this->t_direcriveParser.push_back(&ConfigParser::strParser);
+    this->t_direcriveParser.push_back(&ConfigParser::strTabParser);
+    this->t_direcriveParser.push_back(&ConfigParser::strParser);
+    this->t_direcriveParser.push_back(&ConfigParser::strTabParser);
+    this->t_direcriveParser.push_back(&ConfigParser::strParser);
+    this->t_direcriveParser.push_back(&ConfigParser::strTabPortParser);
+    this->t_direcriveParser.push_back(&ConfigParser::strParser);
+    this->t_direcriveParser.push_back(&ConfigParser::strParser);
 
 }
 
-void ConfigParser::set_current_line(std::string line)
+void ConfigParser::strTabParser(std::string line, Root &root)
 {
-    _current_line = line;
-}
-
-void ConfigParser::set_cursor(std::string cursor)
-{
-    _cursor = cursor;
-}
-
-void ConfigParser::set_current_key(std::string key)
-{
-    _current_key = key;
-}
-
-void ConfigParser::set_previous_key(std::string key)
-{
-    _previous_key = key;
-}
-
-std::string ConfigParser::get_current_key()
-{
-    return _current_key;
-}
-
-std::string ConfigParser::get_current_line()
-{
-    return _current_line;
-}
-
-std::string ConfigParser::get_cursor()
-{
-    return _cursor;
-}
-
-std::string ConfigParser::get_previous_key()
-{
-    return _previous_key;
+    std::stringstream ss(line);
+    std::string token;
+    std::vector<std::string> strTab;
+    while (std::getline(ss, token, ' '))
+    {
+        strTab.push_back(token);
+    }
+    root.set_index(strTab);
 }
 
 Root parser(std::string file)

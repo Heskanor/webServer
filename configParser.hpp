@@ -13,7 +13,8 @@ class ConfigParser
 {
     private:
         std::string _keys[12];
-        void (ConfigParser::direcriveParser[12])(std::string line);
+        typedef void (ConfigParser::*direcriveParser)(std::string line, Root &root);
+        std::vector<direcriveParser> t_direcriveParser;
     public:
         ConfigParser() {}
         ConfigParser(const ConfigParser &src){}
@@ -21,12 +22,12 @@ class ConfigParser
         ConfigParser &operator=( ConfigParser const & rhs );
         Root parser(std::string file);
         
-        void strTabParser(std::string line);
-        void strParser(std::string line);
-        void strTabPortParser(std::string line);
-        void mapParser(std::string line);
-        void intParser(std::string line);
+        void strTabParser(std::string line, Root &root);
+        void strParser(std::string line, Root &root);
+        void strTabPortParser(std::string line, Root &root);
+        void mapParser(std::string line, Root &root);
+        void intParser(std::string line, Root &root);
 
-};  
+};
 
 #endif
