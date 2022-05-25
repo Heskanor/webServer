@@ -5,35 +5,28 @@
 #include <stack>
 #include <list>
 #include "server.hpp"
+#include "location.hpp"
 #include "root.hpp"
 
 
 class ConfigParser
 {
     private:
-        std::string _current_line;
-        std::string _cursor;
-        std::string _current_key;
-        std::string _previous_key;
-        
-
-
-        
+        std::string _keys[12];
+        void (ConfigParser::direcriveParser[12])(std::string line);
     public:
         ConfigParser() {}
         ConfigParser(const ConfigParser &src){}
         ~ConfigParser() {}
         ConfigParser &operator=( ConfigParser const & rhs );
         Root parser(std::string file);
-        std::string get_current_key();
-        std::string get_current_line();
-        std::string get_cursor();
-        std::string get_previous_key();
-        void set_previous_key(std::string key);
-        void set_current_key(std::string key);
-        void set_current_line(std::string line);
-        void set_cursor(std::string cursor);
+        
+        void strTabParser(std::string line);
+        void strParser(std::string line);
+        void strTabPortParser(std::string line);
+        void mapParser(std::string line);
+        void intParser(std::string line);
 
-};
+};  
 
 #endif

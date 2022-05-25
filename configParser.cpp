@@ -9,10 +9,35 @@
 //webserv config file parser
 ConfigParser::ConfigParser()
 {
-    _current_line = "";
-    _cursor = "";
-    _current_key = "";
-    _previous_key = "";
+
+	this->_keys[0] = "index:";//str table
+	this->_keys[1] = "root:";//str
+	this->_keys[2] = "errors:";//map
+	this->_keys[3] = "bodySizeLimit:";//int
+    this->_keys[4] = "autoIndex:";//int
+    this->_keys[5] = "uploadDirectory:";//str
+    this->_keys[6] = "allowedMethods:";//str table
+    this->_keys[7] = "cgiPath:";//str
+    this->_keys[8] = "cgiExt:";//str table
+    this->_keys[9] = "serverName:";//str
+    this->_keys[10] = "listen:";//str port table
+    this->_keys[12] = "redirection:";//str
+    this->_keys[11] = "locations:";//str
+
+	this->direcriveParser[0] = &ConfigParser::strTabParser;
+    this->direcriveParser[1] = &ConfigParser::strParser;
+    this->direcriveParser[2] = &ConfigParser::mapParser;
+    this->direcriveParser[3] = &ConfigParser::intParser;
+    this->direcriveParser[4] = &ConfigParser::intParser;
+    this->direcriveParser[5] = &ConfigParser::strParser;
+    this->direcriveParser[6] = &ConfigParser::strTabParser;
+    this->direcriveParser[7] = &ConfigParser::strParser;
+    this->direcriveParser[8] = &ConfigParser::strTabParser;
+    this->direcriveParser[9] = &ConfigParser::strParser;
+    this->direcriveParser[10] = &ConfigParser::strTabPortParser;
+    this->direcriveParser[11] = &ConfigParser::strParser;
+    this->direcriveParser[12] = &ConfigParser::strParser;
+
 }
 
 void ConfigParser::set_current_line(std::string line)

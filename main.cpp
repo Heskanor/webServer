@@ -46,10 +46,7 @@ int main()
     {
         getline(ifs, line);
         //skip empty spaces
-        i = 0;
-        while ( (line[i] == 32 || (line[i] < 14 && line[i] > 8))&& i< line.length())
-            i++;
-        line.erase(0, i);
+        skipSpaces(line);
         //-----------------------------------------------------
         // is root?
         std::stringstream X(line);
@@ -72,10 +69,7 @@ int main()
                 if (!isComment(line))
                 {
                     //skip empty spaces
-                    i = 0;
-                    while ( (line[i] == 32 || (line[i] < 14 && line[i] > 8))&& i< line.length())
-                        i++;
-                    line.erase(0, i);
+                    skipSpaces(line);
                     //-----------------------------------------------------
                     // is root?
                     std::stringstream Y(line);

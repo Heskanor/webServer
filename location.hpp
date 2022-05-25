@@ -12,8 +12,8 @@ class Location : public Server
 {
     private:
         std::string _path;
-        std::map<int, std::string>  _error_map;
-        std::string _upload_directory;
+        
+        
         std::vector<std::string> _allowed_methods;
         std::string _cgi_path;
         std::vector<std::string> _cgi_ext;

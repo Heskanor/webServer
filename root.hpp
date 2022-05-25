@@ -11,10 +11,13 @@
 class Root
 {
     protected:
-        std::string _root;
-        int _bodySizeLimit;
-        bool _auto_index;
         std::vector<std::string> _index;
+        std::string _root;
+        std::map<int, std::string>  _error_map;
+        int _bodySizeLimit;
+        bool autoIndex;
+        std::string _uploadDirectory;
+        std::vector<std::string> _allowedMethods;
 
     public:
         Root() {}

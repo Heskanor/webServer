@@ -60,7 +60,6 @@ ___
                   - .php4
                   - .php5
                   - .php6
-
 _____
 
 #include <iostream>
