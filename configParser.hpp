@@ -8,38 +8,40 @@
 #include "location.hpp"
 #include "root.hpp"
 
-
+template < typename T >
 class ConfigParser
 {
     public:
         std::string _keys[12];
-        typedef void (ConfigParser::*directiveParser)(std::string line, Root &root);
+        
+        typedef void (ConfigParser::*directiveParser)(std::string token,std::string line, T &lvl);
         std::vector<directiveParser> t_directiveParser;
         ConfigParser() {}
         ConfigParser(const ConfigParser &src){}
         ~ConfigParser() {}
         ConfigParser &operator=( ConfigParser const & rhs );
-        Root   Rootparser(std::string file);
+        Root Rootparser(std::string file);
     private:
-        void strTabParser(std::string line, Root &root);
-        void strParser(std::string line, Root &root);
-        void strTabPortParser(std::string line, Root &root);
-        void mapParser(std::string line, Root &root);
-        void intParser(std::string line, Root &root);
-        void setIndex(std::string line, Root &root);
-        void setRoot(std::string line, Root &root);
-        void setErrors(std::string line, Root &root);
-        void setBodySizeLimit(std::string line, Root &root);
-        void setBodySizeLimit(std::string line, Root &root);
-        void setAutoIndex(std::string line, Root &root);
-        void setUploadDirectory(std::string line, Root &root);
-        void setAllowedMethods(std::string line, Root &root);
-        void setServerName(std::string line, Root &root);
-        void setListen(std::string line, Root &root);
-        void setRedirection(std::string line, Root &root);
-        void setLocation(std::string line, Root &root);
-        void setCgiPath(std::string line, Root &root);
-        void setCgiExt(std::string line, Root &root);
+    
+        void strTabParser(std::string status,std::string line, T &root);
+        void strParser(std::string status,std::string line, T &root);
+        void strTabPortParser(std::string status,std::string line, T &root);
+        void mapParser(std::string status,std::string line, T &root);
+        void intParser(std::string status,std::string line, T &root);
+        void setIndex(std::string status,std::string line, T &root);
+        void setRoot(std::string status,std::string line, T &root);
+        void setErrors(std::string status,std::string line, T &root);
+        void setBodySizeLimit(std::string status,std::string line, T &root);
+        void setBodySizeLimit(std::string status,std::string line, T &root);
+        void setAutoIndex(std::string status,std::string line, T &root);
+        void setUploadDirectory(std::string status,std::string line, T &root);
+        void setAllowedMethods(std::string status,std::string line, T &root);
+        void setServerName(std::string status,std::string line, T &root);
+        void setListen(std::string status,std::string line, T &root);
+        void setRedirection(std::string status,std::string line, T &root);
+        void setLocation(std::string status,std::string line, T &root);
+        void setCgiPath(std::string status,std::string line, T &root);
+        void setCgiExt(std::string status,std::string line, T &root);
 
 };
 

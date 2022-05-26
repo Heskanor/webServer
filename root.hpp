@@ -10,6 +10,8 @@
 
 class Root
 {
+    private:
+        std::vector<Server> _servers;
     protected:
         std::vector<std::string> _index;
         std::string _root;
@@ -37,6 +39,7 @@ class Root
         int get_bodySizeLimit();
         void set_bodySizeLimit(int bodySizeLimit);
         std::vector<Server> get_servers();
+        Server get_server(int index);
         void set_servers(std::vector<Server> servers);
         void add_server(Server server);
 };
