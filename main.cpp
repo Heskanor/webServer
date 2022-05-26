@@ -8,6 +8,7 @@
 #include "root.hpp"
 #include "server.hpp"
 #include "location.hpp"
+#include "configParser.hpp"
 
 bool isComment(std::string line)
 {
@@ -41,6 +42,7 @@ int main()
     size_t pos;
     std::string token;
     Root root;
+    ConfigParser parser;
     int i;
     if (ifs.is_open())
     {
@@ -74,6 +76,11 @@ int main()
                     // is root?
                     std::stringstream Y(line);
                     getline(Y, token,' ');
+                    for (int i = 0; i < 7; i++)
+                    {
+                        if (token == parser._keys[i])
+                            parser.*t_directiveParser[0](line, root);
+                    }
                     if (token =="index:")
                     {
                         // I'm not sure if getline will use the new trimed line or not!

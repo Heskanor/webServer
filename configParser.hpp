@@ -11,22 +11,35 @@
 
 class ConfigParser
 {
-    private:
-        std::string _keys[12];
-        typedef void (ConfigParser::*direcriveParser)(std::string line, Root &root);
-        std::vector<direcriveParser> t_direcriveParser;
     public:
+        std::string _keys[12];
+        typedef void (ConfigParser::*directiveParser)(std::string line, Root &root);
+        std::vector<directiveParser> t_directiveParser;
         ConfigParser() {}
         ConfigParser(const ConfigParser &src){}
         ~ConfigParser() {}
         ConfigParser &operator=( ConfigParser const & rhs );
-        Root parser(std::string file);
-        
+        Root   Rootparser(std::string file);
+    private:
         void strTabParser(std::string line, Root &root);
         void strParser(std::string line, Root &root);
         void strTabPortParser(std::string line, Root &root);
         void mapParser(std::string line, Root &root);
         void intParser(std::string line, Root &root);
+        void setIndex(std::string line, Root &root);
+        void setRoot(std::string line, Root &root);
+        void setErrors(std::string line, Root &root);
+        void setBodySizeLimit(std::string line, Root &root);
+        void setBodySizeLimit(std::string line, Root &root);
+        void setAutoIndex(std::string line, Root &root);
+        void setUploadDirectory(std::string line, Root &root);
+        void setAllowedMethods(std::string line, Root &root);
+        void setServerName(std::string line, Root &root);
+        void setListen(std::string line, Root &root);
+        void setRedirection(std::string line, Root &root);
+        void setLocation(std::string line, Root &root);
+        void setCgiPath(std::string line, Root &root);
+        void setCgiExt(std::string line, Root &root);
 
 };
 

@@ -9,35 +9,33 @@
 //webserv config file parser
 ConfigParser::ConfigParser()
 {
-
+    //hardcoded keyslist
 	this->_keys[0] = "index:";//str table
+	this->t_directiveParser.push_back(&ConfigParser::setIndex); //strTabParser);
 	this->_keys[1] = "root:";//str
+    this->t_directiveParser.push_back(&ConfigParser::setRoot);//strTabParser);
 	this->_keys[2] = "errors:";//map
+    this->t_directiveParser.push_back(&ConfigParser::setErrors);//mapParser);
 	this->_keys[3] = "bodySizeLimit:";//int
+    this->t_directiveParser.push_back(&ConfigParser::setBodySizeLimit//intParser);
     this->_keys[4] = "autoIndex:";//int
+    this->t_directiveParser.push_back(&ConfigParser::setAutoIndex//intParser);
     this->_keys[5] = "uploadDirectory:";//str
+    this->t_directiveParser.push_back(&ConfigParser::setUploadDirectory//strParser);
     this->_keys[6] = "allowedMethods:";//str table
-    this->_keys[7] = "cgiPath:";//str
-    this->_keys[8] = "cgiExt:";//str table
+    this->t_directiveParser.push_back(&ConfigParser::setAllowedMethods//strTabParser);
     this->_keys[9] = "serverName:";//str
+    this->t_directiveParser.push_back(&ConfigParser::setServerName//strParser);
     this->_keys[10] = "listen:";//str port table
+    this->t_directiveParser.push_back(&ConfigParser::setListen//strTabPortParser);
     this->_keys[12] = "redirection:";//str
+    this->t_directiveParser.push_back(&ConfigParser::setRedirection//strParser);
     this->_keys[11] = "locations:";//str
-
-	this->t_direcriveParser.push_back(&ConfigParser::strTabParser);
-    this->t_direcriveParser.push_back(&ConfigParser::strTabParser);
-    this->t_direcriveParser.push_back(&ConfigParser::mapParser);
-    this->t_direcriveParser.push_back(&ConfigParser::intParser);
-    this->t_direcriveParser.push_back(&ConfigParser::intParser);
-    this->t_direcriveParser.push_back(&ConfigParser::strParser);
-    this->t_direcriveParser.push_back(&ConfigParser::strTabParser);
-    this->t_direcriveParser.push_back(&ConfigParser::strParser);
-    this->t_direcriveParser.push_back(&ConfigParser::strTabParser);
-    this->t_direcriveParser.push_back(&ConfigParser::strParser);
-    this->t_direcriveParser.push_back(&ConfigParser::strTabPortParser);
-    this->t_direcriveParser.push_back(&ConfigParser::strParser);
-    this->t_direcriveParser.push_back(&ConfigParser::strParser);
-
+    this->t_directiveParser.push_back(&ConfigParser::setLocation//strParser);
+    this->_keys[7] = "cgiPath:";//str
+    this->t_directiveParser.push_back(&ConfigParser::setCgiPath//strParser);
+    this->_keys[8] = "cgiExt:";//str table
+    this->t_directiveParser.push_back(&ConfigParser::setCgiExt//strTabParser);
 }
 
 void ConfigParser::strTabParser(std::string line, Root &root)
@@ -52,170 +50,109 @@ void ConfigParser::strTabParser(std::string line, Root &root)
     root.set_index(strTab);
 }
 
-Root parser(std::string file)
+bool isComment(std::string line)
 {
-    Root root;
-    std::ifstream configFile(file);
+    int i = 0;
+    while ( (line[i] == 32 || (line[i] < 14 && line[i] > 8))&& i< line.length())
+        i++;
+    if (line[i] == '#')
+        return true;
+    return false;
+}
+
+void skipSpaces(std::string &line)
+{
+    int i = 0;
+    while ( (line[i] == 32 || (line[i] < 14 && line[i] > 8))&& i< line.length())
+        i++;
+    line.erase(0, i);
+}
+// i is the token length
+void skipFirstToken(std::string &line,int i)
+{
+    while ( (line[i] == 32 || (line[i] < 14 && line[i] > 8))&& i< line.length())
+        i++;
+    line.erase(0, i);
+}
+
+Root ConfigParser::Rootparser(std::string file)
+{
+    std::ifstream ifs("Configfile");
     std::string line;
-    std::string cursor;
-    std::string current_key;   
-    std::string previous_key;
-    std::string current_line;
-    std::string root_name;
-    std::string token;
-    std::vector<std::string> index;
-    bool auto_index = false;
-    int bodySizeLimit = 0;
-    std::vector<Server> servers;
+    std::string status;
+    std::string previousKey;
     size_t pos;
-    if (configFile.is_open())
+    std::string token;
+    Root root;
+    int i;
+    if (ifs.is_open())
     {
-        while (getline(configFile, line))
-        {
-            std::stringstream X(line);
-            if (line.find("server:") == std::string::npos)
+        getline(ifs, line);
+        //skip empty spaces
+        skipSpaces(line);
+        //-----------------------------------------------------
+        // is root?
+        std::stringstream X(line);
+        getline(X, token,' ');
+        if (token == "root:")
+        {   status = "root:";
+            //look for comments
+            i = 5;
+            while ( (line[i] == 32 || (line[i] < 14 && line[i] > 8))&& i< line.length())
+                i++;
+            if (line[i] && line[i] != '#')
             {
-                if ((pos = line.find("index:")) != std::string::npos)
-                {
-                    getline(X, token,' ');
-                    while (getline(X, token,' '))
-                    {
-                        if (token != "")
-                            root.add_index(token); //call index setter
-                    }
-                }
-                else if ((pos = line.find("auto_index:")) != std::string::npos)
-                {
-                    getline(X, token,' ');
-                    while (getline(X, token,' '))
-                    {
-                        if (token != "")
-                        {
-                            if (token.find("true") == std::string::npos && token.find("false") == std::string::npos)
-                            {
-                                std::cout << "Error: Auto-Index must be true or false" << std::endl;
-                                exit(1);
-                            }
-                            else if (token.find("true") != std::string::npos)
-                                root.set_auto_index(true);
-                            else if (token.find("false") != std::string::npos)
-                                root.set_auto_index(false);
-                        }
-                    }
-                }
-                else if ((pos = line.find("bodySizeLimit:")) != std::string::npos)
-                {
-                    getline(X, token,' ');
-                    if (getline(X, token,' ') && (token.find_first_not_of("0123456789") == std::string::npos))
-                        root.set_bodySizeLimit(std::stoi(token));
-                    else
-                    {
-                        std::cout << "Error: BodySizeLimit must be a number" << std::endl;
-                        exit(1);
-                    }
-                }
-                if ((pos = line.find("root:")) != std::string::npos)
-                {
-                    getline(X, token,' ');
-                    if (getline(X, token,' '))
-                        root.set_root(token);
-                    else
-                    {
-                        std::cout << "Error: Root must be a string" << std::endl;
-                        exit(1);
-                    }
-                }
+                std::cout << "|"<< "FUCK OFF" << "|"<<std::endl;
+                exit(1);
             }
-            else
+            //-----------------------------------------------------
+            std::cout << "|"<< "Good start sir :)" << "|"<<std::endl;
+            while (getline(ifs, line))
             {
-                Server server;
-                while (getline(configFile, line))
+                if (!isComment(line))
                 {
-                    if (token != "")
+                    //skip empty spaces
+                    skipSpaces(line);
+                    //-----------------------------------------------------
+                    // is root?
+                    std::stringstream Y(line);
+                    getline(Y, token,' ');
+                    previousKey = token;
+                    if (previousKey == "server:")
+                        status = "server:";
+                    if (status == "root:")
                     {
-                        if (token.find("listen_port:") != std::string::npos)
+                        for (int    j = 0; j < 7; j++)
                         {
-                            getline(X, token,' ');
-                            if (getline(X, token,' ') && (token.find_first_not_of("0123456789") == std::string::npos))
-                                server.set_port(std::stoi(token));
-                            else
-                            {
-                                std::cout << "Error: Port must be a number" << std::endl;
-                                exit(1);
-                            }
-                        }
-                        else if (token.find("root:") != std::string::npos)
-                        {
-                            getline(X, token,' ');
-                            if (getline(X, token,' '))
-                                server.set_root(token);
-                            else
-                            {
-                                std::cout << "Error: Root must be a string" << std::endl;
-                                exit(1);
-                            }
-                        }
-                        else if (token.find("index:") != std::string::npos)
-                        {
-                            getline(X, token,' ');
-                            while (getline(X, token,' '))
-                            {
-                                if (token != "")
-                                    server.add_index(token); //call index setter
-                            }
-                        }
-                        else if (token.find("auto_index:") != std::string::npos)
-                        {
-                            getline(X, token,' ');
-                            while (getline(X, token,' '))
-                            {
-                                if (token != "")
-                                {
-                                    if (token.find("true") == std::string::npos && token.find("false") == std::string::npos)
-                                    {
-                                        std::cout << "Error: Auto-Index must be true or false" << std::endl;
-                                        exit(1);
-                                    }
-                                }
-                            }
-                        }
-                        else if(token.find("server_name:") != std::string::npos)
-                        {
-                            getline(X, token,' ');
-                            if (getline(X, token,' '))
-                                server.set_server_name(token);
-                            else
-                            {
-                                std::cout << "Error: Server Name must be a string" << std::endl;
-                                exit(1);
-                            }
-                        }
-                        else if(token.find("bodySizeLimit:") != std::string::npos)
-                        {
-                            getline(X, token,' ');
-                            if (getline(X, token,' ') && (token.find_first_not_of("0123456789") == std::string::npos))
-                                server.set_bodySizeLimit(std::stoi(token));
-                            else
-                            {
-                                std::cout << "Error: BodySizeLimit must be a number" << std::endl;
-                                exit(1);
-                            }
-                        }
-                        else if (token.find("location:") != std::string::npos)
-                        {
-                            getline(X, token,' ');
-                            getline(X, token,' ');
-                            location.set_path(token);
-                            while(token.find("location:") != std::string::npos)
-                            {
-                                Location location;
-                                while (getline())
-                            }
+                            if (token == (this->_keys)[j])
+                                (this->*t_directiveParser[j])(line, root);
                         }
                     }
+                    else if (status =="server:")
+                    {
+                        //look for comments
+                        i = 7;
+                        while ( (line[i] == 32 || (line[i] < 14 && line[i] > 8))&& i< line.length())
+                            i++;
+                        if (line[i] && line[i] != '#')
+                        {
+                            std::cout << "|"<< "FUCK OFF" << "|"<<std::endl;
+                            exit(1);
+                        }
+                        /* code */
+                    }else
+                    {
+                        std::cout << "|"<< "FUCK OFF" << "|"<<std::endl;
+                        exit(1);
+                    }
                 }
-                servers.push_back(server);
             }
         }
+        else
+        {
+            std::cout << "|"<< "FUCK OFF" << "|"<<std::endl;
+            exit(1);
+        }
     }
+    return 0;
 }

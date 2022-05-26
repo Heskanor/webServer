@@ -1,4 +1,4 @@
-Root:   #list of servers
+root:   #list of servers
 	index: #index.html index.htm index.php
 	error: 
 		code:500
