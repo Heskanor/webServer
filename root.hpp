@@ -10,8 +10,6 @@
 
 class Root
 {
-    private:
-        std::vector<Server> _servers;
     protected:
         std::vector<std::string> _index;
         std::string _root;
@@ -22,6 +20,7 @@ class Root
         std::vector<std::string> _allowedMethods;
 
     public:
+        std::vector<Server> _servers;
         Root() {}
         Root(const Root &src){}
         virtual ~Root() {}

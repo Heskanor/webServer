@@ -8,7 +8,8 @@ root:   #list of servers
 		listen: address:8080
 		root: ./root
 	    bodySizeLimit: 1000
-	    locations: /the7
+	    locations: 
+			path: /the7
 	    	autoIndex: true
 	    	index: index.html index.htm
 	    	error500: ./Networking/index.html

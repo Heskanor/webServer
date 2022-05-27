@@ -14,8 +14,8 @@ class Server : public Root
     private:
         std::string _server_name;
         int _port;
-        std::vector<Location> _locations;
     public:
+        std::vector<Location> _locations;
         Server() {}
         Server(const Server &src){}
         virtual ~Server() {}

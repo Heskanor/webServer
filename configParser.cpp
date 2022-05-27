@@ -18,25 +18,25 @@ ConfigParser<T>::ConfigParser()
 	this->_keys[2] = "errors:";//map
     this->t_directiveParser.push_back(&ConfigParser::setErrors);//mapParser);
 	this->_keys[3] = "bodySizeLimit:";//int
-    this->t_directiveParser.push_back(&ConfigParser::setBodySizeLimit//intParser);
+    this->t_directiveParser.push_back(&ConfigParser::setBodySizeLimit);//intParser);;
     this->_keys[4] = "autoIndex:";//int
-    this->t_directiveParser.push_back(&ConfigParser::setAutoIndex//intParser);
+    this->t_directiveParser.push_back(&ConfigParser::setAutoIndex);//intParser);;
     this->_keys[5] = "uploadDirectory:";//str
-    this->t_directiveParser.push_back(&ConfigParser::setUploadDirectory//strParser);
+    this->t_directiveParser.push_back(&ConfigParser::setUploadDirectory);//strParser);;
     this->_keys[6] = "allowedMethods:";//str table
-    this->t_directiveParser.push_back(&ConfigParser::setAllowedMethods//strTabParser);
-    this->_keys[9] = "serverName:";//str
-    this->t_directiveParser.push_back(&ConfigParser::setServerName//strParser);
-    this->_keys[10] = "listen:";//str port table
-    this->t_directiveParser.push_back(&ConfigParser::setListen//strTabPortParser);
-    this->_keys[12] = "redirection:";//str
-    this->t_directiveParser.push_back(&ConfigParser::setRedirection//strParser);
-    this->_keys[11] = "locations:";//str
-    this->t_directiveParser.push_back(&ConfigParser::setLocation//strParser);
-    this->_keys[7] = "cgiPath:";//str
-    this->t_directiveParser.push_back(&ConfigParser::setCgiPath//strParser);
-    this->_keys[8] = "cgiExt:";//str table
-    this->t_directiveParser.push_back(&ConfigParser::setCgiExt//strTabParser);
+    this->t_directiveParser.push_back(&ConfigParser::setAllowedMethods);//strTabParser);;
+    this->_keys[7] = "serverName:";//str
+    this->t_directiveParser.push_back(&ConfigParser::setServerName);//strParser);;
+    this->_keys[8] = "listen:";//str port table
+    this->t_directiveParser.push_back(&ConfigParser::setListen);//strTabPortParser);;
+    this->_keys[9] = "redirection:";//str
+    this->t_directiveParser.push_back(&ConfigParser::setRedirection);//strParser);;
+    this->_keys[10] = "path:";//str
+    this->t_directiveParser.push_back(&ConfigParser::setLocation);//strParser);;
+    this->_keys[11] = "cgiPath:";//str
+    this->t_directiveParser.push_back(&ConfigParser::setCgiPath);//strParser);;
+    this->_keys[12] = "cgiExt:";//str table
+    this->t_directiveParser.push_back(&ConfigParser::setCgiExt);//strTabParser);
 }
 
 template< typename T >
@@ -88,7 +88,8 @@ Root ConfigParser<T>::Rootparser(std::string file)
     size_t pos;
     std::string token;
     Root root;
-    serverCounter = 0;
+    int serverCounter = 0;
+    int locationsCounter = 0;
     int i;
     if (ifs.is_open())
     {
@@ -115,17 +116,17 @@ Root ConfigParser<T>::Rootparser(std::string file)
             }
             //-----------------------------------------------------
             std::cout << "|"<< "Good start sir :)" << "|"<<std::endl;
-            while (getline(ifs, line) && token != "server:")
+            while (getline(ifs, line))
             {
                 if (!isComment(line))
                 {
                     //skip empty spaces
                     skipSpaces(line);
-                    
                     std::stringstream Y(line);
                     getline(Y, token,' ');
                     previousKey = token;
-                        
+                    if (token == "server:" && status == "server:")
+                        serverCounter++;
                     if (status == "root:" && token != "server:")
                     {
                         for (int    j = 0; j < 7; j++)
@@ -133,74 +134,49 @@ Root ConfigParser<T>::Rootparser(std::string file)
                             if (token == (this->_keys)[j])
                                 (this->*t_directiveParser[j])(status, line, root);
                         }
-                    }
-                }
-            }
-            while (getline(ifs, line) && token != "server:")
-            {
-                if (!isComment(line))
-                {
-                    //skip empty spaces
-                    skipSpaces(line);
-                    
-                    std::stringstream Y(line);
-                    getline(Y, token,' ');
-                    previousKey = token;
-                        
-                    if (status == "server:" && token != "server:")
+                    }else if (token == "server:")
                     {
-                        for (int    j = 0; j < 7; j++)
-                        {
-                            if (token == (this->_keys)[j])
-                                (this->*t_directiveParser[j])(status, line, root);
-                        }
-                    }
-                }
-            }
-
-                    else if (status =="server:")
-                    {
-                        // looking for a way to parse server and push it into the root
-                        server = &root.get_server(serverCounter);
-                        //look for comments
-                        i = 7;
-                        while ((line[i] == 32 || (line[i] < 14 && line[i] > 8))&& i< line.length())
-                            i++;
-                        if (line[i] && line[i] != '#')
-                        {
-                            std::cout << "|"<< "FUCK OFF" << "|"<<std::endl;
-                            exit(1);
-                        }
-                        for (int    j = 0; j < 13; j++)
-                        {
-                            if (token == (this->_keys)[j])
-                                (this->*t_directiveParser[j])(status, line, root);
-                        }
-                        /* code */
-                    }
-                    else if (status == "location")
-                    {
-
-                    }
-                    else if (previousKey == "server:")
-                    {
-                        Server server = new Server();
+                        previousKey = token;
+                        getline(ifs, line);
+                        skipSpaces(line);
+                        std::stringstream Y(line);
+                        getline(Y, token,' ');
                         status = "server:";
-                        serverCounter++;
-                    }    
-                    else
-                    {
-                        std::cout << "|"<< "FUCK OFF" << "|"<<std::endl;
-                        exit(1);
+                        for (int    j = 0; j < 10; j++)
+                        {
+                            if (token == (this->_keys)[j])
+                                (this->*t_directiveParser[j])(status, line, root._servers[serverCounter]);
+                        }
+                        if (token == "location:")
+                        {
+                            status = "location:";
+                            token = "lol";
+                            while (getline(ifs, line) && (token != "server:") && (token != "location:"))
+                            {
+                                if (!isComment(line))
+                                {
+                                    //skip empty spaces
+                                    skipSpaces(line);
+                                    std::stringstream Z(line);
+                                    getline(Z, token,' ');
+                                    previousStatus = token;
+                                    if (token != "location:" && token != "server:")
+                                    {
+                                        for (int    j = 0; j < 13; j++)
+                                        {
+                                            if (token == (this->_keys)[j])
+                                                (this->*t_directiveParser[j])(status, line, root._servers[serverCounter]._locations[locationCounter]);
+                                        }
+                                    }
+                                }
+                            }
+                            // location can skip a server by mistake
+                            locationsCounter++;
+                        }
                     }
                 }
             }
-        }
-        else
-        {
-            std::cout << "|"<< "FUCK OFF" << "|"<<std::endl;
-            exit(1);
         }
     }
-    return 0;
+    return root;
 }
