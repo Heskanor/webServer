@@ -6,11 +6,11 @@
 #include <vector>
 #include "location.hpp"
 
-//webserv config file parser
+//webserver config file parser
 template< typename T >
 ConfigParser<T>::ConfigParser()
 {
-    //hardcoded keyslist
+    //hardcoded keys-list
 	this->_keys[0] = "index:";//str table
 	this->t_directiveParser.push_back(&ConfigParser::setIndex); //strTabParser);
 	this->_keys[1] = "root:";//str
@@ -52,6 +52,8 @@ void ConfigParser<T>::strTabParser(std::string status,std::string line, T &lvl)
         }
     }
 }
+
+void ConfigParser::
 
 // void ConfigParser::strTabParser(std::string line, T &lvl)
 // {
@@ -127,7 +129,7 @@ Root ConfigParser<T>::Rootparser(std::string file)
                     if (token == (this->_keys)[j])
                     {
                         (this->*t_directiveParser[j])(status, line, root);
-                        action =1;
+                        action = 1;
                     }
                 }
                 if (action == 0)
@@ -141,6 +143,7 @@ Root ConfigParser<T>::Rootparser(std::string file)
         {
             while (getline(ifs, line))
             {
+                action = 0;
                 locationsCounter = 0;
                 skipSpaces(line);
                 std::stringstream Y(line);
@@ -149,36 +152,49 @@ Root ConfigParser<T>::Rootparser(std::string file)
                 {
                     while (getline(ifs, line))
                     {
+                        action = 0;
                         skipSpaces(line);
                         std::stringstream Y(line);
                         getline(Y, token,' ');
                         previousKey = token;
                         if (token == "server:")
                             break;
-                        else if (token == "location:")
+                        if (token == "location:")
                             locationsCounter++;
                         else
                         {
                             for (int    j = 0; j < 13; j++)
                             {
                                 if (token == (this->_keys)[j])
+                                {
                                     (this->*t_directiveParser[j])(status, line, root._server(serverCounter)._location(locationsCounter));
+                                    action = 1;
+                                }
+                            }
+                            if (action == 0)
+                            {
+                                std::cout << "Error: invalid location key" << std::endl;
+                                exit(1);
                             }
                         }
                     }
-                    locationsCounter++;
                 }
-                if (token == "server:")
-                {
+                else if (token == "server:")
                     serverCounter++;
-                    locationsCounter = 0;
-                }
                 else
                 {
                     for (int    j = 0; j < 10; j++)
                     {
                         if (token == (this->_keys)[j])
+                        {
                             (this->*t_directiveParser[j])(status, line, root._servers[serverCounter]);
+                            action = 1;
+                        }    
+                    }
+                    if (action == 0)
+                    {
+                        std::cout << "Error: invalid server key" << std::endl;
+                        exit(1);
                     }
                 }   
             }
