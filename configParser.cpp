@@ -15,7 +15,7 @@ ConfigParser<T>::ConfigParser()
 	this->t_directiveParser.push_back(&ConfigParser::setIndex); //strTabParser);
 	this->_keys[1] = "root:";//str
     this->t_directiveParser.push_back(&ConfigParser::setRoot);//strTabParser);
-	this->_keys[2] = "errors:";//map
+	this->_keys[2] = "errorPage:";//map
     this->t_directiveParser.push_back(&ConfigParser::setErrors);//mapParser);
 	this->_keys[3] = "bodySizeLimit:";//int
     this->t_directiveParser.push_back(&ConfigParser::setBodySizeLimit);//intParser);;
@@ -40,27 +40,40 @@ ConfigParser<T>::ConfigParser()
 }
 
 template< typename T >
-void ConfigParser<T>::strTabParser(std::string line, T &lvl)
+void ConfigParser<T>::strTabParser(std::string status,std::string line, T &lvl)
 {
-    std::stringstream ss(line);
     std::string token;
-    std::vector<std::string> strTab;
-    while (std::getline(ss, token, ' '))
+    std::stringstream ss(line);
+    while (getline(ss, token, ' '))
     {
-        strTab.push_back(token);
+        if (token.size() > 0)
+        {
+            (this->*t_directiveParser[status])(token,line,lvl);
+        }
     }
-    lvl.set_index(strTab);
 }
 
-bool isComment(std::string line)
-{
-    int i = 0;
-    while ( (line[i] == 32 || (line[i] < 14 && line[i] > 8))&& i< line.length())
-        i++;
-    if (line[i] == '#')
-        return true;
-    return false;
-}
+// void ConfigParser::strTabParser(std::string line, T &lvl)
+// {
+//     std::stringstream ss(line);
+//     std::string token;
+//     std::vector<std::string> strTab;
+//     while (std::getline(ss, token, ' '))
+//     {
+//         strTab.push_back(token);
+//     }
+//     lvl.set_index(strTab);
+// }
+
+// bool isComment(std::string line)
+// {
+//     int i = 0;
+//     while ( (line[i] == 32 || (line[i] < 14 && line[i] > 8))&& i< line.length())
+//         i++;
+//     if (line[i] == '#')
+//         return true;
+//     return false;
+// }
 
 void skipSpaces(std::string &line)
 {
@@ -84,6 +97,7 @@ Root ConfigParser<T>::Rootparser(std::string file)
     std::string status;
     std::string previousKey;
     std::string previousStatus;
+    int action = 0;
     // Server server;
     size_t pos;
     std::string token;
@@ -94,87 +108,79 @@ Root ConfigParser<T>::Rootparser(std::string file)
     if (ifs.is_open())
     {
         getline(ifs, line);
-        //skip empty spaces
         skipSpaces(line);
-        //-----------------------------------------------------
-        // is root?
         std::stringstream X(line);
         getline(X, token,' ');
-        //-----------------------------------------------------
-        // is root?
-        if (token == "root:")
+        if (token != "server:")
         {
-            status = "root:";
-            //look for comments
-            i = 5;
-            while ( (line[i] == 32 || (line[i] < 14 && line[i] > 8))&& i< line.length())
-                i++;
-            if (line[i] && line[i] != '#')
-            {
-                std::cout << "|"<< "FUCK OFF" << "|"<<std::endl;
-                exit(1);
-            }
-            //-----------------------------------------------------
-            std::cout << "|"<< "Good start sir :)" << "|"<<std::endl;
             while (getline(ifs, line))
             {
-                if (!isComment(line))
+                action = 0;
+                skipSpaces(line);
+                std::stringstream Y(line);
+                getline(Y, token,' ');
+                previousKey = token;
+                if (token == "server:")
+                    break;
+                for (int    j = 0; j < 7; j++)
                 {
-                    //skip empty spaces
-                    skipSpaces(line);
-                    std::stringstream Y(line);
-                    getline(Y, token,' ');
-                    previousKey = token;
-                    if (token == "server:" && status == "server:")
-                        serverCounter++;
-                    if (status == "root:" && token != "server:")
+                    if (token == (this->_keys)[j])
                     {
-                        for (int    j = 0; j < 7; j++)
-                        {
-                            if (token == (this->_keys)[j])
-                                (this->*t_directiveParser[j])(status, line, root);
-                        }
-                    }else if (token == "server:")
+                        (this->*t_directiveParser[j])(status, line, root);
+                        action =1;
+                    }
+                }
+                if (action == 0)
+                {
+                    std::cout << "Error: invalid key" << std::endl;
+                    exit(1);
+                }
+            }
+        }
+        else if (token == "server:")
+        {
+            while (getline(ifs, line))
+            {
+                locationsCounter = 0;
+                skipSpaces(line);
+                std::stringstream Y(line);
+                getline(Y, token,' ');
+                else if (token == "location:")
+                {
+                    while (getline(ifs, line))
                     {
-                        previousKey = token;
-                        getline(ifs, line);
                         skipSpaces(line);
                         std::stringstream Y(line);
                         getline(Y, token,' ');
-                        status = "server:";
-                        for (int    j = 0; j < 10; j++)
-                        {
-                            if (token == (this->_keys)[j])
-                                (this->*t_directiveParser[j])(status, line, root._servers[serverCounter]);
-                        }
-                        if (token == "location:")
-                        {
-                            status = "location:";
-                            token = "lol";
-                            while (getline(ifs, line) && (token != "server:") && (token != "location:"))
-                            {
-                                if (!isComment(line))
-                                {
-                                    //skip empty spaces
-                                    skipSpaces(line);
-                                    std::stringstream Z(line);
-                                    getline(Z, token,' ');
-                                    previousStatus = token;
-                                    if (token != "location:" && token != "server:")
-                                    {
-                                        for (int    j = 0; j < 13; j++)
-                                        {
-                                            if (token == (this->_keys)[j])
-                                                (this->*t_directiveParser[j])(status, line, root._servers[serverCounter]._locations[locationCounter]);
-                                        }
-                                    }
-                                }
-                            }
-                            // location can skip a server by mistake
+                        previousKey = token;
+                        if (token == "server:")
+                            break;
+                        else if (token == "location:")
                             locationsCounter++;
+                        else
+                        {
+                            for (int    j = 0; j < 13; j++)
+                            {
+                                if (token == (this->_keys)[j])
+                                    (this->*t_directiveParser[j])(status, line, root._server(serverCounter)._location(locationsCounter));
+                            }
                         }
                     }
+                    locationsCounter++;
                 }
+                if (token == "server:")
+                {
+                    serverCounter++;
+                    locationsCounter = 0;
+                }
+                else
+                {
+                    for (int    j = 0; j < 10; j++)
+                    {
+                        if (token == (this->_keys)[j])
+                            (this->*t_directiveParser[j])(status, line, root._servers[serverCounter]);
+                    }
+                }   
             }
         }
     }

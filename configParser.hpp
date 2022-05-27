@@ -22,8 +22,7 @@ class ConfigParser
         ConfigParser &operator=( ConfigParser const & rhs );
         Root Rootparser(std::string file);
     private:
-    
-        void strTabParser(std::string status,std::string line, T &root);
+        void strTabParser(std::string status,std::string line, T &lvl);
         void strParser(std::string status,std::string line, T &root);
         void strTabPortParser(std::string status,std::string line, T &root);
         void mapParser(std::string status,std::string line, T &root);
