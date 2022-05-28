@@ -34,8 +34,8 @@ class ConfigParser
         void setAllowedMethods(std::string status,std::string line, T &root);//done
         void setServerName(std::string status,std::string line, T &root);//done
         void setListen(std::string status,std::string line, T &root);//done
-        void setRedirection(std::string status,std::string line, T &root);
-        void setLocation(std::string status,std::string line, T &root);
+        void setRedirection(std::string status,std::string line, T &root);//done
+        void setLocation(std::string status,std::string line, T &root);//done
         void setCgiPath(std::string status,std::string line, T &root);
         void setCgiExt(std::string status,std::string line, T &root);
 };

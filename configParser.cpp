@@ -234,10 +234,32 @@ void ConfigParser<T>::setServerName(std::string status,std::string line, T &lvl)
 template < typename T >
 void ConfigParser<T>::setRedirection(std::string status,std::string line, T &lvl)
 {
-    
+    mapParser(status, line, lvl.redirection);
 }
 
+template< typename T >
+void ConfigParser<T>::setLocation(std::string status,std::string line, T &lvl)
+{
+    string s;
+    strParser(status, line, s);
+    lvl.push_back(s);
+}
 
+template< typename T >
+void ConfigParser<T>::setLocation(std::string status,std::string line, T &lvl)
+{
+    string s;
+    strParser(status, line, s);
+    lvl.push_back(s);
+}
+
+template< typename T >
+void ConfigParser<T>::setLocation(std::string status,std::string line, T &lvl)
+{
+    string s;
+    strParser(status, line, s);
+    lvl.push_back(s);
+}
 // void ConfigParser::strTabParser(std::string line, T &lvl)
 // {
 //     std::stringstream ss(line);
@@ -283,6 +305,7 @@ Root ConfigParser<T>::Rootparser(std::string file)
     std::string previousKey;
     std::string previousStatus;
     int action = 0;
+    Server server = new Server();
     // Server server;
     size_t pos;
     std::string token;
@@ -331,9 +354,10 @@ Root ConfigParser<T>::Rootparser(std::string file)
                 skipSpaces(line);
                 std::stringstream Y(line);
                 getline(Y, token,' ');
-                else if (token == "location:")
+                else if (token == "location:" || previousStatus == "location:")
                 {
-                    while (getline(ifs, line))
+                    Location location = new location();
+                    while (getline(ifs, line) && line.find("}") == std::string::npos)
                     {
                         action = 0;
                         skipSpaces(line);
@@ -341,29 +365,37 @@ Root ConfigParser<T>::Rootparser(std::string file)
                         getline(Y, token,' ');
                         previousKey = token;
                         if (token == "server:")
+                        {
+                            status = token;
                             break;
+                        }
                         if (token == "location:")
-                            locationsCounter++;
+                        {
+                            server.add_location(location);
+                            Location location = new location();
+                            continue;
+                        }
                         else
                         {
                             for (int    j = 0; j < 13; j++)
                             {
                                 if (token == (this->_keys)[j])
                                 {
-                                    (this->*t_directiveParser[j])(status, line, root._server(serverCounter)._location(locationsCounter));
+                                    (this->*t_directiveParser[j])(status, line, location);
                                     action = 1;
                                 }
                             }
-                            if (action == 0)
-                            {
-                                std::cout << "Error: invalid location key" << std::endl;
-                                exit(1);
-                            }
+                        }
+                        if (action == 0)
+                        {
+                            std::cout << "Error: invalid key" << std::endl;
+                            exit(1);
                         }
                     }
+                    previousStatus = status;
+                    server.add_location(location);
                 }
-                else if (token == "server:")
-                    serverCounter++;
+                
                 else
                 {
                     for (int j = 0; j < 10; j++)
@@ -379,6 +411,12 @@ Root ConfigParser<T>::Rootparser(std::string file)
                         std::cout << "Error: invalid server key" << std::endl;
                         exit(1);
                     }
+                }
+                if (line.find("}") == std::string::npos)
+                {
+
+                    root.add_server(server);
+                    Server server = new Server();
                 }   
             }
         }
