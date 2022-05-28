@@ -13,7 +13,9 @@ class Server : public Root
 {
     private:
         std::string _server_name;
-        int _port;
+        int _listenPort;
+        std::string _listenAddress;
+        std::map<int, std::string>  _redirection;
     public:
         std::vector<Location> _locations;
         Server() {}

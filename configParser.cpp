@@ -39,21 +39,204 @@ ConfigParser<T>::ConfigParser()
     this->t_directiveParser.push_back(&ConfigParser::setCgiExt);//strTabParser);
 }
 
+void skipSpaces(std::string &line)
+{
+    int i = 0;
+    while ( (line[i] == 32 || (line[i] < 14 && line[i] > 8))&& i< line.length())
+        i++;
+    line.erase(0, i);
+}
+
+void skipFirstToken(std::string &line,int i)
+{
+    while ( (line[i] == 32 || (line[i] < 14 && line[i] > 8))&& i< line.length())
+        i++;
+    line.erase(0, i);
+}
+
+template < typename T >
+void ConfigParser<T>::intParser(std::string status,std::string line, T &root)
+{
+    int i = 0;
+    skipFirstToken(line, status.length() - 1);
+    if (line.find_first_not_of("0123456789") == std::string::npos)
+        root = std::stoi(token);
+    else
+    {
+        std::cout << "error: bad error Code" << std::endl;
+        exit(1);
+    }
+}
+
+template< typename T >
+void ConfigParser<T>::mapParser(std::string status,std::string line, T &root)
+{
+    std::string token;
+    std::string value;
+    int val;
+    int i = 0;
+    skipFirstToken(line, status.length() - 1);
+    while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
+    {
+        token += line[i];
+        i++;
+    }
+    if (find_first_not_of("0123456789") == std::string::npos)
+        val = std::stoi(token);
+    else
+    {
+        std::cout << "error: bad error Code" << std::endl;
+        exit(1);
+    }
+    skipSpaces(line);
+    i = 0;
+    while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
+    {
+        value += line[i];
+        i++;
+    }
+    root.setErrorPage(token, value);
+}
+
+template< typename T >
+void ConfigParser<T>::strParser(std::string status,std::string line, T &root)
+{
+    std::string token;
+    skipFirstToken(line, status.length() - 1);
+    int i = 0;
+    while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
+    {
+        token += line[i];
+        i++;
+    }
+    root = token;
+}
+
 template< typename T >
 void ConfigParser<T>::strTabParser(std::string status,std::string line, T &lvl)
 {
+    //push tokens into lvl vector
     std::string token;
-    std::stringstream ss(line);
-    while (getline(ss, token, ' '))
+    int i = 0;
+    skipFirstToken(line, status.length() - 1);
+    while (line[i] != '\n')
     {
-        if (token.size() > 0)
+        while ( (line[i] == 32 || (line[i] < 14 && line[i] > 8))&& i< line.length())
+            i++;
+        int j = i;
+        while (line[j] != ' ' && j< line.length())
+            j++;
+        token = line.substr(i, j-i);
+        lvl.push_back(token);
+        i = j;
+    }
+}
+
+template< typename T >
+void ConfigParser<T>::setListen(std::string status,std::string line, T &lvl)
+{
+    //parse address:host 
+    int j = 0;
+    std::string token;
+    skipFirstToken(line, status.length() - 1);
+    while (line[j] != ':' && j< line.length())
+        j++;
+    token = line.substr(i, j-i);
+    if (find_first_not_of("0123456789") == std::string::npos && token.length() =< 4)
+            lvl._listenPort(std::stoi(token));
+    else
+    {
+        lvl._listenAddress(token);
+        if (line[j] == ' ')
         {
-            (this->*t_directiveParser[status])(token,line,lvl);
+            std:cout << "error: listen address is not valid" << std::endl;
+            exit(1);
+        }
+        else
+        {
+            while (line[j] != ' '&& line[j] != '\n' && j< line.length())
+                j++;
+            token = line.substr(i, j-i);
+            // if token is not digit, error
+            if (find_first_not_of("0123456789") == std::string::npos)
+                lvl._listenPort(std::stoi(token));
+            else
+            {
+                std::cout << "error: listen port is not valid" << std::endl;
+                exit(1);
+            }
         }
     }
 }
 
-void ConfigParser::
+template< typename T >
+void ConfigParser<T>::setIndex(std::string token, std::string line, T &lvl)
+{
+    strTabParser(0, line, lvl.index);
+}
+
+template < typename T >
+void ConfigParser<T>::setRoot(std::string status,std::string line, T &lvl)
+{
+    strParser(status, line, lvl.root);
+}
+
+template < typename T >
+void ConfigParser<T>::setErrors(std::string status,std::string line, T &lvl)
+{
+    mapParser(status, line, lvl.errors);
+}
+
+template < typename T >
+void ConfigParser<T>::setBodySizeLimit(std::string status,std::string line, T &lvl)
+{
+    intParser(status, line, lvl.bodySizeLimit);
+    if (lvl.bodySizeLimit <= 0)
+    {
+        std::cout << "error: bodySizeLimit is not valid" << std::endl;
+        exit(1);
+    }
+}
+
+template < typename T >
+void ConfigParser<T>::setAutoIndex(std::string status,std::string line, T &lvl)
+{
+    std::string s;
+    strParser(status, line, s);
+    if (s == "on" || s == "true")
+        lvl.autoIndex = true;
+    else if (s == "off" || s == "false")
+        lvl.autoIndex = false;
+    else
+    {
+        std::cout << "error: bad autoIndex value" << std::endl;
+        exit(1);
+    }
+}
+template < typename T >
+void ConfigParser<T>::setUploadDirectory(std::string status,std::string line, T &lvl)
+{
+    strParser(status, line, lvl.uploadDirectory);
+}
+
+template < typename T >
+void ConfigParser<T>::setAllowedMethods(std::string status,std::string line, T &lvl)
+{
+    strTabParser(status, line, lvl.allowedMethods);
+}
+
+template < typename T >
+void ConfigParser<T>::setServerName(std::string status,std::string line, T &lvl)
+{
+    strParser(status, line, lvl.serverName);
+}
+
+template < typename T >
+void ConfigParser<T>::setRedirection(std::string status,std::string line, T &lvl)
+{
+    
+}
+
 
 // void ConfigParser::strTabParser(std::string line, T &lvl)
 // {
@@ -139,7 +322,7 @@ Root ConfigParser<T>::Rootparser(std::string file)
                 }
             }
         }
-        else if (token == "server:")
+        else
         {
             while (getline(ifs, line))
             {
@@ -183,7 +366,7 @@ Root ConfigParser<T>::Rootparser(std::string file)
                     serverCounter++;
                 else
                 {
-                    for (int    j = 0; j < 10; j++)
+                    for (int j = 0; j < 10; j++)
                     {
                         if (token == (this->_keys)[j])
                         {
