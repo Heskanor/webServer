@@ -354,10 +354,10 @@ Root ConfigParser<T>::Rootparser(std::string file)
                 skipSpaces(line);
                 std::stringstream Y(line);
                 getline(Y, token,' ');
-                else if (token == "location:" || previousStatus == "location:")
+                else if (token == "location:")
                 {
                     Location location = new location();
-                    while (getline(ifs, line) && line.find("}") == std::string::npos)
+                    while (getline(ifs, line))
                     {
                         action = 0;
                         skipSpaces(line);
@@ -392,7 +392,6 @@ Root ConfigParser<T>::Rootparser(std::string file)
                             exit(1);
                         }
                     }
-                    previousStatus = status;
                     server.add_location(location);
                 }
                 
@@ -412,12 +411,8 @@ Root ConfigParser<T>::Rootparser(std::string file)
                         exit(1);
                     }
                 }
-                if (line.find("}") == std::string::npos)
-                {
-
-                    root.add_server(server);
-                    Server server = new Server();
-                }   
+                root.add_server(server);
+                
             }
         }
     }
