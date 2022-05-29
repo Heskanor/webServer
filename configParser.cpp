@@ -260,27 +260,6 @@ void ConfigParser<T>::setLocation(std::string status,std::string line, T &lvl)
     strParser(status, line, s);
     lvl.push_back(s);
 }
-// void ConfigParser::strTabParser(std::string line, T &lvl)
-// {
-//     std::stringstream ss(line);
-//     std::string token;
-//     std::vector<std::string> strTab;
-//     while (std::getline(ss, token, ' '))
-//     {
-//         strTab.push_back(token);
-//     }
-//     lvl.set_index(strTab);
-// }
-
-// bool isComment(std::string line)
-// {
-//     int i = 0;
-//     while ( (line[i] == 32 || (line[i] < 14 && line[i] > 8))&& i< line.length())
-//         i++;
-//     if (line[i] == '#')
-//         return true;
-//     return false;
-// }
 
 void skipSpaces(std::string &line)
 {
@@ -289,13 +268,14 @@ void skipSpaces(std::string &line)
         i++;
     line.erase(0, i);
 }
-// i is the token length
+
 void skipFirstToken(std::string &line,int i)
 {
     while ( (line[i] == 32 || (line[i] < 14 && line[i] > 8))&& i< line.length())
         i++;
     line.erase(0, i);
 }
+
 template< typename T >
 Root ConfigParser<T>::Rootparser(std::string file)
 {
@@ -394,14 +374,18 @@ Root ConfigParser<T>::Rootparser(std::string file)
                     }
                     server.add_location(location);
                 }
-                
+                else if(token == "server:")
+                {
+                    root.add_server(server);
+                    server = new Server();
+                }
                 else
                 {
                     for (int j = 0; j < 10; j++)
                     {
                         if (token == (this->_keys)[j])
                         {
-                            (this->*t_directiveParser[j])(status, line, root._servers[serverCounter]);
+                            (this->*t_directiveParser[j])(status, line, server);
                             action = 1;
                         }    
                     }
@@ -411,9 +395,8 @@ Root ConfigParser<T>::Rootparser(std::string file)
                         exit(1);
                     }
                 }
-                root.add_server(server);
-                
             }
+            root.add_server(server);
         }
     }
     return root;
