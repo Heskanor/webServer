@@ -18,9 +18,9 @@ class Root
         bool autoIndex;
         std::string _uploadDirectory;
         std::vector<std::string> _allowedMethods;
+        std::vector<Server> _servers;
 
     public:
-        std::vector<Server> _servers;
         Root() {}
         Root(const Root &src){}
         virtual ~Root() {}

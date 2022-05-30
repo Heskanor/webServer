@@ -258,7 +258,7 @@ void ConfigParser<T>::setLocation(std::string status,std::string line, T &lvl)
 {
     string s;
     strParser(status, line, s);
-    lvl.push_back(s);
+    lvl.set_path(s);
 }
 
 void skipSpaces(std::string &line)
