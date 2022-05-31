@@ -11,6 +11,11 @@ Server::~Server()
 
 }
 
+Server::Server(const Server &src)
+{
+
+}
+
 Server &Server::operator=(Server const & rhs)
 {
     return *this;

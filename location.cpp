@@ -7,6 +7,14 @@ Location::Location()
 {
 }
 
+Location::Location(const Location &src)
+{
+}
+
+Location::~Location()
+{
+}
+
 //geters seters
 std::string Location::get_path()
 {
@@ -17,7 +25,6 @@ void Location::set_path(std::string path)
 {
     _path = path;
 }
-
 
 std::string Location::get_cgi_path()
 {
