@@ -24,23 +24,34 @@ class Request
 		void setcontent_length(std::string len);
 		void setcontent_type(std::string type);
 		void sethttpversion(std::string stri);
+		bool gettransferchunks();
 		std::string get_requestur();
 		void setrequest(std::string str);
 		std::string get_httpversion();
 		std::string get_method();
 		std::string gethost();
+		std::string get_port();
+		std::string get_ip();
+		std::string getcontentlenght();
+		bool gettransferstat();
+		void settransferstat(bool j);
+		void set_ip(std::string);
+		void set_port(std::string);
 		bool get_connection();
 		char *accept_encoding();
 
 	private:
 		std::string method;
+		std::string ipaddress;
+		std::string port;
 		std::string thhpversion;
 		std::string host;
+		bool thereistraansfer;
 		std::string requestur;
 		bool Connection;
 		bool transferchunks;
 		std::string content_type;
-		int content_lenght;
+		std::string  content_lenght;
 		//std::string *user_agent;
 		//std::string *Accept_encoding;
 		

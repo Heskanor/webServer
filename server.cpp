@@ -1,3 +1,5 @@
+
+   
 #include <sys/socket.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -46,7 +48,7 @@ int main(){
 	for (int i = 0;i < 30; i++)
 		clientsocket[i] = 0;
 	int new_socket;
-	std::string headersfield[5] = {"Host","Connection","Content-Length","Content-Type","Transfer-Encoding	"};
+	std::string headersfield[5] = {"Host","Connection","Content-Length","Content-Type","Transfer-Encoding"};
 	fd_set readsfds;
 	int valread = 0;
 	struct sockaddr_in address;
@@ -149,7 +151,6 @@ int main(){
 					if (sub.compare(headersfield[3])== 0)
 						req.setcontent_type(tab[i].substr(p + 2));
 					if (sub.compare(headersfield[4])== 0)
-						if (tab[i].substr(p + 1) == "")
 							req.settransferchunks(tab[i].substr(p + 2));
 				}
 				std::cout<<"couunt is " <<count2<<std::endl;

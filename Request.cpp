@@ -45,6 +45,14 @@ std::ostream &			operator<<( std::ostream & o, Request const & i )
 /*
 ** --------------------------------- METHODS ----------------------------------
 */
+void			Request::settransferstat(bool j)
+{
+	thereistraansfer = j;
+}
+bool			Request::gettransferstat()
+{
+	return thereistraansfer;
+}
 bool			Request::get_connection()
 {
 	return Connection;
@@ -100,21 +108,48 @@ void					Request::setconnection(std::string str)
 //{
 //	host = ho;
 //}
+std::string				Request::get_ip()
+{
+	return ipaddress;
+}
+std::string				Request::get_port()
+{
+	return port;
+}
+
+void					Request::set_ip(std::string op)
+{
+	 ipaddress = op;
+}
+void					Request::set_port(std::string op)
+{
+	port = op;
+}
+std::string 			Request::getcontentlenght()
+{
+	return content_lenght;
+}
 void					Request::setcontent_length(std::string len)
 {
 	//char *Str = len;
-	content_lenght = stoi(len);
+	content_lenght = len ;
 }	
 void					Request::setcontent_type(std::string type)
 {
 	content_type = type;
 }
 bool					Request::settransferchunks(std::string len)
-{		
-		if (len == "chunk")
-		transferchunks = true;
-		else 
-		transferchunks = false;
+{
+		settransferstat(true);	
+		if (len.find("chunked") == std::string::npos)
+			transferchunks = false;
+		else
+		    transferchunks = true;
+	
+}
+bool					Request::gettransferchunks()
+{
+	return transferchunks;
 }
 
 /*

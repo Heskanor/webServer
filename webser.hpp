@@ -2,7 +2,10 @@
 #define WEB_SERVER
 #include <string>
 #include<iostream>
-
+#include <Request.hpp>
+#include <specifications.hpp>
+#include <vector>
+#include <server.hpp>
 typedef struct stru{
     std::string user;
     int approval;
@@ -13,6 +16,6 @@ typedef struct stru{
 t_str
 
 
-
+void checking(Request req);
 
 #endif 
