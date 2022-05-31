@@ -173,7 +173,7 @@ void ConfigParser<T>::setListen(std::string status,std::string line, T &lvl)
         j++;
     token = line.substr(i, j-i);
     if (find_first_not_of("0123456789") == std::string::npos && token.length() =< 4)
-            lvl.set_listenPort(std::stoi(token));
+            lvl.set_listenPort(token);
     else
     {
         lvl.set_listenAddress(token);
@@ -189,7 +189,7 @@ void ConfigParser<T>::setListen(std::string status,std::string line, T &lvl)
             token = line.substr(i, j-i);
             // if token is not digit, error
             if (find_first_not_of("0123456789") == std::string::npos)
-                lvl.set_listenPort(std::stoi(token));
+                lvl.set_listenPort(token);
             else
             {
                 std::cout << "error: listen port is not valid" << std::endl;

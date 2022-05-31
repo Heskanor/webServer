@@ -28,14 +28,38 @@ std::string Server::get_server_name()
 }
 
 
-void Server::set_port(int port)
+void Server::set_listenPort(std::string port)
 {
-    _port = port;
+    _listenPort = port;
 }
 
-int Server::get_port()
+std::string Server::get_listenPort()
 {
-    return _port;
+    return _listenPort;
+}
+
+void Server::set_listenAddress(std::string address){
+    _listenAddress = address;
+}
+
+std::string Server::get_listenAddress()
+{
+    return _listenAddress;
+}
+
+std::map<int, std::string> Server::get_redirections()
+{
+    return _redirections;
+}
+
+std::string Server::get_redirection(int code)
+{
+    return _redirections[code];
+}
+
+void Server::add_redirect_map(int code, std::string url)
+{
+    _redirections[code] = url;
 }
 
 void Server::add_location(Location location)
@@ -46,4 +70,9 @@ void Server::add_location(Location location)
 std::vector<Location> Server::get_locations()
 {
     return _locations;
+}
+
+Location Server::get_location(int index)
+{
+    return _locations[index];
 }
