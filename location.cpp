@@ -34,7 +34,7 @@ std::vector<std::string> Location::get_cgi_ext()
     return _cgi_ext;
 }
 
-void set_cgi_ext(std::vector<std::string> cgi_ext)
+void Location::set_cgi_ext(std::vector<std::string> cgi_ext)
 {
     _cgi_ext = cgi_ext;
 }
