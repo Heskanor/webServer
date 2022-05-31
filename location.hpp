@@ -1,7 +1,5 @@
 #ifndef LOCATION_HPP
 # define LOCATION_HPP
-
-
 #include <iterator>
 #include <map>
 #include "server.hpp"

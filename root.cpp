@@ -17,6 +17,11 @@ Root &Root::operator=(Root const & rhs)
     return *this;
 }
 
+std::string Root::get_root()
+{
+    return _root;
+}
+
 void Root::set_root(std::string root)
 {
     _root = root;
@@ -27,14 +32,14 @@ void Root::set_index(std::vector<std::string> index)
     _index = index;
 }
 
-void Root::set_auto_index(bool autoIndex)
+std::vector<std::string> Root::get_index()
 {
-    _auto_index = autoIndex;
+    return _index;
 }
 
-std::string Root::get_root()
+void Root::set_auto_index(bool autoIndex)
 {
-    return _root;
+    _autoIndex = autoIndex;
 }
 
 std::vector<std::string> Root::get_index()
@@ -44,7 +49,7 @@ std::vector<std::string> Root::get_index()
 
 bool Root::get_auto_index()
 {
-    return _auto_index;
+    return _autoIndex;
 }
 
 int Root::get_bodySizeLimit()
@@ -67,11 +72,23 @@ void Root::add_index(std::string index)
     _index.push_back(index);
 }
 
-void set_servers(std::vector<Server> servers)
+void Root::set_servers(std::vector<Server> servers)
 {
     _servers = servers;
 }
-void add_server(Server server)
+
+void Root::add_server(Server server)
 {
     _servers.push_back(server);
 }
+
+std::string Root::get_error_map(int error)
+{
+    return _error_map[error];
+}
+
+void Root::add_error_map(int error, std::string error_url)
+{
+    _error_map[error] = error_url;
+}
+

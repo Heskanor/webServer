@@ -95,7 +95,37 @@ void ConfigParser<T>::mapParser(std::string status,std::string line, T &root)
         value += line[i];
         i++;
     }
-    root.setErrorPage(token, value);
+    root.add_redirect_map(token, value);
+}
+
+template< typename T >
+void ConfigParser<T>::mapErrParser(std::string status,std::string line, T &root)
+{
+    std::string token;
+    std::string value;
+    int val;
+    int i = 0;
+    skipFirstToken(line, status.length() - 1);
+    while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
+    {
+        token += line[i];
+        i++;
+    }
+    if (find_first_not_of("0123456789") == std::string::npos)
+        val = std::stoi(token);
+    else
+    {
+        std::cout << "error: bad error Code" << std::endl;
+        exit(1);
+    }
+    skipSpaces(line);
+    i = 0;
+    while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
+    {
+        value += line[i];
+        i++;
+    }
+    root.add_error_map(token, value);
 }
 
 template< typename T >
@@ -143,10 +173,10 @@ void ConfigParser<T>::setListen(std::string status,std::string line, T &lvl)
         j++;
     token = line.substr(i, j-i);
     if (find_first_not_of("0123456789") == std::string::npos && token.length() =< 4)
-            lvl._listenPort(std::stoi(token));
+            lvl.set_listenPort(std::stoi(token));
     else
     {
-        lvl._listenAddress(token);
+        lvl.set_listenAddress(token);
         if (line[j] == ' ')
         {
             std:cout << "error: listen address is not valid" << std::endl;
@@ -159,7 +189,7 @@ void ConfigParser<T>::setListen(std::string status,std::string line, T &lvl)
             token = line.substr(i, j-i);
             // if token is not digit, error
             if (find_first_not_of("0123456789") == std::string::npos)
-                lvl._listenPort(std::stoi(token));
+                lvl.set_listenPort(std::stoi(token));
             else
             {
                 std::cout << "error: listen port is not valid" << std::endl;
@@ -169,33 +199,40 @@ void ConfigParser<T>::setListen(std::string status,std::string line, T &lvl)
     }
 }
 
+
 template< typename T >
 void ConfigParser<T>::setIndex(std::string token, std::string line, T &lvl)
 {
-    strTabParser(0, line, lvl.index);
+    std::vector<std::string> ind;
+    strTabParser(0, line, ind);
+    lvl.set_index(ind);
 }
 
 template < typename T >
 void ConfigParser<T>::setRoot(std::string status,std::string line, T &lvl)
 {
-    strParser(status, line, lvl.root);
+    std::string tko;
+    strParser(status, line, tko);
+    lvl.set_root(tko);
 }
 
 template < typename T >
 void ConfigParser<T>::setErrors(std::string status,std::string line, T &lvl)
 {
-    mapParser(status, line, lvl.errors);
+    mapErrParser(status, line, lvl);
 }
 
 template < typename T >
 void ConfigParser<T>::setBodySizeLimit(std::string status,std::string line, T &lvl)
 {
-    intParser(status, line, lvl.bodySizeLimit);
+    int size;
+    intParser(status, line, size);
     if (lvl.bodySizeLimit <= 0)
     {
         std::cout << "error: bodySizeLimit is not valid" << std::endl;
         exit(1);
     }
+    lvl.set_bodySizeLimit(size);
 }
 
 template < typename T >
@@ -204,9 +241,9 @@ void ConfigParser<T>::setAutoIndex(std::string status,std::string line, T &lvl)
     std::string s;
     strParser(status, line, s);
     if (s == "on" || s == "true")
-        lvl.autoIndex = true;
+        lvl.set_auto_index = true;
     else if (s == "off" || s == "false")
-        lvl.autoIndex = false;
+        lvl.set_auto_index = false;
     else
     {
         std::cout << "error: bad autoIndex value" << std::endl;
@@ -216,57 +253,39 @@ void ConfigParser<T>::setAutoIndex(std::string status,std::string line, T &lvl)
 template < typename T >
 void ConfigParser<T>::setUploadDirectory(std::string status,std::string line, T &lvl)
 {
-    strParser(status, line, lvl.uploadDirectory);
+    std::string s;
+    strParser(status, line, s);
+    lvl.set_uploadDirectory = s;
 }
 
 template < typename T >
 void ConfigParser<T>::setAllowedMethods(std::string status,std::string line, T &lvl)
 {
-    strTabParser(status, line, lvl.allowedMethods);
+    std::vector<std::string> meth;
+    strTabParser(status, line, meth);
+    lvl.set_allowedMethods(meth);
 }
 
 template < typename T >
 void ConfigParser<T>::setServerName(std::string status,std::string line, T &lvl)
 {
-    strParser(status, line, lvl.serverName);
+    std::string s;
+    strParser(status, line, s);
+    lvl.set_server_name = s;
 }
 
 template < typename T >
 void ConfigParser<T>::setRedirection(std::string status,std::string line, T &lvl)
 {
-    mapParser(status, line, lvl.redirection);
+    mapParser(status, line, lvl);
 }
 
 template< typename T >
 void ConfigParser<T>::setLocation(std::string status,std::string line, T &lvl)
 {
-    string s;
-    strParser(status, line, s);
-    lvl.push_back(s);
-}
-
-template< typename T >
-void ConfigParser<T>::setLocation(std::string status,std::string line, T &lvl)
-{
-    string s;
-    strParser(status, line, s);
-    lvl.push_back(s);
-}
-
-template< typename T >
-void ConfigParser<T>::setLocation(std::string status,std::string line, T &lvl)
-{
-    string s;
+    std::string s;
     strParser(status, line, s);
     lvl.set_path(s);
-}
-
-void skipSpaces(std::string &line)
-{
-    int i = 0;
-    while ( (line[i] == 32 || (line[i] < 14 && line[i] > 8))&& i< line.length())
-        i++;
-    line.erase(0, i);
 }
 
 void skipFirstToken(std::string &line,int i)
@@ -361,7 +380,7 @@ Root ConfigParser<T>::Rootparser(std::string file)
                             {
                                 if (token == (this->_keys)[j])
                                 {
-                                    (this->*t_directiveParser[j])(status, line, location);
+                                    (this->*t_directiveParser[j])(token, line, location);
                                     action = 1;
                                 }
                             }
@@ -385,7 +404,7 @@ Root ConfigParser<T>::Rootparser(std::string file)
                     {
                         if (token == (this->_keys)[j])
                         {
-                            (this->*t_directiveParser[j])(status, line, server);
+                            (this->*t_directiveParser[j])(token, line, server);
                             action = 1;
                         }    
                     }

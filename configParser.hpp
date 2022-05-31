@@ -24,6 +24,7 @@ class ConfigParser
         void strTabParser(std::string status,std::string line, T &lvl);// done 
         void strParser(std::string status,std::string line, T &root);//done
         void mapParser(std::string status,std::string line, T &root);//done
+        void mapErrParser(std::string status,std::string line, T &root);//done
         void intParser(std::string status,std::string line, T &root);//done
         void setIndex(std::string status,std::string line, T &root);//done
         void setRoot(std::string status,std::string line, T &root);//done
