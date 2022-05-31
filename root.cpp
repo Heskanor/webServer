@@ -77,6 +77,11 @@ void Root::set_servers(std::vector<Server> servers)
     _servers = servers;
 }
 
+Server Root::get_server(int index)
+{
+    return _servers[index];
+}
+
 void Root::add_server(Server server)
 {
     _servers.push_back(server);
@@ -91,4 +96,25 @@ void Root::add_error_map(int error, std::string error_url)
 {
     _error_map[error] = error_url;
 }
+
+std::string Root::get_upload_directory()
+{
+    return _uploadDirectory;
+}
+
+void Root::set_upload_directory(std::string upload_directory)
+{
+    _uploadDirectory = upload_directory;
+}
+
+std::vector<std::string> Root::get_allowed_methods()
+{
+    return _allowedMethods;
+}
+
+void Root::set_allowed_methods(std::vector<std::string> allowed_methods)
+{
+    _allowedMethods = allowed_methods;
+}
+
 

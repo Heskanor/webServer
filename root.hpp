@@ -22,7 +22,7 @@ class Root
 
     public:
         Root() {}
-        Root(const Root &src){}
+        // Root(const Root &src){}
         virtual ~Root() {}
         Root &operator=( Root const & rhs );
         //geters and seters
@@ -42,13 +42,10 @@ class Root
         void add_server(Server server);
         void add_error_map(int error, std::string error_url);
         std::string get_error_map(int error);
-        void set_redirect_map(int error, std::string redirect_url);
-        std::string get_redirect_map(int error);
         std::string get_upload_directory();
         void set_upload_directory(std::string upload_directory);
         std::vector<std::string> get_allowed_methods();
         void set_allowed_methods(std::vector<std::string> allowed_methods);
-        
 
 
 };

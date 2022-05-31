@@ -13,11 +13,11 @@ class Server : public Root
 {
     private:
         std::string _server_name;
-        int _listenPort;
+        std::string _listenPort;
         std::string _listenAddress;
         std::map<int, std::string>  _redirection;
-    public:
         std::vector<Location> _locations;
+    public:
         Server() {}
         Server(const Server &src){}
         virtual ~Server() {}
@@ -25,7 +25,7 @@ class Server : public Root
         //geters and seters
         std::string get_server_name();
         void set_server_name(std::string name);
-        int get_port();
+        std::string get_port();
         void set_port(int port);
         std::vector<Location> get_locations();
         void add_location(Location location);

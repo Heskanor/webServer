@@ -21,6 +21,13 @@ void Server::set_server_name(std::string name)
 {
     _server_name = name;
 }
+
+std::string Server::get_server_name()
+{
+    return _server_name;
+}
+
+
 void Server::set_port(int port)
 {
     _port = port;
