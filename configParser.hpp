@@ -8,11 +8,12 @@
 #include "location.hpp"
 #include "root.hpp"
 
-
+template <class T>
 class ConfigParser
 {
     public:
         std::string _keys[12];
+        // template <typename T>
         typedef void (ConfigParser::*directiveParser)(std::string token,std::string line, T &lvl);
         std::vector<directiveParser> t_directiveParser;
         ConfigParser() {}
@@ -21,6 +22,7 @@ class ConfigParser
         ConfigParser &operator=( ConfigParser const & rhs );
         Root Rootparser(std::string file);
     private:
+    
         void strTabParser(std::string status,std::string line, T &lvl);// done 
         void strParser(std::string status,std::string line, T &root);//done
         void mapParser(std::string status,std::string line, T &root);//done

@@ -3,10 +3,10 @@
 #include <iterator>
 #include <map>
 #include "server.hpp"
+#include "root.hpp"
+class Server;
 
-
-
-class Location:public Server
+class Location : public Server
 {
     private:
         std::string _path;

@@ -9,6 +9,7 @@
 #include "location.hpp"
 #include "root.hpp"
 
+class Root;
 class Server : public Root
 {
     private:

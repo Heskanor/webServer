@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include "server.hpp"
+class Server;
 
 class Root
 {
@@ -35,7 +36,6 @@ class Root
         void add_index(std::string index);
         bool get_auto_index();
         void set_auto_index(bool autoIndex);
-        std::string get_root();
         int get_bodySizeLimit();
         void set_bodySizeLimit(int bodySizeLimit);
         std::vector<Server> get_servers();
