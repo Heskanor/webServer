@@ -6,7 +6,7 @@
 
 
 
-class Location : public Server
+class Location:public Server
 {
     private:
         std::string _path;

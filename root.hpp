@@ -10,6 +10,9 @@
 
 class Root
 {
+    private:
+        std::vector<Server> _servers;
+
     protected:
         std::vector<std::string> _index;
         std::string _root;
@@ -18,7 +21,6 @@ class Root
         std::map<int, std::string>  _error_map;
         std::string _uploadDirectory;
         std::vector<std::string> _allowedMethods;
-        std::vector<Server> _servers;
 
     public:
         Root() {}

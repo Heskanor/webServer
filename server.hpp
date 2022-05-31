@@ -15,8 +15,9 @@ class Server : public Root
         std::string _server_name;
         std::string _listenPort;
         std::string _listenAddress;
-        std::map<int, std::string>  _redirections;
         std::vector<Location> _locations;
+    protected:
+        std::map<int, std::string>  _redirections;
     public:
         Server() {}
         Server(const Server &src){}

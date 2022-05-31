@@ -8,7 +8,7 @@
 #include "location.hpp"
 #include "root.hpp"
 
-template < typename T >
+
 class ConfigParser
 {
     public:
