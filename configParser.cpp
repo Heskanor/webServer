@@ -4,7 +4,12 @@
 #include <fstream>
 #include <sstream> 
 #include <vector>
+#include <cstddef> 
+#include <map>
+#include <string>
 #include "location.hpp"
+#include "server.hpp"
+#include "root.hpp"
 
 //webserver config file parser
 template< typename T >
@@ -53,14 +58,14 @@ void skipFirstToken(std::string &line,int i)
         i++;
     line.erase(0, i);
 }
-
+//issue with this function: i need to extract token before converting it to int
 template < typename T >
 void ConfigParser<T>::intParser(std::string status,std::string line, T &root)
 {
     int i = 0;
     skipFirstToken(line, status.length() - 1);
     if (line.find_first_not_of("0123456789") == std::string::npos)
-        root = std::stoi(token);
+        root = std::stoi(line);
     else
     {
         std::cout << "error: bad error Code" << std::endl;
@@ -169,6 +174,7 @@ void ConfigParser<T>::setListen(std::string status,std::string line, T &lvl)
     int j = 0;
     std::string token;
     skipFirstToken(line, status.length() - 1);
+    int i =0;
     while (line[j] != ':' && j< line.length())
         j++;
     token = line.substr(i, j-i);
@@ -353,7 +359,7 @@ Root ConfigParser<T>::Rootparser(std::string file)
                 skipSpaces(line);
                 std::stringstream Y(line);
                 getline(Y, token,' ');
-                else if (token == "location:")
+                if (token == "location:")
                 {
                     Location location = new location();
                     while (getline(ifs, line))

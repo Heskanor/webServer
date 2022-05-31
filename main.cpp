@@ -13,6 +13,5 @@
 int main()
 {
     ConfigParser<Root> parser;
-
     return 0;
 }

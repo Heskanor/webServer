@@ -6,10 +6,11 @@
 #include <list>
 #include <vector>
 #include <string>
-#include "location.hpp"
-#include "root.hpp"
+#include <map>
 
-class Root;
+#include "root.hpp"
+class Location;
+
 class Server : public Root
 {
     private:

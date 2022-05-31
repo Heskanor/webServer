@@ -1,5 +1,6 @@
 #include "server.hpp"
 #include "location.hpp"
+#include "root.hpp"
 
 Server::Server()
 {
