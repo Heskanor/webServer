@@ -6,7 +6,6 @@
 #include <vector>
 #include <cstddef> 
 #include <map>
-#include <string>
 #include "location.hpp"
 #include "server.hpp"
 #include "root.hpp"
@@ -302,7 +301,7 @@ void skipFirstToken(std::string &line,int i)
 }
 
 template< typename T >
-Root ConfigParser<T>::Rootparser(std::string file)
+Root *ConfigParser<T>::Rootparser(std::string file)
 {
     std::ifstream ifs(file);
     std::string line;
@@ -310,11 +309,11 @@ Root ConfigParser<T>::Rootparser(std::string file)
     std::string previousKey;
     std::string previousStatus;
     int action = 0;
-    Server server = new Server();
+    Root *root = new Root();
+    Root *server = new Server();
     // Server server;
     size_t pos;
     std::string token;
-    Root root;
     int serverCounter = 0;
     int locationsCounter = 0;
     int i;
@@ -361,7 +360,7 @@ Root ConfigParser<T>::Rootparser(std::string file)
                 getline(Y, token,' ');
                 if (token == "location:")
                 {
-                    Location location = new location();
+                    Root *location = new Location();
                     while (getline(ifs, line))
                     {
                         action = 0;
@@ -376,8 +375,8 @@ Root ConfigParser<T>::Rootparser(std::string file)
                         }
                         if (token == "location:")
                         {
-                            server.add_location(location);
-                            Location location = new location();
+                            server->add_location(location);
+                            Root *location = new Location();
                             continue;
                         }
                         else
@@ -397,12 +396,12 @@ Root ConfigParser<T>::Rootparser(std::string file)
                             exit(1);
                         }
                     }
-                    server.add_location(location);
+                    server->add_location(location);
                 }
                 else if(token == "server:")
                 {
-                    root.add_server(server);
-                    server = new Server();
+                    root->add_server(server);
+                    Root* server = new Server();
                 }
                 else
                 {
@@ -421,7 +420,7 @@ Root ConfigParser<T>::Rootparser(std::string file)
                     }
                 }
             }
-            root.add_server(server);
+            root->add_server(server);
         }
     }
     return root;

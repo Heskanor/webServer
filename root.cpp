@@ -82,7 +82,7 @@ Server Root::get_server(int index)
     return _servers[index];
 }
 
-void Root::add_server(Server server)
+void Root::add_server(Server &server)
 {
     _servers.push_back(server);
 }

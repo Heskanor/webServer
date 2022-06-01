@@ -20,7 +20,7 @@ class ConfigParser
         ConfigParser(const ConfigParser &src);
         ~ConfigParser();
         ConfigParser &operator=( ConfigParser const & rhs );
-        Root Rootparser(std::string file);
+        Root *Rootparser(std::string file);
     private:
     
         void strTabParser(std::string status,std::string line, T &lvl);// done 

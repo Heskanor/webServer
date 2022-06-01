@@ -13,5 +13,7 @@
 int main()
 {
     ConfigParser<Root> parser;
+    //Root *r = new Location();
+
     return 0;
 }

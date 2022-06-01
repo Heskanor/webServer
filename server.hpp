@@ -11,7 +11,7 @@
 #include "root.hpp"
 class Location;
 
-class Server : public Root
+class Server : public virtual Root
 {
     private:
         std::string _server_name;
@@ -24,20 +24,20 @@ class Server : public Root
         Server() {}
         Server(const Server &src){}
         virtual ~Server() {}
-        Server &operator=( Server const & rhs );
-        //geters and seters
+        virtual Server &operator=( Server const & rhs );
+        virtual //geters and seters
         std::string get_server_name();
-        void set_server_name(std::string name);
-        std::string get_listenAddress();
-        std::string get_listenPort();
-        void set_listenAddress(std::string address);
-        void set_listenPort(std::string port);
-        std::map<int, std::string>  get_redirections();
-        std::string get_redirection(int code);
-        void add_redirect_map(int code, std::string url);
-        std::vector<Location> get_locations();
-        void add_location(Location location);
-        Location get_location(int index);
+        virtual void set_server_name(std::string name);
+        virtual std::string get_listenAddress();
+        virtual std::string get_listenPort();
+        virtual void set_listenAddress(std::string address);
+        virtual void set_listenPort(std::string port);
+        virtual std::map<int, std::string>  get_redirections();
+        virtual std::string get_redirection(int code);
+        virtual void add_redirect_map(int code, std::string url);
+        virtual std::vector<Location> get_locations();
+        virtual void add_location(Location location);
+        virtual Location get_location(int index);
 };
 
 #endif

@@ -6,7 +6,7 @@
 // #include "root.hpp"
 
 
-class Location : public Server
+class Location : public virtual Server
 {
     private:
         std::string _path;
@@ -16,7 +16,7 @@ class Location : public Server
     public:
         Location() {}
         Location(const Location &src){}
-        virtual ~Location() {}
+        ~Location() {}
         Location &operator=( Location const & rhs );
         //geters and seters
         std::string get_path();
