@@ -43,6 +43,7 @@ class Root
         virtual Server get_server(int index);
         virtual void set_servers(std::vector<Server> servers);
         virtual void add_server(Server &server);
+        //virtual void add_server(Server &server);
         virtual void add_error_map(int error, std::string error_url);
         virtual std::string get_error_map(int error);
         virtual std::string get_upload_directory();

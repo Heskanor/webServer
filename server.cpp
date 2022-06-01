@@ -44,7 +44,8 @@ std::string Server::get_listenPort()
     return _listenPort;
 }
 
-void Server::set_listenAddress(std::string address){
+void Server::set_listenAddress(std::string address)
+{
     _listenAddress = address;
 }
 

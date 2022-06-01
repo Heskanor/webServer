@@ -36,7 +36,7 @@ class Server : public virtual Root
         virtual std::string get_redirection(int code);
         virtual void add_redirect_map(int code, std::string url);
         virtual std::vector<Location> get_locations();
-        virtual void add_location(Location location);
+        void add_location(Location location);
         virtual Location get_location(int index);
 };
 

@@ -85,7 +85,7 @@ void ConfigParser<T>::mapParser(std::string status,std::string line, T &root)
         token += line[i];
         i++;
     }
-    if (find_first_not_of("0123456789") == std::string::npos)
+    if (token.find_first_not_of("0123456789") == std::string::npos)
         val = std::stoi(token);
     else
     {
@@ -115,7 +115,7 @@ void ConfigParser<T>::mapErrParser(std::string status,std::string line, T &root)
         token += line[i];
         i++;
     }
-    if (find_first_not_of("0123456789") == std::string::npos)
+    if (token.find_first_not_of("0123456789") == std::string::npos)
         val = std::stoi(token);
     else
     {
@@ -177,14 +177,14 @@ void ConfigParser<T>::setListen(std::string status,std::string line, T &lvl)
     while (line[j] != ':' && j< line.length())
         j++;
     token = line.substr(i, j-i);
-    if (find_first_not_of("0123456789") == std::string::npos && token.length() =< 4)
+    if (token.find_first_not_of("0123456789") == std::string::npos && token.length() <= 4)
             lvl.set_listenPort(token);
     else
     {
         lvl.set_listenAddress(token);
         if (line[j] == ' ')
         {
-            std:cout << "error: listen address is not valid" << std::endl;
+            std::cout << "error: listen address is not valid" << std::endl;
             exit(1);
         }
         else
@@ -193,7 +193,7 @@ void ConfigParser<T>::setListen(std::string status,std::string line, T &lvl)
                 j++;
             token = line.substr(i, j-i);
             // if token is not digit, error
-            if (find_first_not_of("0123456789") == std::string::npos)
+            if (token.find_first_not_of("0123456789") == std::string::npos)
                 lvl.set_listenPort(token);
             else
             {
@@ -293,12 +293,7 @@ void ConfigParser<T>::setLocation(std::string status,std::string line, T &lvl)
     lvl.set_path(s);
 }
 
-void skipFirstToken(std::string &line,int i)
-{
-    while ( (line[i] == 32 || (line[i] < 14 && line[i] > 8))&& i< line.length())
-        i++;
-    line.erase(0, i);
-}
+
 
 template< typename T >
 Root *ConfigParser<T>::Rootparser(std::string file)
@@ -375,7 +370,7 @@ Root *ConfigParser<T>::Rootparser(std::string file)
                         }
                         if (token == "location:")
                         {
-                            server->add_location(location);
+                            server->add_location(&location);
                             Root *location = new Location();
                             continue;
                         }
