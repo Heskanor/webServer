@@ -12,10 +12,9 @@
 
 int main()
 {
-    //ConfigParser<Root> parser;
+    ConfigParser parser;
     Root *r1 = new Root();
-    Server *r2 = new Server();
-    Location *r = new Location();
+    r1 = parser.Rootparser("Configfile");
 
     return 0;
 }

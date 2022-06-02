@@ -57,20 +57,22 @@ ConfigParser::ConfigParser()
     this->t_rootParser.push_back(&ConfigParser::setAllowedMethods);//strTabParser);
     this->t_serverParser.push_back(&ConfigParser::setAllowedMethods);//strTabParser);
     this->t_locationParser.push_back(&ConfigParser::setAllowedMethods);//strTabParser);
-    this->_rootkeys[7] = "serverName:";//str
+    this->_serverkeys[7] = "serverName:";//str
     this->t_serverParser.push_back(&ConfigParser::setServerName);//strParser);;
-    this->_rootkeys[8] = "listen:";//str port table
+    this->_serverkeys[8] = "listen:";//str port table
     this->t_serverParser.push_back(&ConfigParser::setListen);//strTabPortParser);
-    this->_rootkeys[7] = "redirection:";//str
+    this->_locationkeys[7] = "redirection:";//str
     this->t_locationParser.push_back(&ConfigParser::setRedirection);//strParser);
-    this->_rootkeys[8] = "path:";//str
+    this->_locationkeys[8] = "path:";//str
     this->t_locationParser.push_back(&ConfigParser::setLocation);//strParser);
-    this->_rootkeys[9] = "cgiPath:";//str
+    this->_locationkeys[9] = "cgiPath:";//str
     this->t_locationParser.push_back(&ConfigParser::setCgiPath);//strParser);
-    this->_rootkeys[10] = "cgiExt:";//str table
+    this->_locationkeys[10] = "cgiExt:";//str table
     this->t_locationParser.push_back(&ConfigParser::setCgiExt);//strTabParser);
 }
-
+ConfigParser::~ConfigParser()
+{
+}
 void skipSpaces(std::string &line)
 {
     int i = 0;
@@ -130,7 +132,6 @@ void ConfigParser::strTabParser(std::string status,std::string line, std::vector
         i = j;
     }
 }
-
 
 void ConfigParser::setRedirection(std::string status,std::string line, Location &root)
 {
@@ -448,7 +449,19 @@ void ConfigParser::setLocation(std::string status,std::string line, Location &lv
     lvl.set_path(s);
 }
 
+void ConfigParser::setCgiPath(std::string status,std::string line, Location &root)
+{
+    std::string s;
+    strParser(status, line, s);
+    root.set_cgi_path(s);
+}
 
+void ConfigParser::setCgiExt(std::string status,std::string line, Location &root)
+{
+    std::vector<std::string> s;
+    strTabParser(status, line, s);
+    root.set_cgi_ext(s);
+}
 
 Root *ConfigParser::Rootparser(std::string file)
 {

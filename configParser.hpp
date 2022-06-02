@@ -18,7 +18,7 @@ class ConfigParser
         typedef void (ConfigParser::*locationParser)(std::string token,std::string line, Location &lvl);
         std::string _rootkeys[7];
         std::string _serverkeys[10];
-        std::string _locationkeys[10];
+        std::string _locationkeys[11];
         std::vector<rootParser> t_rootParser;
         std::vector<serverParser> t_serverParser;
         std::vector<locationParser> t_locationParser;
