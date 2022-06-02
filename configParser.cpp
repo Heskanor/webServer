@@ -323,7 +323,7 @@ void ConfigParser::setBodySizeLimit(std::string status,std::string line, Root &l
 {
     int size;
     intParser(status, line, size);
-    if (lvl.bodySizeLimit <= 0)
+    if (size <= 0)
     {
         std::cout << "error: bodySizeLimit is not valid" << std::endl;
         exit(1);
@@ -334,7 +334,7 @@ void ConfigParser::setBodySizeLimit(std::string status,std::string line, Server 
 {
     int size;
     intParser(status, line, size);
-    if (lvl.bodySizeLimit <= 0)
+    if (size <= 0)
     {
         std::cout << "error: bodySizeLimit is not valid" << std::endl;
         exit(1);
@@ -345,7 +345,7 @@ void ConfigParser::setBodySizeLimit(std::string status,std::string line, Locatio
 {
     int size;
     intParser(status, line, size);
-    if (lvl.bodySizeLimit <= 0)
+    if (size <= 0)
     {
         std::cout << "error: bodySizeLimit is not valid" << std::endl;
         exit(1);
@@ -556,7 +556,7 @@ Root *ConfigParser::Rootparser(std::string file)
                 {
                     for (int j = 0; j < 10; j++)
                     {
-                        if (token == (this->_keys)[j])
+                        if (token == (this->_serverkeys)[j])
                         {
                             (this->*t_serverParser[j])(token, line, *server);
                             action = 1;
@@ -569,7 +569,7 @@ Root *ConfigParser::Rootparser(std::string file)
                     }
                 }
             }
-            root->add_server(server);
+            root->add_server(*server);
         }
     }
     return root;
