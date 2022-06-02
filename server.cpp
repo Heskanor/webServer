@@ -54,17 +54,17 @@ std::string Server::get_listenAddress()
     return _listenAddress;
 }
 
-std::map<int, std::string> Server::get_redirections()
+std::map<std::string, std::string> Server::get_redirections()
 {
     return _redirections;
 }
 
-std::string Server::get_redirection(int code)
+std::string Server::get_redirection(std::string code)
 {
     return _redirections[code];
 }
 
-void Server::add_redirect_map(std:string code, std::string url)
+void Server::add_redirect_map(std::string code, std::string url)
 {
     _redirections[code] = url;
 }

@@ -33,10 +33,10 @@ class Server : public virtual Root
         virtual void set_listenAddress(std::string address);
         virtual void set_listenPort(std::string port);
         virtual std::map<std::string, std::string>  get_redirections();
-        virtual std::string get_redirection(int code);
-        virtual void add_redirect_map(int code, std::string url);
+        virtual std::string get_redirection(std::string code);
+        virtual void add_redirect_map(std::string code, std::string url);
         virtual std::vector<Location> get_locations();
-        void add_location(Location location);
+        void add_location(Location &location);
         virtual Location get_location(int index);
 };
 
