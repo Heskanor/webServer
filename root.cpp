@@ -82,12 +82,12 @@ void Root::add_server(Server &server)
     _servers.push_back(server);
 }
 
-std::string Root::get_error_map(int error)
+std::string Root::get_error_map(std::string error)
 {
     return _error_map[error];
 }
 
-void Root::add_error_map(int error, std::string error_url)
+void Root::add_error_map(std::string error, std::string error_url)
 {
     _error_map[error] = error_url;
 }

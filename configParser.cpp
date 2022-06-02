@@ -85,7 +85,7 @@ void skipFirstToken(std::string &line,int i)
         i++;
     line.erase(0, i);
 }
-//issue with this function: i need to extract token before converting it to int
+//issue: with this function: i need to extract token before converting it to int
 void ConfigParser::intParser(std::string status,std::string line, int &size)
 {
     int i = 0;
@@ -131,32 +131,6 @@ void ConfigParser::strTabParser(std::string status,std::string line, std::vector
     }
 }
 
-void ConfigParser::setRedirection(std::string status,std::string line, Server &root)
-{
-    std::string token;
-    std::string value;
-    int val;
-    int i = 0;
-    skipFirstToken(line, status.length() - 1);
-    while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
-    {
-        token += line[i];
-        i++;
-    }
-    if (token.find_first_not_of("0123456789") != std::string::npos)
-    {
-        std::cout << "error: bad error Code" << std::endl;
-        exit(1);
-    }
-    skipSpaces(line);
-    i = 0;
-    while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
-    {
-        value += line[i];
-        i++;
-    }
-    root.add_redirect_map(token, value);
-}
 
 void ConfigParser::setRedirection(std::string status,std::string line, Location &root)
 {
