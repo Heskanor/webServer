@@ -64,12 +64,12 @@ std::string Server::get_redirection(int code)
     return _redirections[code];
 }
 
-void Server::add_redirect_map(int code, std::string url)
+void Server::add_redirect_map(std:string code, std::string url)
 {
     _redirections[code] = url;
 }
 
-void Server::add_location(Location location)
+void Server::add_location(Location &location)
 {
     _locations.push_back(location);
 }
