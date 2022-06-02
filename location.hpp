@@ -14,9 +14,9 @@ class Location : public virtual Server
         std::vector<std::string> _cgi_ext;
         
     public:
-        Location() {}
-        Location(const Location &src){}
-        ~Location() {}
+        Location();
+        Location(const Location &src);
+        ~Location();
         Location &operator=( Location const & rhs );
         //geters and seters
         std::string get_path();

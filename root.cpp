@@ -42,11 +42,6 @@ void Root::set_auto_index(bool autoIndex)
     _autoIndex = autoIndex;
 }
 
-std::vector<std::string> Root::get_index()
-{
-    return _index;
-}
-
 bool Root::get_auto_index()
 {
     return _autoIndex;

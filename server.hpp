@@ -21,9 +21,9 @@ class Server : public virtual Root
     protected:
         std::map<std::string, std::string>  _redirections;
     public:
-        Server() {}
-        Server(const Server &src){}
-        ~Server() {}
+        Server();
+        Server(const Server &src);
+        ~Server();
         virtual Server &operator=( Server const & rhs );
         virtual //geters and seters
         std::string get_server_name();

@@ -12,8 +12,10 @@
 
 int main()
 {
-    ConfigParser<Root> parser;
-    //Root *r = new Location();
+    //ConfigParser<Root> parser;
+    Root *r1 = new Root();
+    Server *r2 = new Server();
+    Location *r = new Location();
 
     return 0;
 }

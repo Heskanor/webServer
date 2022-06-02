@@ -25,9 +25,9 @@ class Root
         std::vector<std::string> _allowedMethods;
 
     public:
-        Root() {}
+        Root();
         // Root(const Root &src){}
-        virtual ~Root() {}
+        virtual ~Root();
         virtual Root &operator=( Root const & rhs );
         //geters and seters
         virtual std::string get_root();
