@@ -13,8 +13,10 @@
 int main()
 {
     ConfigParser parser;
+    std::vector<std::string> str;
     Root *r1 = new Root();
     r1 = parser.Rootparser("Configfile");
-
+    str = r1->get_index();
+    std::cout << str[1] << std::endl;
     return 0;
 }

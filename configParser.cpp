@@ -82,16 +82,18 @@ void skipSpaces(std::string &line)
 }
 
 void skipFirstToken(std::string &line,int i)
-{
+{std::cout << i<<std::endl;
     while ( (line[i] == 32 || (line[i] < 14 && line[i] > 8))&& i< line.length())
         i++;
-    line.erase(0, i);
+        std::cout <<line<< i<<std::endl;
+    line.erase(line.begin(), line.begin() +i);  std::cout <<"before"<<line<<"after"<< std::endl;
 }
 //issue: with this function: i need to extract token before converting it to int
 void ConfigParser::intParser(std::string status,std::string line, int &size)
 {
     int i = 0;
     skipFirstToken(line, status.length() - 1);
+    std::cout<<line<<std::endl;
     if (line.find_first_not_of("0123456789") == std::string::npos)
         size = std::stoi(line);
     else
@@ -104,7 +106,8 @@ void ConfigParser::intParser(std::string status,std::string line, int &size)
 void ConfigParser::strParser(std::string status,std::string line, std::string &root)
 {
     std::string token;
-    skipFirstToken(line, status.length() - 1);
+    std::cout << status << std::endl;
+    skipFirstToken(line, status.length());
     int i = 0;
     while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
     {
@@ -119,7 +122,7 @@ void ConfigParser::strTabParser(std::string status,std::string line, std::vector
     //push tokens into lvl vector
     std::string token;
     int i = 0;
-    skipFirstToken(line, status.length() - 1);
+    skipFirstToken(line, status.length());
     while (line[i] != '\n')
     {
         while ( (line[i] == 32 || (line[i] < 14 && line[i] > 8))&& i< line.length())
@@ -139,7 +142,7 @@ void ConfigParser::setRedirection(std::string status,std::string line, Location 
     std::string value;
     int val;
     int i = 0;
-    skipFirstToken(line, status.length() - 1);
+    skipFirstToken(line, status.length());
     while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
     {
         token += line[i];
@@ -305,6 +308,7 @@ void ConfigParser::setRoot(std::string status,std::string line, Root &lvl)
 {
     std::string tko;
     strParser(status, line, tko);
+    // std::cout << tko <<"haha15"<< std::endl;
     lvl.set_root(tko);
 }
 void ConfigParser::setRoot(std::string status,std::string line, Server &lvl)
@@ -479,6 +483,7 @@ Root *ConfigParser::Rootparser(std::string file)
     int serverCounter = 0;
     int locationsCounter = 0;
     int i;
+
     if (ifs.is_open())
     {
         getline(ifs, line);
@@ -500,7 +505,7 @@ Root *ConfigParser::Rootparser(std::string file)
                 {
                     if (token == (this->_rootkeys)[j])
                     {
-                        (this->*t_rootParser[j])(status, line, *root);
+                        (this->*t_rootParser[j])(token, line, *root);
                         action = 1;
                     }
                 }
@@ -515,6 +520,8 @@ Root *ConfigParser::Rootparser(std::string file)
         {
             while (getline(ifs, line))
             {
+                std::cout <<"haha17"<< std::endl;
+
                 action = 0;
                 locationsCounter = 0;
                 skipSpaces(line);
