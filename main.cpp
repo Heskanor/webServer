@@ -15,8 +15,18 @@ int main()
     ConfigParser parser;
     std::vector<std::string> str;
     Root *r1 = new Root();
+    Server *s = new Server();
     r1 = parser.Rootparser("Configfile");
     str = r1->get_index();
-    std::cout << str[1] << std::endl;
+    for (std::vector<std::string>::iterator it = str.begin(); it != str.end(); ++it)
+    {
+        std::cout << *it << std::endl;
+    }
+    std::vector<Server> servers = r1->get_servers();
+    for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); ++it)
+    {
+        std::cout << it->get_listenAddress()<< std::endl;
+        std::cout<< it->get_listenPort() << std::endl;
+    }
     return 0;
 }

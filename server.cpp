@@ -1,6 +1,7 @@
 #include "server.hpp"
 #include "location.hpp"
 #include "root.hpp"
+#include <sstream> 
 
 Server::Server()
 {
@@ -12,13 +13,23 @@ Server::~Server()
 
 }
 
-Server::Server(const Server &src)
+Server::Server(const Server &src):
+    _server_name(src._server_name),
+    _listenAddress(src._listenAddress),
+    _listenPort(src._listenPort),
+    _locations(src._locations)
 {
-
+    *this = src;
 }
+
 
 Server &Server::operator=(Server const & rhs)
 {
+    _server_name = rhs._server_name;
+    _listenAddress = rhs._listenAddress;
+    _listenPort = rhs._listenPort;
+    //_locations = rhs._locations;
+
     return *this;
 }
 
@@ -36,10 +47,12 @@ std::string Server::get_server_name()
 
 void Server::set_listenPort(std::string port)
 {
-    _listenPort = port;
+    std::stringstream ss;
+    ss << port;
+    ss >> _listenPort;
 }
 
-std::string Server::get_listenPort()
+int Server::get_listenPort()
 {
     return _listenPort;
 }

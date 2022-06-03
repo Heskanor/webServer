@@ -1,18 +1,18 @@
 index: index.html index.htm index.php
 root: ./root
 server:
+	serverName: 127.0.0.1
+	listen: 8080
 	root: ./root
 	bodySizeLimit: 1000
 	location: 
 		path: /the7
 		autoIndex: true
 		index: index.html index.htm
-		error500: ./Networking/index.html
-		error502: ./Networking/index.html
+		errorPage: 501 ./Networking/index.html
+		errorPage: 500 ./Networking/index.html
 		uploadDirectory: /var/www/html/public/uploads
 		allowedMethods: POST GET DELETE
-		return: 
-		#make sure you have php-cgi installed on your system
-		# put the php-cgi absolute path here
+		return: 500 /login.html
 		cgiPath: ./Networking/index.html
 		cgiExt: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6

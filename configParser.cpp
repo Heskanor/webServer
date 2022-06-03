@@ -61,7 +61,7 @@ ConfigParser::ConfigParser()
     this->t_serverParser.push_back(&ConfigParser::setServerName);//strParser);;
     this->_serverkeys[8] = "listen:";//str port table
     this->t_serverParser.push_back(&ConfigParser::setListen);//strTabPortParser);
-    this->_locationkeys[7] = "redirection:";//str
+    this->_locationkeys[7] = "return:";//str
     this->t_locationParser.push_back(&ConfigParser::setRedirection);//strParser);
     this->_locationkeys[8] = "path:";//str
     this->t_locationParser.push_back(&ConfigParser::setLocation);//strParser);
@@ -82,20 +82,27 @@ void skipSpaces(std::string &line)
 }
 
 void skipFirstToken(std::string &line,int i)
-{std::cout << i<<std::endl;
+{
+    // std::cout << i<<std::endl;
     while ( (line[i] == 32 || (line[i] < 14 && line[i] > 8))&& i< line.length())
         i++;
-        std::cout <<line<< i<<std::endl;
-    line.erase(line.begin(), line.begin() +i);  std::cout <<"before"<<line<<"after"<< std::endl;
+        //std::cout <<line<< i<<std::endl;
+    line.erase(line.begin(), line.begin() +i);  //std::cout <<"before"<<line<<"after"<< std::endl;
 }
 //issue: with this function: i need to extract token before converting it to int
 void ConfigParser::intParser(std::string status,std::string line, int &size)
 {
     int i = 0;
-    skipFirstToken(line, status.length() - 1);
-    std::cout<<line<<std::endl;
+    skipFirstToken(line, status.length());
+    
+
     if (line.find_first_not_of("0123456789") == std::string::npos)
-        size = std::stoi(line);
+    {std::cout<<"inter :"<<line<<std::endl;
+        std::stringstream ss;
+        ss << line;
+        ss >> size;
+        // size = std::stoi(line);
+    }    
     else
     {
         std::cout << "error: bad error Code" << std::endl;
@@ -106,7 +113,7 @@ void ConfigParser::intParser(std::string status,std::string line, int &size)
 void ConfigParser::strParser(std::string status,std::string line, std::string &root)
 {
     std::string token;
-    std::cout << status << std::endl;
+    //std::cout << status << std::endl;
     skipFirstToken(line, status.length());
     int i = 0;
     while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
@@ -122,8 +129,9 @@ void ConfigParser::strTabParser(std::string status,std::string line, std::vector
     //push tokens into lvl vector
     std::string token;
     int i = 0;
+    
     skipFirstToken(line, status.length());
-    while (line[i] != '\n')
+    while (line[i] != '\n' &&  i <line.length())
     {
         while ( (line[i] == 32 || (line[i] < 14 && line[i] > 8))&& i< line.length())
             i++;
@@ -166,19 +174,22 @@ void ConfigParser::setRedirection(std::string status,std::string line, Location 
 void ConfigParser::setIndex(std::string token, std::string line, Root &lvl)
 {
     std::vector<std::string> ind;
-    strTabParser(0, line, ind);
+    strTabParser(token, line, ind);
+
+    std::cout<< "wtf" <<std::endl;
     lvl.set_index(ind);
 }
 void ConfigParser::setIndex(std::string token, std::string line, Server &lvl)
 {
     std::vector<std::string> ind;
-    strTabParser(0, line, ind);
+    strTabParser(token, line, ind);
     lvl.set_index(ind);
 }
 void ConfigParser::setIndex(std::string token, std::string line, Location &lvl)
 {
     std::vector<std::string> ind;
-    strTabParser(0, line, ind);
+    std::cout << "fucked up here1" << std::endl;
+    strTabParser(token, line, ind);
     lvl.set_index(ind);
 }
 
@@ -188,7 +199,7 @@ void ConfigParser::setErrors(std::string status,std::string line, Root &root)
     std::string value;
     int val;
     int i = 0;
-    skipFirstToken(line, status.length() - 1);
+    skipFirstToken(line, status.length());
     while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
     {
         token += line[i];
@@ -216,7 +227,7 @@ void ConfigParser::setErrors(std::string status,std::string line, Server &root)
     std::string value;
     int val;
     int i = 0;
-    skipFirstToken(line, status.length() - 1);
+    skipFirstToken(line, status.length());
     while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
     {
         token += line[i];
@@ -244,7 +255,7 @@ void ConfigParser::setErrors(std::string status,std::string line, Location &root
     std::string value;
     int val;
     int i = 0;
-    skipFirstToken(line, status.length() - 1);
+    skipFirstToken(line, status.length());
     while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
     {
         token += line[i];
@@ -267,21 +278,24 @@ void ConfigParser::setErrors(std::string status,std::string line, Location &root
     root.add_error_map(token, value);
 }
 
-void ConfigParser::setListen(std::string status,std::string line, Server &lvl)
+void ConfigParser::setListen(std::string token,std::string line, Server &lvl)
 {
     //parse address:host 
     int j = 0;
-    std::string token;
-    skipFirstToken(line, status.length() - 1);
+
+    skipFirstToken(line, token.length());
     int i =0;
+    std::cout<<"token: "<<token<<std::endl;
+    std::cout<<"line: "<<line<<std::endl;
     while (line[j] != ':' && j< line.length())
         j++;
-    token = line.substr(i, j-i);
-    if (token.find_first_not_of("0123456789") == std::string::npos && token.length() <= 4)
+    //if (j <line.length())
+        //token = line.substr(0, j);
+    if (j >= line.length() && token.find_first_not_of("0123456789") == std::string::npos && token.length() <= 4)
             lvl.set_listenPort(token);
     else
     {
-        lvl.set_listenAddress(token);
+        
         if (line[j] == ' ')
         {
             std::cout << "error: listen address is not valid" << std::endl;
@@ -289,9 +303,13 @@ void ConfigParser::setListen(std::string status,std::string line, Server &lvl)
         }
         else
         {
-            while (line[j] != ' '&& line[j] != '\n' && j< line.length())
+            token = line.substr(0, j);
+            lvl.set_listenAddress(token);
+            std::cout<<"Atoken: "<<token<<std::endl;
+            while ((line[j] == ' '|| line[j] == '\n' || line[j] == ':' )&& j< line.length())
                 j++;
-            token = line.substr(i, j-i);
+            token = line.substr(j, line.length());
+            std::cout << "|"<< token<< std::endl;
             // if token is not digit, error
             if (token.find_first_not_of("0123456789") == std::string::npos)
                 lvl.set_listenPort(token);
@@ -300,6 +318,7 @@ void ConfigParser::setListen(std::string status,std::string line, Server &lvl)
                 std::cout << "error: listen port is not valid" << std::endl;
                 exit(1);
             }
+            std::cout<<"Ptoken: "<<token<<std::endl;
         }
     }
 }
@@ -476,8 +495,8 @@ Root *ConfigParser::Rootparser(std::string file)
     std::string previousStatus;
     int action = 0;
     Root *root = new Root();
-    Server *server = new Server();
-    // Server server;
+    // Server *server = new Server();
+    Server server;
     size_t pos;
     std::string token;
     int serverCounter = 0;
@@ -492,6 +511,19 @@ Root *ConfigParser::Rootparser(std::string file)
         getline(X, token,' ');
         if (token != "server:")
         {
+            for (int    j = 0; j < 7; j++)
+            {
+                if (token == (this->_rootkeys)[j])
+                {
+                    (this->*t_rootParser[j])(token, line, *root);
+                    action = 1;
+                }
+            }
+            if (action == 0)
+            {
+                std::cout << "Error: invalid key" << std::endl;
+                exit(1);
+            }
             while (getline(ifs, line))
             {
                 action = 0;
@@ -516,11 +548,11 @@ Root *ConfigParser::Rootparser(std::string file)
                 }
             }
         }
-        else
-        {
+        // else
+        // {
             while (getline(ifs, line))
             {
-                std::cout <<"haha17"<< std::endl;
+                //std::cout <<"haha17"<< std::endl;
 
                 action = 0;
                 locationsCounter = 0;
@@ -544,13 +576,13 @@ Root *ConfigParser::Rootparser(std::string file)
                         }
                         if (token == "location:")
                         {
-                            server->add_location(*location);
+                            server.add_location(*location);
                             Location *location = new Location();
                             continue;
                         }
                         else
                         {
-                            for (int    j = 0; j < 10; j++)
+                            for (int    j = 0; j < 11; j++)
                             {
                                 if (token == (this->_locationkeys)[j])
                                 {
@@ -561,16 +593,17 @@ Root *ConfigParser::Rootparser(std::string file)
                         }
                         if (action == 0)
                         {
-                            std::cout << "Error: invalid key" << std::endl;
+                            std::cout << "Error: invalid location key near :" << token<<std::endl;
                             exit(1);
                         }
                     }
-                    server->add_location(*location);
+                    server.add_location(*location);
                 }
                 else if(token == "server:")
                 {
-                    root->add_server(*server);
-                    Root* server = new Server();
+                    root->add_server(server);
+                    Server server;
+                    //Server* server = new Server();
                 }
                 else
                 {
@@ -578,7 +611,7 @@ Root *ConfigParser::Rootparser(std::string file)
                     {
                         if (token == (this->_serverkeys)[j])
                         {
-                            (this->*t_serverParser[j])(token, line, *server);
+                            (this->*t_serverParser[j])(token, line, server);
                             action = 1;
                         }    
                     }
@@ -589,8 +622,8 @@ Root *ConfigParser::Rootparser(std::string file)
                     }
                 }
             }
-            root->add_server(*server);
-        }
+            root->add_server(server);
+        // }
     }
     return root;
 }

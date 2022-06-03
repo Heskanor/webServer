@@ -15,7 +15,7 @@ class Server : public virtual Root
 {
     private:
         std::string _server_name;
-        std::string _listenPort;
+        int _listenPort;
         std::string _listenAddress;
         std::vector<Location> _locations;
     protected:
@@ -29,7 +29,7 @@ class Server : public virtual Root
         std::string get_server_name();
         virtual void set_server_name(std::string name);
         virtual std::string get_listenAddress();
-        virtual std::string get_listenPort();
+        virtual int get_listenPort();
         virtual void set_listenAddress(std::string address);
         virtual void set_listenPort(std::string port);
         virtual std::map<std::string, std::string>  get_redirections();
