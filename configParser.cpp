@@ -148,7 +148,7 @@ void ConfigParser::setRedirection(std::string status,std::string line, Location 
 {
     std::string token;
     std::string value;
-    int val;
+    
     int i = 0;
     skipFirstToken(line, status.length());
     while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
@@ -197,7 +197,7 @@ void ConfigParser::setErrors(std::string status,std::string line, Root &root)
 {
     std::string token;
     std::string value;
-    int val;
+    std::string val;
     int i = 0;
     skipFirstToken(line, status.length());
     while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
@@ -206,7 +206,7 @@ void ConfigParser::setErrors(std::string status,std::string line, Root &root)
         i++;
     }
     if (token.find_first_not_of("0123456789") == std::string::npos)
-        val = std::stoi(token);
+        val = token;
     else
     {
         std::cout << "error: bad error Code" << std::endl;
@@ -225,7 +225,7 @@ void ConfigParser::setErrors(std::string status,std::string line, Server &root)
 {
     std::string token;
     std::string value;
-    int val;
+    std::string val;
     int i = 0;
     skipFirstToken(line, status.length());
     while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
@@ -234,7 +234,7 @@ void ConfigParser::setErrors(std::string status,std::string line, Server &root)
         i++;
     }
     if (token.find_first_not_of("0123456789") == std::string::npos)
-        val = std::stoi(token);
+        val = token;
     else
     {
         std::cout << "error: bad error Code" << std::endl;
@@ -253,7 +253,7 @@ void ConfigParser::setErrors(std::string status,std::string line, Location &root
 {
     std::string token;
     std::string value;
-    int val;
+    std::string val;
     int i = 0;
     skipFirstToken(line, status.length());
     while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
@@ -262,7 +262,7 @@ void ConfigParser::setErrors(std::string status,std::string line, Location &root
         i++;
     }
     if (token.find_first_not_of("0123456789") == std::string::npos)
-        val = std::stoi(token);
+        val = token;
     else
     {
         std::cout << "error: bad error Code" << std::endl;
