@@ -14,15 +14,15 @@ int main()
 {
     ConfigParser parser;
     std::vector<std::string> str;
-    Root *r1 = new Root();
-    Server *s = new Server();
+    Root r1;
+    Server s;
     r1 = parser.Rootparser("Configfile");
-    str = r1->get_index();
+    str = r1.get_index();
     for (std::vector<std::string>::iterator it = str.begin(); it != str.end(); ++it)
     {
         std::cout << *it << std::endl;
     }
-    std::vector<Server> servers = r1->get_servers();
+    std::vector<Server> servers = r1.get_servers();
     for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); ++it)
     {
         std::cout << it->get_listenAddress()<< std::endl;

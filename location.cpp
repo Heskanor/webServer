@@ -9,8 +9,21 @@ Location::Location()
 {
 }
 
-Location::Location(const Location &src)
+Location::Location(const Location &src) :
+    _path(src._path),
+    _cgi_path(src._cgi_path),
+    _cgi_ext(src._cgi_ext)
 {
+    *this = src;
+}
+
+Location &Location::operator=(Location const & rhs)
+{
+    _path = rhs._path;
+    _cgi_path = rhs._cgi_path;
+    _cgi_ext = rhs._cgi_ext;
+
+    return *this;
 }
 
 Location::~Location()
