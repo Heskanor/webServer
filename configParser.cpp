@@ -94,13 +94,12 @@ void ConfigParser::intParser(std::string status,std::string line, int &size)
 {
     int i = 0;
     skipFirstToken(line, status.length());
-    
-
     if (line.find_first_not_of("0123456789") == std::string::npos)
-    {std::cout<<"inter :"<<line<<std::endl;
+    {
         std::stringstream ss;
         ss << line;
         ss >> size;
+        
         // size = std::stoi(line);
     }    
     else
@@ -352,6 +351,7 @@ void ConfigParser::setBodySizeLimit(std::string status,std::string line, Root &l
         std::cout << "error: bodySizeLimit is not valid" << std::endl;
         exit(1);
     }
+    std::cout<<"size :"<<size<<std::endl;
     lvl.set_bodySizeLimit(size);
 }
 void ConfigParser::setBodySizeLimit(std::string status,std::string line, Server &lvl)
@@ -363,6 +363,7 @@ void ConfigParser::setBodySizeLimit(std::string status,std::string line, Server 
         std::cout << "error: bodySizeLimit is not valid" << std::endl;
         exit(1);
     }
+    std::cout<<"size :"<<size<<std::endl;
     lvl.set_bodySizeLimit(size);
 }
 void ConfigParser::setBodySizeLimit(std::string status,std::string line, Location &lvl)
@@ -374,6 +375,7 @@ void ConfigParser::setBodySizeLimit(std::string status,std::string line, Locatio
         std::cout << "error: bodySizeLimit is not valid" << std::endl;
         exit(1);
     }
+    std::cout<<"size :"<<size<<std::endl;
     lvl.set_bodySizeLimit(size);
 }
 

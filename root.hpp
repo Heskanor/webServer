@@ -26,7 +26,7 @@ class Root
 
     public:
         Root();
-        // Root(const Root &src){}
+        Root(const Root &src);
         virtual ~Root();
         virtual Root &operator=( Root const & rhs );
         //geters and seters

@@ -12,8 +12,22 @@ Root::~Root()
 
 }
 
+Root::Root(const Root &src)
+{
+    *this = src;
+}
+
 Root &Root::operator=(Root const & rhs)
 {
+    _index = rhs._index;
+    _servers = rhs._servers;
+    _root = rhs._root;
+    std::cout<<"sizee :"<<rhs._root<<std::endl;
+    _bodySizeLimit = rhs._bodySizeLimit;
+    _autoIndex = rhs._autoIndex;
+    _error_map = rhs._error_map;
+    _uploadDirectory = rhs._uploadDirectory;
+    _allowedMethods = rhs._allowedMethods;
     return *this;
 }
 
@@ -49,11 +63,13 @@ bool Root::get_auto_index()
 
 int Root::get_bodySizeLimit()
 {
+    
     return _bodySizeLimit;
 }
 
 void Root::set_bodySizeLimit(int bodySizeLimit)
 {
+    
     _bodySizeLimit = bodySizeLimit;
 }
 

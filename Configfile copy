@@ -9,7 +9,7 @@ server:
 		path: /the7
 		autoIndex: true
 		index: index.html index.htm
-		error500: ./Networking/index.html
+		error:  500 ./Networking/index.html
 		error502: ./Networking/index.html
 		uploadDirectory: /var/www/html/public/uploads
 		allowedMethods: POST GET DELETE

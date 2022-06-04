@@ -19,6 +19,7 @@ Location::Location(const Location &src) :
 
 Location &Location::operator=(Location const & rhs)
 {
+    Server::operator=(rhs);
     _path = rhs._path;
     _cgi_path = rhs._cgi_path;
     _cgi_ext = rhs._cgi_ext;

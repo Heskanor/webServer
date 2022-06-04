@@ -25,10 +25,11 @@ Server::Server(const Server &src):
 
 Server &Server::operator=(Server const & rhs)
 {
+    Root::operator=(rhs);
     _server_name = rhs._server_name;
     _listenAddress = rhs._listenAddress;
     _listenPort = rhs._listenPort;
-    //_locations = rhs._locations;
+    _locations = rhs._locations;
 
     return *this;
 }
