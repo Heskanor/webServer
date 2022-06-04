@@ -9,10 +9,7 @@ Location::Location()
 {
 }
 
-Location::Location(const Location &src) :
-    _path(src._path),
-    _cgi_path(src._cgi_path),
-    _cgi_ext(src._cgi_ext)
+Location::Location(const Location &src)
 {
     *this = src;
 }

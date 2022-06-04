@@ -37,6 +37,7 @@ int main()
         {
             std::cout << "Location ___________" << std::endl;
             std::cout << it2->get_path() << std::endl;
+            std::cout << it2->get_root() << std::endl;
             std::cout << it2->get_cgi_path() << std::endl;
             std::vector<std::string> cgi_ext = it2->get_cgi_ext();
             for (std::vector<std::string>::iterator it3 = cgi_ext.begin(); it3 != cgi_ext.end(); ++it3)
