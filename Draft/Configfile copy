@@ -1,5 +1,6 @@
 index: index.html index.htm index.php
 errorPage: 500 ./Networking/fuckyou.html
+
 server:
 	serverName: 127.0.0.1
 	listen: address:8080
@@ -13,8 +14,6 @@ server:
 		error502: ./Networking/index.html
 		uploadDirectory: /var/www/html/public/uploads
 		allowedMethods: POST GET DELETE
-		return: 
-		#make sure you have php-cgi installed on your system
-		# put the php-cgi absolute path here
+		return: 200 ./Networking/index.html
 		cgiPath: ./Networking/index.html
 		cgiExt: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6

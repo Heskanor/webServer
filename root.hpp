@@ -46,6 +46,7 @@ class Root
         //virtual void add_server(Server &server);
         virtual void add_error_map(std::string error, std::string error_url);
         virtual std::string get_error_map(std::string error);
+        virtual std::map<std::string, std::string> get_errmap();
         virtual std::string get_upload_directory();
         virtual void set_upload_directory(std::string upload_directory);
         virtual std::vector<std::string> get_allowed_methods();

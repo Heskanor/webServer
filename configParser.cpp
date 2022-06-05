@@ -174,8 +174,6 @@ void ConfigParser::setIndex(std::string token, std::string line, Root &lvl)
 {
     std::vector<std::string> ind;
     strTabParser(token, line, ind);
-
-    std::cout<< "wtf" <<std::endl;
     lvl.set_index(ind);
 }
 void ConfigParser::setIndex(std::string token, std::string line, Server &lvl)
@@ -187,7 +185,6 @@ void ConfigParser::setIndex(std::string token, std::string line, Server &lvl)
 void ConfigParser::setIndex(std::string token, std::string line, Location &lvl)
 {
     std::vector<std::string> ind;
-    std::cout << "fucked up here1" << std::endl;
     strTabParser(token, line, ind);
     lvl.set_index(ind);
 }
@@ -284,8 +281,6 @@ void ConfigParser::setListen(std::string token,std::string line, Server &lvl)
 
     skipFirstToken(line, token.length());
     int i =0;
-    std::cout<<"token: "<<token<<std::endl;
-    std::cout<<"line: "<<line<<std::endl;
     while (line[j] != ':' && j< line.length())
         j++;
     //if (j <line.length())
@@ -304,11 +299,9 @@ void ConfigParser::setListen(std::string token,std::string line, Server &lvl)
         {
             token = line.substr(0, j);
             lvl.set_listenAddress(token);
-            std::cout<<"Atoken: "<<token<<std::endl;
             while ((line[j] == ' '|| line[j] == '\n' || line[j] == ':' )&& j< line.length())
                 j++;
             token = line.substr(j, line.length());
-            std::cout << "|"<< token<< std::endl;
             // if token is not digit, error
             if (token.find_first_not_of("0123456789") == std::string::npos)
                 lvl.set_listenPort(token);
@@ -317,7 +310,6 @@ void ConfigParser::setListen(std::string token,std::string line, Server &lvl)
                 std::cout << "error: listen port is not valid" << std::endl;
                 exit(1);
             }
-            std::cout<<"Ptoken: "<<token<<std::endl;
         }
     }
 }
@@ -351,7 +343,6 @@ void ConfigParser::setBodySizeLimit(std::string status,std::string line, Root &l
         std::cout << "error: bodySizeLimit is not valid" << std::endl;
         exit(1);
     }
-    std::cout<<"size :"<<size<<std::endl;
     lvl.set_bodySizeLimit(size);
 }
 void ConfigParser::setBodySizeLimit(std::string status,std::string line, Server &lvl)
@@ -363,7 +354,6 @@ void ConfigParser::setBodySizeLimit(std::string status,std::string line, Server 
         std::cout << "error: bodySizeLimit is not valid" << std::endl;
         exit(1);
     }
-    std::cout<<"size :"<<size<<std::endl;
     lvl.set_bodySizeLimit(size);
 }
 void ConfigParser::setBodySizeLimit(std::string status,std::string line, Location &lvl)
@@ -375,7 +365,6 @@ void ConfigParser::setBodySizeLimit(std::string status,std::string line, Locatio
         std::cout << "error: bodySizeLimit is not valid" << std::endl;
         exit(1);
     }
-    std::cout<<"size :"<<size<<std::endl;
     lvl.set_bodySizeLimit(size);
 }
 
@@ -497,7 +486,6 @@ Root ConfigParser::Rootparser(std::string file)
     std::string previousStatus;
     int action = 0;
     Root root;
-    // Server *server = new Server();
     Server server;
     size_t pos;
     std::string token;
@@ -550,82 +538,77 @@ Root ConfigParser::Rootparser(std::string file)
                 }
             }
         }
-        // else
-        // {
-            while (getline(ifs, line))
+        while (getline(ifs, line))
+        {
+            action = 0;
+            locationsCounter = 0;
+            skipSpaces(line);
+            std::stringstream Y(line);
+            getline(Y, token,' ');
+            if (token == "location:")
             {
-                //std::cout <<"haha17"<< std::endl;
-
-                action = 0;
-                locationsCounter = 0;
-                skipSpaces(line);
-                std::stringstream Y(line);
-                getline(Y, token,' ');
-                if (token == "location:")
+                Location location;
+                while (getline(ifs, line))
                 {
-                    Location location;
-                    while (getline(ifs, line))
+                    action = 0;
+                    skipSpaces(line);
+                    std::stringstream Y(line);
+                    getline(Y, token,' ');
+                    previousKey = token;
+                    if (token == "server:")
                     {
-                        action = 0;
-                        skipSpaces(line);
-                        std::stringstream Y(line);
-                        getline(Y, token,' ');
-                        previousKey = token;
-                        if (token == "server:")
+                        status = token;
+                        break;
+                    }
+                    if (token == "location:")
+                    {
+                        server.add_location(location);
+                        Location location;
+                        continue;
+                    }
+                    else
+                    {
+                        for (int    j = 0; j < 11; j++)
                         {
-                            status = token;
-                            break;
-                        }
-                        if (token == "location:")
-                        {
-                            server.add_location(location);
-                            Location location;
-                            continue;
-                        }
-                        else
-                        {
-                            for (int    j = 0; j < 11; j++)
+                            if (token == (this->_locationkeys)[j])
                             {
-                                if (token == (this->_locationkeys)[j])
-                                {
-                                    (this->*t_locationParser[j])(token, line, location);
-                                    action = 1;
-                                }
+                                (this->*t_locationParser[j])(token, line, location);
+                                action = 1;
                             }
                         }
-                        if (action == 0)
-                        {
-                            std::cout << "Error: invalid location key near :" << token<<std::endl;
-                            exit(1);
-                        }
-                    }
-                    server.add_location(location);
-                }
-                else if(token == "server:")
-                {
-                    root.add_server(server);
-                    Server server;
-                    //Server* server = new Server();
-                }
-                else
-                {
-                    for (int j = 0; j < 10; j++)
-                    {
-                        if (token == (this->_serverkeys)[j])
-                        {
-                            (this->*t_serverParser[j])(token, line, server);
-                            action = 1;
-                        }    
                     }
                     if (action == 0)
                     {
-                        std::cout << "Error: invalid server key" << std::endl;
+                        std::cout << "Error: invalid location key near :" << token<<std::endl;
                         exit(1);
                     }
                 }
+                server.add_location(location);
             }
-            root.add_server(server);
-        // }
+            else if(token == "server:")
+            {
+                root.add_server(server);
+                Server server;
+                //Server* server = new Server();
+            }
+            else
+            {
+                for (int j = 0; j < 10; j++)
+                {
+                    if (token == (this->_serverkeys)[j])
+                    {
+                        (this->*t_serverParser[j])(token, line, server);
+                        action = 1;
+                    }    
+                }
+                if (action == 0)
+                {
+                    std::cout << "Error: invalid server key" << std::endl;
+                    exit(1);
+                }
+            }
+        }
+        root.add_server(server);
     }
     return root;
 }

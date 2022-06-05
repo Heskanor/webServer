@@ -22,7 +22,6 @@ Root &Root::operator=(Root const & rhs)
     _index = rhs._index;
     _servers = rhs._servers;
     _root = rhs._root;
-    std::cout<<"sizee :"<<rhs._root<<std::endl;
     _bodySizeLimit = rhs._bodySizeLimit;
     _autoIndex = rhs._autoIndex;
     _error_map = rhs._error_map;
@@ -44,6 +43,11 @@ void Root::set_root(std::string root)
 void Root::set_index(std::vector<std::string> index)
 {
     _index = index;
+}
+
+std::map<std::string, std::string> Root::get_errmap()
+{
+    return _error_map;
 }
 
 std::vector<std::string> Root::get_index()
@@ -95,15 +99,7 @@ Server Root::get_server(int index)
 
 void Root::add_server(Server &server)
 {
-    std::cout << "add server" << std::endl;
-    std::cout << server.get_server_name() << std::endl;
     _servers.push_back(server);
-    // std::cout << "push back not error" << std::endl;
-    // print servers vector
-    for (std::vector<Server>::iterator it = _servers.begin(); it != _servers.end(); ++it)
-    {
-        std::cout <<"lol"<< it->get_server_name() << std::endl;
-    }
 }
 
 std::string Root::get_error_map(std::string error)

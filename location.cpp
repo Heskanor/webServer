@@ -7,6 +7,7 @@
 
 Location::Location()
 {
+
 }
 
 Location::Location(const Location &src)
