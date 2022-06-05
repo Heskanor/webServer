@@ -27,6 +27,7 @@ class Server : public virtual Root
         virtual Server &operator=( Server const & rhs );
         virtual //geters and seters
         std::string get_server_name();
+        void clear();
         virtual void set_server_name(std::string name);
         virtual std::string get_listenAddress();
         virtual int get_listenPort();

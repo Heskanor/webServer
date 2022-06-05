@@ -59,3 +59,10 @@ void Location::set_cgi_ext(std::vector<std::string> cgi_ext)
 {
     _cgi_ext = cgi_ext;
 }
+void Location::clear()
+{
+    // Server::clear();
+    _path = "";
+    _cgi_path = "";
+    _cgi_ext.clear();
+}

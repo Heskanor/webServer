@@ -477,15 +477,12 @@ void ConfigParser::setCgiExt(std::string status,std::string line, Location &root
     root.set_cgi_ext(s);
 }
 
-Root ConfigParser::Rootparser(std::string file)
+Root *ConfigParser::Rootparser(std::string file)
 {
     std::ifstream ifs(file);
     std::string line;
-    std::string status;
-    std::string previousKey;
-    std::string previousStatus;
     int action = 0;
-    Root root;
+    Root *root = new Root();
     Server server;
     size_t pos;
     std::string token;
@@ -505,7 +502,7 @@ Root ConfigParser::Rootparser(std::string file)
             {
                 if (token == (this->_rootkeys)[j])
                 {
-                    (this->*t_rootParser[j])(token, line, root);
+                    (this->*t_rootParser[j])(token, line, *root);
                     action = 1;
                 }
             }
@@ -520,14 +517,13 @@ Root ConfigParser::Rootparser(std::string file)
                 skipSpaces(line);
                 std::stringstream Y(line);
                 getline(Y, token,' ');
-                previousKey = token;
                 if (token == "server:")
                     break;
                 for (int    j = 0; j < 7; j++)
                 {
                     if (token == (this->_rootkeys)[j])
                     {
-                        (this->*t_rootParser[j])(token, line, root);
+                        (this->*t_rootParser[j])(token, line, *root);
                         action = 1;
                     }
                 }
@@ -554,16 +550,20 @@ Root ConfigParser::Rootparser(std::string file)
                     skipSpaces(line);
                     std::stringstream Y(line);
                     getline(Y, token,' ');
-                    previousKey = token;
                     if (token == "server:")
                     {
-                        status = token;
+                        server.add_location(location);
+                        location.clear();
+                        root->add_server(server);
+                        server.clear();
+                        action = -1;
                         break;
                     }
-                    if (token == "location:")
+                    else if (token == "location:")
                     {
                         server.add_location(location);
-                        Location location;
+                        action = -1;
+                        location.clear();
                         continue;
                     }
                     else
@@ -583,12 +583,17 @@ Root ConfigParser::Rootparser(std::string file)
                         exit(1);
                     }
                 }
-                server.add_location(location);
+                if (action != -1)
+                {
+                    server.add_location(location);
+                }
+                location.clear();
             }
             else if(token == "server:")
             {
-                root.add_server(server);
-                Server server;
+                root->add_server(server);
+                server.clear();
+                //location.clear();
                 //Server* server = new Server();
             }
             else
@@ -608,7 +613,8 @@ Root ConfigParser::Rootparser(std::string file)
                 }
             }
         }
-        root.add_server(server);
+        root->add_server(server);
+        server.clear();
     }
     return root;
 }

@@ -97,3 +97,12 @@ Location Server::get_location(int index)
 {
     return _locations[index];
 }
+
+void Server::clear()
+{
+    _server_name.clear();
+    _listenAddress.clear();
+    _listenPort = 0;
+    _locations.clear();
+    _redirections.clear();
+}
