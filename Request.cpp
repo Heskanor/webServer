@@ -108,6 +108,11 @@ void					Request::setconnection(std::string str)
 //{
 //	host = ho;
 //}
+
+void					Request::set_socketid(int d)
+{
+	setsocketid = d;
+}
 std::string				Request::get_ip()
 {
 	return ipaddress;
@@ -145,7 +150,10 @@ bool					Request::settransferchunks(std::string len)
 			transferchunks = false;
 		else
 		    transferchunks = true;
-	
+		if (transferchunks == true)
+			std::cout<<"im hererereree is true"<<std::endl;
+		else
+			std::cout<<"im hererereree is false"<<std::endl;
 }
 bool					Request::gettransferchunks()
 {

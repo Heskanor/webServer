@@ -1,0 +1,10 @@
+// if (lop[i].get_server_name()[0] == '*' && lop[i].get_server_name()[0] == '.')
+      // {
+      //     if (lop[i].get_server_name().substr(2,lop[i].get_server_name().size() - 2) == req.gethost().substr(req.gethost().size() -lop[i].get_server_name().size() - 2))
+      //     {   if (size < lop[i].get_server_name().size() - 2)
+      //         {
+      //             size = lop[i].get_server_name().size() - 2;
+      //             storingi = i;
+      //         }
+      //     }
+      // }
