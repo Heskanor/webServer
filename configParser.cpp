@@ -546,6 +546,7 @@ Root *ConfigParser::Rootparser(std::string file)
                 Location location;
                 while (getline(ifs, line))
                 {
+                    
                     action = 0;
                     skipSpaces(line);
                     std::stringstream Y(line);
@@ -598,7 +599,7 @@ Root *ConfigParser::Rootparser(std::string file)
             }
             else
             {
-                for (int j = 0; j < 10; j++)
+                for (int j = 0; j < 9; j++)
                 {
                     if (token == (this->_serverkeys)[j])
                     {

@@ -7,8 +7,13 @@ server:
 	listen: 123456789:8080
 	root: ./root
 	bodySizeLimit: 1000
+server:
+	serverName: Server2
+	listen: 123456789:8080
+	root: ./root
+	bodySizeLimit: 1000
 	location:
-		path: /the1
+		path: 
 		autoIndex: true
 		index: index.html index.htm
 		errorPage: 501 ./Networking/index.html
@@ -18,11 +23,6 @@ server:
 		return: 500 /login.html
 		cgiPath: ./Networking/index.html
 		cgiExt: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6
-server:
-	serverName: Server2
-	listen: 123456789:8080
-	root: ./root
-	bodySizeLimit: 1000
 	location:
 		path: /the2
 		autoIndex: true
