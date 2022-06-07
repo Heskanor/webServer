@@ -14,30 +14,30 @@ int main()
 {
     ConfigParser parser;
     std::vector<std::string> str;
-    Root *r1 = new Root();
+    Root r1;;
     Server s;
     r1 = parser.Rootparser("Configfile");
-    str = r1->get_index();
+    str = r1.get_index();
     std::cout <<"Root ___________" << std::endl;
     std::cout <<" Index:";
     for (std::vector<std::string>::iterator it = str.begin(); it != str.end(); ++it)
     {
         std::cout << " " << *it;
     }
-    std::cout << "\n root : " << r1->get_root() << std::endl;
-    std::cout << " bodysizelimit : " << r1->get_bodySizeLimit() << std::endl;
-    std::cout << " autoIndex : " << r1->get_auto_index() << std::endl;
+    std::cout << "\n root : " << r1.get_root() << std::endl;
+    std::cout << " bodysizelimit : " << r1.get_bodySizeLimit() << std::endl;
+    std::cout << " autoIndex : " << r1.get_auto_index() << std::endl;
 
     //error map iterator
     std::map<std::string, std::string>::iterator it;
-    std::map<std::string, std::string> error_map = r1->get_errmap();
+    std::map<std::string, std::string> error_map = r1.get_errmap();
     std::cout << " error map : " << std::endl;
     for (it = error_map.begin(); it != error_map.end(); ++it)
     {
         std::cout << " " << it->first << " " << it->second << std::endl;
     }
-    std::cout << " autoIndex : " << r1->get_auto_index() << std::endl;
-    std::vector<Server> servers = r1->get_servers();
+    std::cout << " autoIndex : " << r1.get_auto_index() << std::endl;
+    std::vector<Server> servers = r1.get_servers();
     for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); ++it)
     {
         std::cout << std::endl <<" Server ___________" << std::endl;
