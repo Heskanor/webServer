@@ -208,6 +208,7 @@ void ConfigParser::setErrors(std::string status,std::string line, Root &root)
         std::cout << "error: bad error Code" << std::endl;
         exit(1);
     }
+    line.erase(0,i);
     skipSpaces(line);
     i = 0;
     while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
@@ -215,7 +216,8 @@ void ConfigParser::setErrors(std::string status,std::string line, Root &root)
         value += line[i];
         i++;
     }
-    root.add_error_map(token, value);
+    std::cout << "haha15 : " << value << std::endl;
+    root.add_error_map(val, value);
 }
 void ConfigParser::setErrors(std::string status,std::string line, Server &root)
 {
