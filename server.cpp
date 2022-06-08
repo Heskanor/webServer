@@ -5,7 +5,7 @@
 
 Server::Server()
 {
-
+    
 }
 
 Server::~Server()
@@ -105,4 +105,10 @@ void Server::clear()
     _listenPort = 0;
     _locations.clear();
     _redirections.clear();
+}
+
+bool Server::check_empty()
+{
+    if (_server_name.empty() || _listenPort == 0)
+        return false;
 }

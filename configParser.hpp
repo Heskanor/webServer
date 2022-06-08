@@ -27,6 +27,7 @@ class ConfigParser
         ~ConfigParser();
         ConfigParser &operator=( ConfigParser const & rhs );
         Root Rootparser(std::string file);
+        void root_checker(Root root);
     private:
     
         void strTabParser(std::string status,std::string line, std::vector<std::string> &str);//done

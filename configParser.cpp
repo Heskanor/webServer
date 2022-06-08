@@ -479,6 +479,60 @@ void ConfigParser::setCgiExt(std::string status,std::string line, Location &root
     root.set_cgi_ext(s);
 }
 
+void ConfigParser::root_checker(Root root)
+{
+    std::vector<Server> s = root.get_servers();
+    std::vector<std::string> str;
+    
+    if (s.empty())
+    {
+        std::cout << "you have to set a server";
+        exit(1);
+    }
+    else
+    {
+        //servers iterator
+        for (std::vector<Server>::iterator it = s.begin(); it != s.end(); ++it)
+        {
+            if (it->check_empty() == true)
+            {
+                std::cout << "you have to set a server";
+              exit(1);
+            }
+
+            // str = it->get_index();
+            // std::cout <<"   Index:";
+            // for (std::vector<std::string>::iterator it = str.begin(); it != str.end(); ++it)
+            // {
+            //     std::cout << " " << *it;
+            // }
+            // std::cout << "\n   Server name :" << it->get_server_name() << std::endl;
+            // std::cout << "   Listen address :"<<it->get_listenAddress()<< std::endl;
+            // std::cout << "   Listen port :"<<it->get_listenPort() << std::endl;
+            // std::cout << "   bodysizelimit :"<<it->get_bodySizeLimit() << std::endl;
+            // std::vector<Location> locations = it->get_locations();
+            // //int i = 0;
+            // for (std::vector<Location>::iterator it2 = locations.begin(); it2 != locations.end(); ++it2)
+            // {
+            //     // std::cout <<">>" <<i<<"<<"<<std::endl;
+            //     // i++;
+            //     std::cout << "\n |__Location ___________" << std::endl;
+            //     std::cout << "     body size limit :" << it2->get_bodySizeLimit() << std::endl;
+            //     std::cout << "     path :"<< it2->get_path() << std::endl;
+            //     std::cout << "     root :"<< it2->get_root() << std::endl;
+            //     std::cout << "     cgi path :"<< it2->get_cgi_path() << std::endl;
+            //     std::vector<std::string> cgi_ext = it2->get_cgi_ext();
+            //     std::cout << "     cgi ext :"<< it2->get_cgi_path();
+            //     for (std::vector<std::string>::iterator it3 = cgi_ext.begin(); it3 != cgi_ext.end(); ++it3)
+            //     {
+            //         std::cout << *it3 << " ";
+            //     }
+            // }
+        }
+
+    }
+}
+
 Root ConfigParser::Rootparser(std::string file)
 {
     std::ifstream ifs(file);
@@ -618,5 +672,6 @@ Root ConfigParser::Rootparser(std::string file)
         root.add_server(server);
         server.clear();
     }
+    root_checker(root);
     return root;
 }

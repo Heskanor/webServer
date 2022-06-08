@@ -28,6 +28,7 @@ class Server : public virtual Root
         virtual //geters and seters
         std::string get_server_name();
         void clear();
+        bool check_empty();
         virtual void set_server_name(std::string name);
         virtual std::string get_listenAddress();
         virtual int get_listenPort();
