@@ -5,7 +5,8 @@
 
 Server::Server()
 {
-    
+    _listenPort = 80;
+    _listenAddress = "0.0.0.0";
 }
 
 Server::~Server()
@@ -109,6 +110,8 @@ void Server::clear()
 
 bool Server::check_empty()
 {
-    if (_server_name.empty() || _listenPort == 0)
+    if (_server_name.empty() || (_locations.empty() && _root.empty()))
+        return true;
+    else
         return false;
 }

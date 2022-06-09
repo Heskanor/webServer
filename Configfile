@@ -1,19 +1,8 @@
 server:
-	serverName: Server1
-	listen: 123456789:8080
+	serverName: saf
+	listen: www.example.com:8080
 	root: ./root
 	bodySizeLimit: 1000
-	location:
-		path: /the1
-		autoIndex: true
-		index: index.html index.htm
-		errorPage: 501 ./Networking/index.html
-		errorPage: 500 ./Networking/index.html
-		uploadDirectory: /var/www/html/public/uploads
-		allowedMethods: POST GET DELETE
-		return: 500 /login.html
-		cgiPath: ./Networking/index.html
-		cgiExt: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6
 server:
 	serverName: Server2
 	listen: 123456789:8080

@@ -66,3 +66,10 @@ void Location::clear()
     _cgi_path = "";
     _cgi_ext.clear();
 }
+bool Location::check_lempty()
+{
+    if (_path.empty())
+        return true;
+    else
+        return false;
+}
