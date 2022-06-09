@@ -1,31 +1,78 @@
 #include "Response.hpp"
 
-void send_400(Client* client)
+void init_code_map(void)
 {
-	std::string response = "HTTP/1.1 400 Bad Request\r\n"
-		"Connection: close\r\n"
-		"Content-Length: 11\r\n\r\nBad Request";
-	send(client->get_sockfd(), response.c_str(), response.size(), 0);
-	drop_client(client);
+	code_map[200] = "200 OK";
+	code_map[201] = "201 Created";
+	code_map[301] = "301 Move Permanently";
+	code_map[400] = "400 Bad Request";
+	code_map[403] = "403 Forbidden";
+	code_map[404] = "404 Not Found";
+	code_map[405] = "405 Method Not Allowed";
+	code_map[413] = "413 Payload Too Large";
+	code_map[414] = "414 URI Too Long";
+	code_map[500] = "500 Internal Server Error";
+	code_map[501] = "501 Not Implemented";
+	code_map[502] = "502 Bad Gateway";
+	code_map[505] = "505 HTTP Version Not Supported";
 }
 
-void send_404(Client* client)
+void check_http_version(std::string version)
 {
-	std::string response = "HTTP/1.1 404 Not Found\r\n\r\n"
-		"Connection: close\r\n"
-		"Content-Length: 9\r\n\r\nNot Found";
-	send(client->get_sockfd(), response.c_str(), response.size(), 0);
-	drop_client(client);
+	if (version != "HTTP/1.1")
+	{
+		throw Response::InvalidHttpVersion();
+	}
 }
 
-void serve_resource(Client* client, std::string resource)
+void check_supported_methods(std::string method)
 {
-	// For debugging purposes
-	std::cout << "Serve resource: " << client->get_client_address() << " " << resource << std::endl;
+	if (method != "GET" && method != "POST" && method != "DELETE")
+	{
+		throw Response::HttpMethodNotSupported();
+	}
+}
+
+
+Location find_matched_location(std::string& path, std::vector<Location>& locations)
+{
+	if (path != "")
+	{
+		int nbr_locations = locations.size();
+		for (int i = 0; i < nbr_locations; i++)
+		{
+			if (locations[i].path == path)
+				return locations[i];
+		}
+		size_t found = path.find_last_of("/");
+		if (found != std::string::npos)
+		{
+			std::string path_without_last_slash = path.substr(0, found);
+			return find_matched_location(path_without_last_slash, locations);
+		}
+	}
+	throw Response::NoMatchedLocation();
+}
+
+void check_allowed_methods(std::string method, std::vector<std::string>& allowed_methods)
+{
+	if (std::find(allowed_methods.begin(), allowed_methods.end(), method) == allowed_methods.end())
+	{
+		throw Response::HttpMethodNotAllowed();
+	}
+}
+
+void check_for_redirect()
+{
+
+}
+
+void find_requested_resource(std::string& path, Location& location)
+{
 	
-	std::string response = "HTTP/1.1 200 OK\r\n"
-		"Connection: close\r\n"
-		"Content-Length: " + std::to_string(resource.size()) + "\r\n\r\n" + resource;
-	send(client->get_sockfd(), response.c_str(), response.size(), 0);
-	drop_client(client);
-}	
+}
+
+void server_response(Request& req, Server& server)
+{
+
+}
