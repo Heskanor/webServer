@@ -15,6 +15,11 @@
 class Response
 {
 	public:
+		std::string _response_file;
+		std::string _headers;
+		std::string _body;
+		std::string _status_code;
+
 		class InvalidHttpVersion : public std::exception
 		{
 			virtual const char* what() const throw()

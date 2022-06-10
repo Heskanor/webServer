@@ -105,6 +105,7 @@ bool check_for_autoindex(std::string directory)
 					entities.push_back(ent->d_name);
 				}
 			}
+			closedir(dir);
 		}
 		create_autoindex_file(directory, entities);
 		return true;
@@ -112,7 +113,7 @@ bool check_for_autoindex(std::string directory)
 	return false;
 }
 
-void find_requested_resource(std::string& path, Location& location)
+std::string find_requested_resource(std::string& path, Location& location)
 {
 	std::string resource = location._root + location.path;
 	struct stat st;
@@ -142,5 +143,20 @@ void find_requested_resource(std::string& path, Location& location)
 
 void server_response(Request& req, Server& server)
 {
+	Response res;
 
+	try
+	{
+		check_http_version(req.get_httpversion(););
+		check_supported_methods(req.get_method());
+		Location location = find_matched_location(req.get_requestur(), server.locations);
+		check_allowed_methods(req.get_method(), location.allowed_methods);
+		std::string resource = find_requested_resource(req.get_requestur(), location);
+	}
+	catch (std::exception& e)
+	{
+		char* error_code = e.what();
+		// check for error pages
+	}
 }
+
