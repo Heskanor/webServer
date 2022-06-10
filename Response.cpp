@@ -67,9 +67,77 @@ void check_for_redirect()
 
 }
 
+void create_autoindex_file(std:string directory, std::vector<std::string>& entities)
+{
+	std::ofstream file;
+	file.open(directory + "index.html");
+	file << "<!DOCTYPE html>\n";
+	file << "<html>\n";
+	file << "<head>\n";
+	file << "<title>Index</title>\n";
+	file << "</head>\n";
+	file << "<body>\n";
+	file << "<ul>\n";
+	for (int i = 0; i < entities.size(); i++)
+	{
+		file << "<li><a href=\"" << entities[i] << "\">" << entities[i] << "</a></li>\n";
+	}
+	file << "</ul>\n";
+	file << "</body>\n";
+	file << "</html>\n";
+	file.close();
+}
+
+bool check_for_autoindex(std::string directory)
+{
+	if (location.autoindex)
+	{
+		if (access(directory, R_OK) == 0)
+		{
+			DIR *dir;
+			struct dirent *ent;
+			std::vector<std::string> entities;
+
+			if ((dir = opendir(directory)) != NULL)
+			{
+				while ((ent = readdir(dir)) != NULL)
+				{
+					entities.push_back(ent->d_name);
+				}
+			}
+		}
+		create_autoindex_file(directory, entities);
+		return true;
+	}
+	return false;
+}
+
 void find_requested_resource(std::string& path, Location& location)
 {
-	
+	std::string resource = location._root + location.path;
+	struct stat st;
+	if (stat(resource.c_str(), &st) == 0)
+	{
+		if (S_ISDIR(st.st_mode))
+		{
+			if (!check_for_index_file(location))
+			{
+				//resource += "/";
+				if (!check_for_autoindex(resource))
+				{
+					throw Response::NoMatchedLocation();
+				}
+			}
+		} 
+		else if (S_ISREG(st.st_mode))
+		{
+			
+		} 
+	}
+	else
+	{
+		throw Response::NoMatchedLocation();
+	}
 }
 
 void server_response(Request& req, Server& server)

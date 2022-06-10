@@ -10,6 +10,7 @@
 #include <fcntl.h>
 #include "ErrorCodes.hpp"
 #include "Request.hpp"
+#include <dirent.h>
 
 class Response
 {
