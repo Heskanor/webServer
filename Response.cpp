@@ -2,19 +2,29 @@
 
 void init_code_map(void)
 {
-	code_map[200] = "200 OK";
-	code_map[201] = "201 Created";
-	code_map[301] = "301 Move Permanently";
-	code_map[400] = "400 Bad Request";
-	code_map[403] = "403 Forbidden";
-	code_map[404] = "404 Not Found";
-	code_map[405] = "405 Method Not Allowed";
-	code_map[413] = "413 Payload Too Large";
-	code_map[414] = "414 URI Too Long";
-	code_map[500] = "500 Internal Server Error";
-	code_map[501] = "501 Not Implemented";
-	code_map[502] = "502 Bad Gateway";
-	code_map[505] = "505 HTTP Version Not Supported";
+	code_map["200"] = "200 OK";
+	code_map["201"] = "201 Created";
+	code_map["301"] = "301 Move Permanently";
+	code_map["400"] = "400 Bad Request";
+	code_map["403"] = "403 Forbidden";
+	code_map["404"] = "404 Not Found";
+	code_map["405"] = "405 Method Not Allowed";
+	code_map["413"] = "413 Payload Too Large";
+	code_map["414"] = "414 URI Too Long";
+	code_map["500"] = "500 Internal Server Error";
+	code_map["501"] = "501 Not Implemented";
+	code_map["502"] = "502 Bad Gateway";
+	code_map["505"] = "505 HTTP Version Not Supported";
+}
+
+bool check_if_entity_exists(std::string path)
+{
+	struct stat st;
+	if (stat(path.c_str(), &st) == 0)
+	{
+		return true;
+	}
+	return false;
 }
 
 void check_http_version(std::string version)
@@ -67,10 +77,11 @@ void check_for_redirect()
 
 }
 
-void create_autoindex_file(std:string directory, std::vector<std::string>& entities)
+void create_autoindex_file(std:string directory, std::vector<std::string>& entities, Response& res)
 {
+	std::string file_path = "/tmp/autoindex.html";
 	std::ofstream file;
-	file.open(directory + "index.html");
+	file.open(file_path);
 	file << "<!DOCTYPE html>\n";
 	file << "<html>\n";
 	file << "<head>\n";
@@ -85,65 +96,78 @@ void create_autoindex_file(std:string directory, std::vector<std::string>& entit
 	file << "</ul>\n";
 	file << "</body>\n";
 	file << "</html>\n";
+	res._body_path = file_path;
 	file.close();
 }
 
-bool check_for_autoindex(std::string directory)
+bool check_for_autoindex(std::string directory, Response& res)
 {
-	if (location.autoindex)
-	{
-		if (access(directory, R_OK) == 0)
-		{
-			DIR *dir;
-			struct dirent *ent;
-			std::vector<std::string> entities;
+	DIR *dir;
+	struct dirent *ent;
+	std::vector<std::string> entities;
 
-			if ((dir = opendir(directory)) != NULL)
-			{
-				while ((ent = readdir(dir)) != NULL)
-				{
-					entities.push_back(ent->d_name);
-				}
-			}
-			closedir(dir);
+	if ((dir = opendir(directory)) != NULL)
+	{
+		while ((ent = readdir(dir)) != NULL)
+		{
+			entities.push_back(ent->d_name);
 		}
-		create_autoindex_file(directory, entities);
-		return true;
+	}
+	closedir(dir);
+	create_autoindex_file(directory, entities, res);
+}
+
+void check_for_index_file(Location& location, Response& res)
+{
+	int nbr_indexes = location._index.size();
+	if (!location._index.empty())
+	{
+		for (int i = 0; i < nbr_indexes; i++)
+		{
+			if (!check_if_entity_exists(location._index[i]))
+				continue;	
+			if (access(location._index[i].c_str(), R_OK) == 0)
+			{
+				res._body_path = location._index[i];
+				return true;
+			}
+			else
+				throw Response::ForbiddenPath();		
+		}
 	}
 	return false;
 }
 
-std::string find_requested_resource(std::string& path, Location& location)
+void check_directory_resource(std::string& resource, Location& location, Response& res)
 {
-	std::string resource = location._root + location.path;
+	bool index_file = check_for_index_file(location, res);
+	if (!index_file && location.autoindex)
+		check_for_autoindex(resource, res);
+	else if (!index_file && !location.autoindex)
+		throw Response::ForbiddenPath();
+}
+
+int find_requested_resource(std::string& resource, Location& location, Response& res)
+{
 	struct stat st;
 	if (stat(resource.c_str(), &st) == 0)
 	{
+		// will modify access permissions later depending on the method
+		if (access(resource.c_str(), R_OK))
+			throw Response::ForbiddenPath();
 		if (S_ISDIR(st.st_mode))
-		{
-			if (!check_for_index_file(location))
-			{
-				//resource += "/";
-				if (!check_for_autoindex(resource))
-				{
-					throw Response::NoMatchedLocation();
-				}
-			}
-		} 
+			return (DIRCODE);
 		else if (S_ISREG(st.st_mode))
-		{
-			
-		} 
+			return (FILECODE);
 	}
 	else
-	{
 		throw Response::NoMatchedLocation();
-	}
 }
 
-void server_response(Request& req, Server& server)
+Response server_response(Request& req, Server& server)
 {
 	Response res;
+	init_code_map();
 
 	try
 	{
@@ -151,7 +175,15 @@ void server_response(Request& req, Server& server)
 		check_supported_methods(req.get_method());
 		Location location = find_matched_location(req.get_requestur(), server.locations);
 		check_allowed_methods(req.get_method(), location.allowed_methods);
-		std::string resource = find_requested_resource(req.get_requestur(), location);
+		std::string resource = location._root + location._path;
+		int resource_code = find_requested_resource(resource, location, res);
+		if (resource_code == DIRCODE)
+			check_directory_resource(resource, location, res);
+		else if (resource_code == FILECODE)
+		{
+			// check if it's extension is a MimeType
+			res._body_path = resource;
+		}
 	}
 	catch (std::exception& e)
 	{

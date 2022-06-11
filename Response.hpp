@@ -12,13 +12,17 @@
 #include "Request.hpp"
 #include <dirent.h>
 
+#define DIRCODE 2
+#define FILECODE 1
+
 class Response
 {
 	public:
-		std::string _response_file;
+		//std::string _response_file;
 		std::string _headers;
-		std::string _body;
+		std::string _body_path;
 		std::string _status_code;
+
 
 		class InvalidHttpVersion : public std::exception
 		{
@@ -48,6 +52,14 @@ class Response
 				return "404";
 			}
 		};
+		class ForbiddenPath : public std::exception
+		{
+			virtual const char* what() const throw()
+			{
+				return "403";
+			}
+		};
+
 };
 
 std::map<int, std::string> code_map;
