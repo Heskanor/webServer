@@ -513,7 +513,6 @@ void ConfigParser::root_checker(Root root)
                 }
             }
         }
-
     }
 }
 
