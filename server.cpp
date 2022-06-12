@@ -29,7 +29,7 @@ Server &Server::operator=(Server const & rhs)
     Root::operator=(rhs);
     _server_name = rhs._server_name;
     _listenAddress = rhs._listenAddress;
-    _listenPort = rhs._listenPort;
+    _listenPort = rhs._listenPort; 
     _locations = rhs._locations;
 
     return *this;
@@ -69,19 +69,15 @@ std::string Server::get_listenAddress()
     return _listenAddress;
 }
 
-std::map<std::string, std::string> Server::get_redirections()
+std::pair<std::string, std::string> Server::get_redirection()
 {
-    return _redirections;
+    return _redirection;
 }
 
-std::string Server::get_redirection(std::string code)
+void Server::set_redirection(std::string code, std::string url)
 {
-    return _redirections[code];
-}
-
-void Server::add_redirect_map(std::string code, std::string url)
-{
-    _redirections[code] = url;
+    _redirection.first = code;
+    _redirection.second = url;
 }
 
 void Server::add_location(Location &location)
@@ -105,7 +101,8 @@ void Server::clear()
     _listenAddress.clear();
     _listenPort = 0;
     _locations.clear();
-    _redirections.clear();
+    _redirection.first.clear();
+    _redirection.second.clear();
 }
 
 bool Server::check_empty()

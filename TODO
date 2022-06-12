@@ -1,0 +1,3 @@
+error manage each directive
+copy parent directives into childs
+Parse unrepeated directive and throw exception if it is not

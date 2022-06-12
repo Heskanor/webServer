@@ -19,27 +19,29 @@ class Server : public virtual Root
         std::string _listenAddress;
         std::vector<Location> _locations;
     protected:
-        std::map<std::string, std::string>  _redirections;
+        //std::map<std::string, std::string>  _redirections;
+        std::pair<std::string, std::string> _redirection;
+        // redriction.first = 500;
+        // redriction.second = "path";
     public:
         Server();
         Server(const Server &src);
         ~Server();
         virtual Server &operator=( Server const & rhs );
-        virtual //geters and seters
-        std::string get_server_name();
         void clear();
         bool check_empty();
+        //geters and seters
+        virtual std::string get_server_name();
         virtual void set_server_name(std::string name);
         virtual std::string get_listenAddress();
-        virtual int get_listenPort();
         virtual void set_listenAddress(std::string address);
+        virtual int get_listenPort();
         virtual void set_listenPort(std::string port);
-        virtual std::map<std::string, std::string>  get_redirections();
-        virtual std::string get_redirection(std::string code);
-        virtual void add_redirect_map(std::string code, std::string url);
-        virtual std::vector<Location> get_locations();
+        virtual std::pair<std::string, std::string> get_redirection();
+        virtual void set_redirection(std::string code, std::string url);
+        std::vector<Location> get_locations();
         void add_location(Location &location);
-        virtual Location get_location(int index);
+        Location get_location(int index);
 };
 
 #endif

@@ -17,7 +17,7 @@ class ConfigParser
         typedef void (ConfigParser::*serverParser)(std::string token,std::string line, Server &lvl);
         typedef void (ConfigParser::*locationParser)(std::string token,std::string line, Location &lvl);
         std::string _rootkeys[7];
-        std::string _serverkeys[10];
+        std::string _serverkeys[11];
         std::string _locationkeys[12];
         std::vector<rootParser> t_rootParser;
         std::vector<serverParser> t_serverParser;
@@ -30,38 +30,39 @@ class ConfigParser
         void root_checker(Root root);
     private:
     
-        void strTabParser(std::string status,std::string line, std::vector<std::string> &str);//done
-        void strParser(std::string status,std::string line, std::string &root);//done
-        void intParser(std::string status,std::string line, int &size);//done
-        //void mapParser(std::string status,std::string line, Root &root);//done
-        // void mapErrParser(std::string status,std::string line, Root &root);//done
-        void setIndex(std::string status,std::string line, Root &root);//done
-        void setRoot(std::string status,std::string line, Root &root);//done
-        void setErrors(std::string status,std::string line, Root &root);//done
-        void setBodySizeLimit(std::string status,std::string line, Root &root);//done
-        void setAutoIndex(std::string status,std::string line, Root &root);//done
-        void setUploadDirectory(std::string status,std::string line, Root &root);//done
-        void setAllowedMethods(std::string status,std::string line, Root &root);//done
+        void strTabParser(std::string status,std::string line, std::vector<std::string> &str);
+        void strParser(std::string status,std::string line, std::string &root);
+        void intParser(std::string status,std::string line, int &size);
+        //void mapParser(std::string status,std::string line, Root &root);
+        // void mapErrParser(std::string status,std::string line, Root &root);
+        void setIndex(std::string status,std::string line, Root &root);
+        void setRoot(std::string status,std::string line, Root &root);
+        void setErrors(std::string status,std::string line, Root &root);
+        void setBodySizeLimit(std::string status,std::string line, Root &root);
+        void setAutoIndex(std::string status,std::string line, Root &root);
+        void setUploadDirectory(std::string status,std::string line, Root &root);
+        void setAllowedMethods(std::string status,std::string line, Root &root);
 
-        void setIndex(std::string status,std::string line, Server &root);//done
-        void setRoot(std::string status,std::string line, Server &root);//done
-        void setErrors(std::string status,std::string line, Server &root);//done
-        void setBodySizeLimit(std::string status,std::string line, Server &root);//done
-        void setAutoIndex(std::string status,std::string line, Server &root);//done
-        void setUploadDirectory(std::string status,std::string line, Server &root);//done
-        void setAllowedMethods(std::string status,std::string line, Server &root);//done
-        void setServerName(std::string status,std::string line, Server &root);//done
-        void setListen(std::string status,std::string line, Server &root);//done
+        void setIndex(std::string status,std::string line, Server &root);
+        void setRoot(std::string status,std::string line, Server &root);
+        void setErrors(std::string status,std::string line, Server &root);
+        void setBodySizeLimit(std::string status,std::string line, Server &root);
+        void setAutoIndex(std::string status,std::string line, Server &root);
+        void setUploadDirectory(std::string status,std::string line, Server &root);
+        void setAllowedMethods(std::string status,std::string line, Server &root);
+        void setServerName(std::string status,std::string line, Server &root);
+        void setListen(std::string status,std::string line, Server &root);
+        void setRedirection(std::string status,std::string line, Server &root);
      
-        void setIndex(std::string status,std::string line, Location &root);//done
-        void setRoot(std::string status,std::string line, Location &root);//done
-        void setErrors(std::string status,std::string line, Location &root);//done
-        void setBodySizeLimit(std::string status,std::string line, Location &root);//done
-        void setAutoIndex(std::string status,std::string line, Location &root);//done
-        void setUploadDirectory(std::string status,std::string line, Location &root);//done
-        void setAllowedMethods(std::string status,std::string line, Location &root);//done
-        void setRedirection(std::string status,std::string line, Location &root);//done
-        void setLocation(std::string status,std::string line, Location &root);//done
+        void setIndex(std::string status,std::string line, Location &root);
+        void setRoot(std::string status,std::string line, Location &root);
+        void setErrors(std::string status,std::string line, Location &root);
+        void setBodySizeLimit(std::string status,std::string line, Location &root);
+        void setAutoIndex(std::string status,std::string line, Location &root);
+        void setUploadDirectory(std::string status,std::string line, Location &root);
+        void setAllowedMethods(std::string status,std::string line, Location &root);
+        void setRedirection(std::string status,std::string line, Location &root);
+        void setLocation(std::string status,std::string line, Location &root);
         void setCgiPath(std::string status,std::string line, Location &root);
         void setCgiExt(std::string status,std::string line, Location &root);
 };

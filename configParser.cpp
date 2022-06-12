@@ -61,7 +61,9 @@ ConfigParser::ConfigParser()
     this->t_serverParser.push_back(&ConfigParser::setServerName);//strParser);;
     this->_serverkeys[8] = "listen:";//str port table
     this->t_serverParser.push_back(&ConfigParser::setListen);//strTabPortParser);
+    this->_serverkeys[9] = "return:";//str
     this->_locationkeys[7] = "return:";//str
+    this->t_serverParser.push_back(&ConfigParser::setRedirection);//strParser);
     this->t_locationParser.push_back(&ConfigParser::setRedirection);//strParser);
     this->_locationkeys[8] = "path:";//str
     this->t_locationParser.push_back(&ConfigParser::setLocation);//strParser);
@@ -142,7 +144,7 @@ void ConfigParser::strTabParser(std::string status,std::string line, std::vector
         i = j;
     }
 }
-
+// I get to check the case where we can have the redirection path alone
 void ConfigParser::setRedirection(std::string status,std::string line, Location &root)
 {
     std::string token;
@@ -167,7 +169,7 @@ void ConfigParser::setRedirection(std::string status,std::string line, Location 
         value += line[i];
         i++;
     }
-    root.add_redirect_map(token, value);
+    root.set_redirection(token, value);
 }
 
 void ConfigParser::setIndex(std::string token, std::string line, Root &lvl)
@@ -515,7 +517,7 @@ void ConfigParser::root_checker(Root root)
         }
     }
 }
-
+//check repeated directives
 Root ConfigParser::Rootparser(std::string file)
 {
     std::ifstream ifs(file);
