@@ -1,5 +1,13 @@
 #include "Response.hpp"
 
+std::string deffault_error_page(std::string& code, std::string& msg)
+{
+	std::string page;
+	page = "<html><head><title>" + code + " " + msg + "</title></head><body><center><h1>" 
+	+ code + " " + msg + "</h1></center><hr><center>Webserver</center></body></html>";
+	return page;
+}
+
 void init_code_map(void)
 {
 	code_map["200"] = "200 OK";
@@ -15,6 +23,32 @@ void init_code_map(void)
 	code_map["501"] = "501 Not Implemented";
 	code_map["502"] = "502 Bad Gateway";
 	code_map["505"] = "505 HTTP Version Not Supported";
+}
+
+// HTTP/1.1 403 Forbidden
+// Server: nginx/1.21.6
+// Date: Sun, 12 Jun 2022 02:41:52 GMT
+// Content-Type: text/html
+// Content-Length: 555
+// Connection: keep-alive
+
+std::string set_date_header()
+{
+	time_t ttime = time(0);
+    char* dt = ctime(&ttime);
+	string date = string(dt);
+	return (date.substr(0, date.size() - 1));
+}
+
+void set_response_headers(Request& req, Response& res, std::string more_headers)
+{
+	res._headers += "HTTP/1.1 " + res._status_code + " " + code_map[res._status_code] + "\r\n";
+	res._headers += "Server: Webserver/1.0\r\n";
+	res._headers += "Date: " + set_date_header() + "\r\n";
+	res._headers += "Content-Type: " + req.content_type + "\r\n";
+	// res._headers += "Content-Length: " + res._content_length + "\r\n";
+	// res._headers += "Connection: keep-alive\r\n";
+	res._headers += more_headers;
 }
 
 bool check_if_entity_exists(std::string path)
@@ -72,9 +106,15 @@ void check_allowed_methods(std::string method, std::vector<std::string>& allowed
 	}
 }
 
-void check_for_redirect()
+void check_for_redirect(std::vector<std::pair<std::string, std::string>>& redirections, Response& res)
 {
-
+	if (redirections.size() == 0)
+		return;
+	std::string new_status_code = redirections[0].first;
+	std::string new_location = redirections[0].second;
+	std::string location_header = "Location: " + new_location + "\r\n";
+	res._status_code = new_status_code;
+	set_response_headers(req, res, location_header);
 }
 
 void create_autoindex_file(std:string directory, std::vector<std::string>& entities, Response& res)
@@ -85,15 +125,19 @@ void create_autoindex_file(std:string directory, std::vector<std::string>& entit
 	file << "<!DOCTYPE html>\n";
 	file << "<html>\n";
 	file << "<head>\n";
-	file << "<title>Index</title>\n";
+	file << "<title>Index of " << directory << "</title>\n";
 	file << "</head>\n";
 	file << "<body>\n";
-	file << "<ul>\n";
+	file << "<h1>Index of "<< directory <<"</h1>\n";
+	file << "<hr>\n";
+	file << "<pre>\n";
+	file << "<a href=" << "../" << ">../</a>\n";
 	for (int i = 0; i < entities.size(); i++)
 	{
-		file << "<li><a href=\"" << entities[i] << "\">" << entities[i] << "</a></li>\n";
+		file << "<a href=\"" << entities[i] << "\">" << entities[i] << "</a>\n";
 	}
-	file << "</ul>\n";
+	file << "</pre>\n";
+	file << "<hr>\n";
 	file << "</body>\n";
 	file << "</html>\n";
 	res._body_path = file_path;
@@ -153,6 +197,7 @@ int find_requested_resource(std::string& resource, Location& location, Response&
 	if (stat(resource.c_str(), &st) == 0)
 	{
 		// will modify access permissions later depending on the method
+		// if resource is directory with out / at the end redirect to directory/ before checking permission 
 		if (access(resource.c_str(), R_OK))
 			throw Response::ForbiddenPath();
 		if (S_ISDIR(st.st_mode))
@@ -175,6 +220,7 @@ Response server_response(Request& req, Server& server)
 		check_supported_methods(req.get_method());
 		Location location = find_matched_location(req.get_requestur(), server.locations);
 		check_allowed_methods(req.get_method(), location.allowed_methods);
+		//redirection
 		std::string resource = location._root + location._path;
 		int resource_code = find_requested_resource(resource, location, res);
 		if (resource_code == DIRCODE)

@@ -11,6 +11,7 @@
 #include "ErrorCodes.hpp"
 #include "Request.hpp"
 #include <dirent.h>
+#include <fstream>
 
 #define DIRCODE 2
 #define FILECODE 1
@@ -22,7 +23,7 @@ class Response
 		std::string _headers;
 		std::string _body_path;
 		std::string _status_code;
-
+		
 
 		class InvalidHttpVersion : public std::exception
 		{
