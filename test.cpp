@@ -71,46 +71,99 @@ using namespace std;
 // 	return 0;
 // }
 
-std::string set_date_header()
+// std::string set_date_header()
+// {
+// 	time_t ttime = time(0);
+//     char* dt = ctime(&ttime);
+// 	string date = string(dt);
+// 	return (date.substr(0, date.size() - 1));
+// }
+
+// int main()
+// {
+// 	vector<string> entities;
+// 	entities.push_back("home");
+// 	entities.push_back("tmp");
+// 	entities.push_back("urs");
+// 	entities.push_back("etc");
+// 	entities.push_back("local");
+
+// 	std::string file_path = "autoindex.html";
+// 	std::ofstream file;
+// 	file.open(file_path);
+// 	file << "<!DOCTYPE html>\n";
+// 	file << "<html>\n";
+// 	file << "<head>\n";
+// 	file << "<title>Index of " << "/Desktop/" << "</title>\n";
+// 	file << "</head>\n";
+// 	file << "<body>\n";
+// 	file << "<h1>Index of "<< "/Desktop/" <<"</h1>\n";
+// 	file << "<hr>\n";
+// 	file << "<pre>\n";
+// 	file << "<a href=" << "../" << ">../</a>\n";
+// 	for (int i = 0; i < entities.size(); i++)
+// 	{
+// 		file << "<a href=\"" << entities[i] << "\">" << entities[i] << "</a>\n";
+// 	}
+// 	file << "</pre>\n";
+// 	file << "<hr>\n";
+// 	file << "</body>\n";
+// 	file << "</html>\n";
+// 	//res._body_path = file_path;
+// 	file.close();
+
+// 	cout << set_date_header() << endl;
+// }
+
+
+class Beeg {
+	public:
+	class BeegBoi : public std::exception
+	{
+		public:
+		virtual const char* what() const throw()
+		{
+			return "BOIIII";
+		}
+	};
+	class BeegGal : public std::exception
+	{
+		public:
+		virtual const char* what() const throw()
+		{
+			return "GAAAAAL";
+		}
+	};
+};
+
+int BeegBorgir(int a)
 {
-	time_t ttime = time(0);
-    char* dt = ctime(&ttime);
-	string date = string(dt);
-	return (date.substr(0, date.size() - 1));
+	if (a % 2)
+	{
+		throw Beeg::BeegBoi();
+	}
+	return a / 2;
 }
+
+int testBeeg(int b)
+{
+	if (BeegBorgir(b) < b)
+	{
+		cout << "here" << endl;
+		return 2;
+	}
+	else
+		return 1;
+}
+
 
 int main()
 {
-	vector<string> entities;
-	entities.push_back("home");
-	entities.push_back("tmp");
-	entities.push_back("urs");
-	entities.push_back("etc");
-	entities.push_back("local");
-
-	std::string file_path = "autoindex.html";
-	std::ofstream file;
-	file.open(file_path);
-	file << "<!DOCTYPE html>\n";
-	file << "<html>\n";
-	file << "<head>\n";
-	file << "<title>Index of " << "/Desktop/" << "</title>\n";
-	file << "</head>\n";
-	file << "<body>\n";
-	file << "<h1>Index of "<< "/Desktop/" <<"</h1>\n";
-	file << "<hr>\n";
-	file << "<pre>\n";
-	file << "<a href=" << "../" << ">../</a>\n";
-	for (int i = 0; i < entities.size(); i++)
-	{
-		file << "<a href=\"" << entities[i] << "\">" << entities[i] << "</a>\n";
+	try{
+		int i = testBeeg(5);
 	}
-	file << "</pre>\n";
-	file << "<hr>\n";
-	file << "</body>\n";
-	file << "</html>\n";
-	//res._body_path = file_path;
-	file.close();
-
-	cout << set_date_header() << endl;
+	catch(exception& e)
+	{
+		cout << e.what() << endl;
+	}
 }

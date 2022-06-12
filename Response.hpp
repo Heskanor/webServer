@@ -21,9 +21,12 @@ class Response
 	public:
 		//std::string _response_file;
 		std::string _headers;
+		std::string _special_headers;
 		std::string _body_path;
 		std::string _status_code;
-		
+		std::string _content_type;
+		std::string _content_length;
+
 
 		class InvalidHttpVersion : public std::exception
 		{
@@ -60,7 +63,13 @@ class Response
 				return "403";
 			}
 		};
-
+		class RedirectionDetected : public std::exception
+		{
+			virtual const char* what() const throw()
+			{
+				return "301";
+			}
+		};
 };
 
 std::map<int, std::string> code_map;
