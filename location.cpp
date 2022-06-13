@@ -15,6 +15,18 @@ Location::Location(const Location &src)
     *this = src;
 }
 
+Location::Location(Server &src)
+{
+    _index = src.get_index();
+    _root = src.get_root();
+    _bodySizeLimit = src.get_bodySizeLimit();
+    _autoIndex = src.get_auto_index();
+    _error_map = src.get_errors_map();
+    _uploadDirectory = src.get_upload_directory();
+    _allowedMethods = src.get_allowed_methods();
+    _redirection = src.get_redirection();
+}
+
 Location &Location::operator=(Location const & rhs)
 {
     Server::operator=(rhs);

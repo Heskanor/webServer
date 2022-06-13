@@ -9,6 +9,17 @@ Server::Server()
     _listenAddress = "0.0.0.0";
 }
 
+Server::Server(Root &src)
+{
+    _index = src.get_index();
+    _root = src.get_root();
+    _bodySizeLimit = src.get_bodySizeLimit();
+    _autoIndex = src.get_auto_index();
+    _error_map = src.get_errors_map();
+    _uploadDirectory = src.get_upload_directory();
+    _allowedMethods = src.get_allowed_methods();
+}
+
 Server::~Server()
 {
 
@@ -16,9 +27,10 @@ Server::~Server()
 
 Server::Server(const Server &src):
     _server_name(src._server_name),
-    _listenAddress(src._listenAddress),
     _listenPort(src._listenPort),
-    _locations(src._locations)
+    _listenAddress(src._listenAddress),
+    _locations(src._locations),
+    _redirection(src._redirection)
 {
     *this = src;
 }
@@ -28,9 +40,10 @@ Server &Server::operator=(Server const & rhs)
 {
     Root::operator=(rhs);
     _server_name = rhs._server_name;
-    _listenAddress = rhs._listenAddress;
     _listenPort = rhs._listenPort; 
+    _listenAddress = rhs._listenAddress;
     _locations = rhs._locations;
+    _redirection = rhs._redirection;
 
     return *this;
 }

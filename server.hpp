@@ -26,6 +26,7 @@ class Server : public virtual Root
     public:
         Server();
         Server(const Server &src);
+        Server(Root &src);
         ~Server();
         virtual Server &operator=( Server const & rhs );
         void clear();

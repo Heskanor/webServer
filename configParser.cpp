@@ -1,17 +1,16 @@
-#include "configParser.hpp"
 #include <iostream>
-#include <string>
 #include <fstream>
 #include <sstream> 
-#include <vector>
 #include <cstddef> 
+#include <string>
+#include <vector>
 #include <map>
+#include "configParser.hpp"
 #include "location.hpp"
 #include "server.hpp"
 #include "root.hpp"
 
 //webserver config file parser
-
 ConfigParser::ConfigParser()
 {
     //hardcoded keys-list
@@ -72,29 +71,28 @@ ConfigParser::ConfigParser()
     this->_locationkeys[10] = "cgiExt:";//str table
     this->t_locationParser.push_back(&ConfigParser::setCgiExt);//strTabParser);
 }
+
 ConfigParser::~ConfigParser()
 {
 }
+
 void skipSpaces(std::string &line)
 {
-    int i = 0;
+    unsigned int i = 0;
     while ( (line[i] == 32 || (line[i] < 14 && line[i] > 8))&& i< line.length())
         i++;
     line.erase(0, i);
 }
 
-void skipFirstToken(std::string &line,int i)
+void skipFirstToken(std::string &line,unsigned int i)
 {
-    // std::cout << i<<std::endl;
     while ( (line[i] == 32 || (line[i] < 14 && line[i] > 8))&& i< line.length())
         i++;
-        //std::cout <<line<< i<<std::endl;
-    line.erase(line.begin(), line.begin() +i);  //std::cout <<"before"<<line<<"after"<< std::endl;
+    line.erase(line.begin(), line.begin() +i);
 }
 
 void ConfigParser::intParser(std::string status,std::string line, int &size)
 {
-    int i = 0;
     skipFirstToken(line, status.length());
     if (line.find_first_not_of("0123456789") == std::string::npos)
     {
@@ -114,9 +112,9 @@ void ConfigParser::intParser(std::string status,std::string line, int &size)
 void ConfigParser::strParser(std::string status,std::string line, std::string &root)
 {
     std::string token;
-    //std::cout << status << std::endl;
+
     skipFirstToken(line, status.length());
-    int i = 0;
+    unsigned int i = 0;
     while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
     {
         token += line[i];
@@ -127,16 +125,15 @@ void ConfigParser::strParser(std::string status,std::string line, std::string &r
 
 void ConfigParser::strTabParser(std::string status,std::string line, std::vector<std::string> &str)
 {
-    //push tokens into lvl vector
     std::string token;
-    int i = 0;
+    unsigned int i = 0;
     
     skipFirstToken(line, status.length());
     while (line[i] != '\n' &&  i <line.length())
     {
         while ( (line[i] == 32 || (line[i] < 14 && line[i] > 8))&& i< line.length())
             i++;
-        int j = i;
+        unsigned int j = i;
         while (line[j] != ' ' && j< line.length())
             j++;
         token = line.substr(i, j-i);
@@ -149,19 +146,23 @@ void ConfigParser::setRedirection(std::string status,std::string line, Location 
 {
     std::string token;
     std::string value;
-    
-    int i = 0;
+    std::string val;
+    unsigned int i = 0;
+
     skipFirstToken(line, status.length());
     while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
     {
         token += line[i];
         i++;
     }
-    if (token.find_first_not_of("0123456789") != std::string::npos)
+    if (token.find_first_not_of("0123456789") == std::string::npos)
+        val = token;
+    else
     {
         std::cout << "error: bad error Code" << std::endl;
         exit(1);
     }
+    line.erase(0,i);
     skipSpaces(line);
     i = 0;
     while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
@@ -169,7 +170,39 @@ void ConfigParser::setRedirection(std::string status,std::string line, Location 
         value += line[i];
         i++;
     }
-    root.set_redirection(token, value);
+    root.set_redirection(val, value);
+    std::pair<std::string, std::string> lord = root.get_redirection();
+}
+
+void ConfigParser::setRedirection(std::string status,std::string line, Server &root)
+{
+    std::string token;
+    std::string value;
+    std::string val;
+    unsigned int i = 0;
+
+    skipFirstToken(line, status.length());
+    while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
+    {
+        token += line[i];
+        i++;
+    }
+    if (token.find_first_not_of("0123456789") == std::string::npos)
+        val = token;
+    else
+    {
+        std::cout << "error: bad error Code" << std::endl;
+        exit(1);
+    }
+    line.erase(0,i);
+    skipSpaces(line);
+    i = 0;
+    while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
+    {
+        value += line[i];
+        i++;
+    }
+    root.set_redirection(val, value);
 }
 
 void ConfigParser::setIndex(std::string token, std::string line, Root &lvl)
@@ -196,7 +229,8 @@ void ConfigParser::setErrors(std::string status,std::string line, Root &root)
     std::string token;
     std::string value;
     std::string val;
-    int i = 0;
+    unsigned int i = 0;
+
     skipFirstToken(line, status.length());
     while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
     {
@@ -218,7 +252,7 @@ void ConfigParser::setErrors(std::string status,std::string line, Root &root)
         value += line[i];
         i++;
     }
-    std::cout << "haha15 : " << value << std::endl;
+    //std::cout << "haha15 : " << value << std::endl;
     root.add_error_map(val, value);
 }
 void ConfigParser::setErrors(std::string status,std::string line, Server &root)
@@ -226,7 +260,7 @@ void ConfigParser::setErrors(std::string status,std::string line, Server &root)
     std::string token;
     std::string value;
     std::string val;
-    int i = 0;
+    unsigned int i = 0;
     skipFirstToken(line, status.length());
     while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
     {
@@ -240,6 +274,7 @@ void ConfigParser::setErrors(std::string status,std::string line, Server &root)
         std::cout << "error: bad error Code" << std::endl;
         exit(1);
     }
+    line.erase(0,i);
     skipSpaces(line);
     i = 0;
     while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
@@ -247,14 +282,15 @@ void ConfigParser::setErrors(std::string status,std::string line, Server &root)
         value += line[i];
         i++;
     }
-    root.add_error_map(token, value);
+    //std::cout << "haha15 : " << value << std::endl;
+    root.add_error_map(val, value);
 }
 void ConfigParser::setErrors(std::string status,std::string line, Location &root)
 {
     std::string token;
     std::string value;
     std::string val;
-    int i = 0;
+    unsigned int i = 0;
     skipFirstToken(line, status.length());
     while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
     {
@@ -268,6 +304,7 @@ void ConfigParser::setErrors(std::string status,std::string line, Location &root
         std::cout << "error: bad error Code" << std::endl;
         exit(1);
     }
+    line.erase(0,i);
     skipSpaces(line);
     i = 0;
     while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
@@ -275,16 +312,16 @@ void ConfigParser::setErrors(std::string status,std::string line, Location &root
         value += line[i];
         i++;
     }
-    root.add_error_map(token, value);
+    //std::cout << "haha15 : " << value << std::endl;
+    root.add_error_map(val, value);
 }
 
 void ConfigParser::setListen(std::string token,std::string line, Server &lvl)
 {
     //parse address:host 
-    int j = 0;
+    unsigned int j = 0;
 
     skipFirstToken(line, token.length());
-    int i =0;
     while (line[j] != ':' && j< line.length())
         j++;
     //if (j <line.length())
@@ -493,7 +530,6 @@ void ConfigParser::root_checker(Root root)
     }
     else
     {
-        //servers iterator
         for (std::vector<Server>::iterator it = s.begin(); it != s.end(); ++it)
         {
             if (it->check_empty())
@@ -504,7 +540,6 @@ void ConfigParser::root_checker(Root root)
             else
             {
                 std::vector<Location> locations = it->get_locations();
-                //int i = 0;
                 for (std::vector<Location>::iterator it2 = locations.begin(); it2 != locations.end(); ++it2)
                 {
                     if (it2->check_lempty())
@@ -517,7 +552,7 @@ void ConfigParser::root_checker(Root root)
         }
     }
 }
-//check repeated directives
+
 Root ConfigParser::Rootparser(std::string file)
 {
     std::ifstream ifs(file);
@@ -526,12 +561,12 @@ Root ConfigParser::Rootparser(std::string file)
     Root root;
     Location location;
     Server server;
-    size_t pos;
     std::string token;
-    int serverCounter = 0;
     int locationsCounter = 0;
-    int i;
-
+    std::map<std::string, int> rootAdminer;
+    std::map<std::string, int> serverAdminer;
+    std::map<std::string, int> locationAdminer;
+    
     if (ifs.is_open())
     {
         getline(ifs, line);
@@ -565,9 +600,16 @@ Root ConfigParser::Rootparser(std::string file)
                 {
                     if (token == (this->_rootkeys)[j])
                     {
+                        if (rootAdminer.find(token) != rootAdminer.end() && token != "errorPage:")
+                        {
+                            std::cout << "Error: repeated directive" << std::endl;
+                            exit(1);
+                        }
+                        rootAdminer[token] = 1;
                         (this->*t_rootParser[j])(token, line, root);
                         action = 1;
                     }
+
                 }
                 if (action == 0)
                 {
@@ -586,9 +628,9 @@ Root ConfigParser::Rootparser(std::string file)
             if (token == "location:")
             {
                 location.clear();
+                locationAdminer.clear();
                 while (getline(ifs, line))
                 {
-                    
                     action = 0;
                     skipSpaces(line);
                     std::stringstream Y(line);
@@ -597,6 +639,7 @@ Root ConfigParser::Rootparser(std::string file)
                     {
                         server.add_location(location);
                         root.add_server(server);
+                        serverAdminer.clear();
                         location.clear();
                         server.clear();
                         action = -1;
@@ -606,7 +649,7 @@ Root ConfigParser::Rootparser(std::string file)
                     {
                         server.add_location(location);
                         location.clear();
-                        action =7;
+                        action = 7;
                         continue;
                     }
                     else
@@ -615,6 +658,12 @@ Root ConfigParser::Rootparser(std::string file)
                         {
                             if (token == (this->_locationkeys)[j])
                             {
+                                if (locationAdminer.find(token) != locationAdminer.end() && token != "errorPage:")
+                                {
+                                    std::cout << "Error: repeated directive" << std::endl;
+                                    exit(1);
+                                }
+                                locationAdminer[token] = 1;
                                 (this->*t_locationParser[j])(token, line, location);
                                 action = 1;
                             }
@@ -635,6 +684,7 @@ Root ConfigParser::Rootparser(std::string file)
             else if(token == "server:")
             {
                 root.add_server(server);
+                serverAdminer.clear();
                 server.clear();
             }
             else
@@ -643,6 +693,12 @@ Root ConfigParser::Rootparser(std::string file)
                 {
                     if (token == (this->_serverkeys)[j])
                     {
+                        if (serverAdminer.find(token) != serverAdminer.end() && token != "errorPage:")
+                        {
+                            std::cout << "Error: repeated directive" << std::endl;
+                            exit(1);
+                        }
+                        serverAdminer[token] = 1;
                         (this->*t_serverParser[j])(token, line, server);
                         action = 1;
                     }    
@@ -655,8 +711,10 @@ Root ConfigParser::Rootparser(std::string file)
             }
         }
         root.add_server(server);
+        serverAdminer.clear();
         server.clear();
     }
+    serverAdminer.clear();
     root_checker(root);
     return root;
 }

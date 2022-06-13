@@ -1,3 +1,2 @@
-error manage each directive
-copy parent directives into childs
-Parse unrepeated directive and throw exception if it is not
+error manage each directive [not yet done]
+copy parent directives into childs [need to be tested]

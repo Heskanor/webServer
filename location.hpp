@@ -15,6 +15,7 @@ class Location : public virtual Server
         
     public:
         Location();
+        Location(Server &src);
         Location(const Location &src);
         ~Location();
         Location &operator=( Location const & rhs );

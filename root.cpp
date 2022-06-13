@@ -107,6 +107,10 @@ std::string Root::get_error_map(std::string error)
 {
     return _error_map[error];
 }
+std::map<std::string, std::string> Root::get_errors_map()
+{
+    return _error_map;
+}
 
 void Root::add_error_map(std::string error, std::string error_url)
 {

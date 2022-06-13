@@ -61,6 +61,9 @@ int main()
             std::cout << "     body size limit :" << it2->get_bodySizeLimit() << std::endl;
             std::cout << "     path :"<< it2->get_path() << std::endl;
             std::cout << "     root :"<< it2->get_root() << std::endl;
+            std::cout << "     errorPage 501:"<< it2->get_error_map("501") << std::endl;
+            std::pair<std::string, std::string> lord = it2->get_redirection();
+            std::cout << "     return :"<< lord.first << std::endl;
             std::cout << "     cgi path :"<< it2->get_cgi_path() << std::endl;
             std::vector<std::string> cgi_ext = it2->get_cgi_ext();
             std::cout << "     cgi ext :"<< it2->get_cgi_path();
