@@ -14,13 +14,14 @@ class Location;
 class Server : public virtual Root
 {
     private:
-        std::string _server_name;
+        std::vector<std::string> _server_name;
         int _listenPort;
         std::string _listenAddress;
         std::vector<Location> _locations;
     protected:
-        //std::map<std::string, std::string>  _redirections;
         std::pair<std::string, std::string> _redirection;
+
+        //std::map<std::string, std::string>  _redirections;
         // redriction.first = 500;
         // redriction.second = "path";
     public:
@@ -32,8 +33,8 @@ class Server : public virtual Root
         void clear();
         bool check_empty();
         //geters and seters
-        virtual std::string get_server_name();
-        virtual void set_server_name(std::string name);
+        virtual std::vector<std::string> get_server_name();
+        virtual void set_server_name(std::vector<std::string> name);
         virtual std::string get_listenAddress();
         virtual void set_listenAddress(std::string address);
         virtual int get_listenPort();

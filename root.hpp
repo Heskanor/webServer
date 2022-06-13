@@ -51,6 +51,7 @@ class Root
         virtual std::string get_upload_directory();
         virtual void set_upload_directory(std::string upload_directory);
         virtual std::vector<std::string> get_allowed_methods();
+        virtual void add_allowed_method(std::string method);
         virtual void set_allowed_methods(std::vector<std::string> allowed_methods);
 
 

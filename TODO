@@ -1,2 +1,2 @@
 error manage each directive [not yet done]
-copy parent directives into childs [need to be tested]
+return val take the path instead of empty second token

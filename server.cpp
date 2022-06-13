@@ -49,12 +49,12 @@ Server &Server::operator=(Server const & rhs)
 }
 
 //seters
-void Server::set_server_name(std::string name)
+void Server::set_server_name(std::vector<std::string> name)
 {
     _server_name = name;
 }
 
-std::string Server::get_server_name()
+std::vector<std::string> Server::get_server_name()
 {
     return _server_name;
 }

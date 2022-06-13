@@ -137,4 +137,9 @@ void Root::set_allowed_methods(std::vector<std::string> allowed_methods)
     _allowedMethods = allowed_methods;
 }
 
+void Root::add_allowed_method(std::string allowed_method)
+{
+    _allowedMethods.push_back(allowed_method);
+}
+
 

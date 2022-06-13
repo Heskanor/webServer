@@ -237,11 +237,11 @@ void ConfigParser::setErrors(std::string status,std::string line, Root &root)
         token += line[i];
         i++;
     }
-    if (token.find_first_not_of("0123456789") == std::string::npos)
+    if (token.find_first_not_of("0123456789") == std::string::npos && token.length() == 3 && token >= "500" && token <= "599")
         val = token;
     else
     {
-        std::cout << "error: bad error Code" << std::endl;
+        std::cout << "error code" << token << "must be between 300 and 599" << std::endl;
         exit(1);
     }
     line.erase(0,i);
@@ -262,7 +262,7 @@ void ConfigParser::setErrors(std::string status,std::string line, Server &root)
     std::string val;
     unsigned int i = 0;
     skipFirstToken(line, status.length());
-    while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
+    while (line[i] != ' '&& line[i]!= '\n' && i < line.length() && token.length() == 3 && token >= "500" && token <= "599")
     {
         token += line[i];
         i++;
@@ -271,7 +271,7 @@ void ConfigParser::setErrors(std::string status,std::string line, Server &root)
         val = token;
     else
     {
-        std::cout << "error: bad error Code" << std::endl;
+        std::cout << "error code" << token << "must be between 300 and 599" << std::endl;
         exit(1);
     }
     line.erase(0,i);
@@ -297,11 +297,11 @@ void ConfigParser::setErrors(std::string status,std::string line, Location &root
         token += line[i];
         i++;
     }
-    if (token.find_first_not_of("0123456789") == std::string::npos)
+    if (token.find_first_not_of("0123456789") == std::string::npos && token.length() == 3 && token >= "500" && token <= "599")
         val = token;
     else
     {
-        std::cout << "error: bad error Code" << std::endl;
+        std::cout << "error code" << token << "must be between 300 and 599" << std::endl;
         exit(1);
     }
     line.erase(0,i);
@@ -475,25 +475,57 @@ void ConfigParser::setAllowedMethods(std::string status,std::string line, Root &
 {
     std::vector<std::string> meth;
     strTabParser(status, line, meth);
-    lvl.set_allowed_methods(meth);
+    std::vector<std::string>::iterator it;
+    for (it = meth.begin(); it != meth.end(); it++)
+    {
+        if (*it == "GET" || *it == "POST" || *it == "DELETE")
+            lvl.add_allowed_method(*it);
+        else
+        {
+            std::cout << "error: bad allowedMethod value" << std::endl;
+            exit(1);
+        }
+    }
+    //lvl.set_allowed_methods(meth);
 }
 void ConfigParser::setAllowedMethods(std::string status,std::string line, Server &lvl)
 {
     std::vector<std::string> meth;
     strTabParser(status, line, meth);
-    lvl.set_allowed_methods(meth);
+    std::vector<std::string>::iterator it;
+    for (it = meth.begin(); it != meth.end(); it++)
+    {
+        if (*it == "GET" || *it == "POST" || *it == "DELETE")
+            lvl.add_allowed_method(*it);
+        else
+        {
+            std::cout << "error: bad allowedMethod value" << std::endl;
+            exit(1);
+        }
+    }
+    //lvl.set_allowed_methods(meth);
 }
 void ConfigParser::setAllowedMethods(std::string status,std::string line, Location &lvl)
 {
     std::vector<std::string> meth;
     strTabParser(status, line, meth);
-    lvl.set_allowed_methods(meth);
+    std::vector<std::string>::iterator it;
+    for (it = meth.begin(); it != meth.end(); it++)
+    {
+        if (*it == "GET" || *it == "POST" || *it == "DELETE")
+            lvl.add_allowed_method(*it);
+        else
+        {
+            std::cout << "error: bad allowedMethod value" << std::endl;
+            exit(1);
+        }
+    }
 }
 
 void ConfigParser::setServerName(std::string status,std::string line, Server &lvl)
 {
-    std::string s;
-    strParser(status, line, s);
+    std::vector<std::string> s;
+    strTabParser(status, line, s);
     lvl.set_server_name(s);
 }
 

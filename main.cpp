@@ -47,7 +47,7 @@ int main()
         {
             std::cout << " " << *it;
         }
-        std::cout << "\n   Server name :" << it->get_server_name() << std::endl;
+        std::cout << "\n   Server name :" << it->get_server_name()[0] << std::endl;
         std::cout << "   Listen address :"<<it->get_listenAddress()<< std::endl;
         std::cout << "   Listen port :"<<it->get_listenPort() << std::endl;
         std::cout << "   bodysizelimit :"<<it->get_bodySizeLimit() << std::endl;
