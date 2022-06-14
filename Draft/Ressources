@@ -1,0 +1,160 @@
+# webserv
+
+42 project, recoding our own web server in C++. A program capable of running an HTTP server, handling requests, and parsing configuration files.
+
+
+[Subject](https://cdn.intra.42.fr/pdf/pdf/13265/en.subject.pdf)
+
+## Resources
+
+### Server setup
+
+[How to build a simple HTTP server](https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-build-a-simple-http-server-from-scratch-d1ef8945e4fa)
+
+[Simple server with C++](https://ncona.com/2019/04/building-a-simple-server-with-cpp/)
+
+[C++ Web Programming](https://www.tutorialspoint.com/cplusplus/cpp_web_programming.htm)
+
+### HTTP 1.1 (standard to follow) :
+
+[HTTP/1.1 (RFC 2616)](https://www.rfc-editor.org/rfc/rfc2616.html)
+
+[HTTP/1.1 : Message Syntax and Routing (RFC 7230)](https://www.rfc-editor.org/rfc/rfc7230.html)
+
+[HTTP/1.1 : Semantics and Content (RFC 7231)](https://www.rfc-editor.org/rfc/rfc7231.html)
+
+[HTTP/1.1 : Conditional Requests (RFC 7232)](https://www.rfc-editor.org/rfc/rfc7232.html)
+
+[HTTP/1.1 : Range Requests (RFC 7233)](https://www.rfc-editor.org/rfc/rfc7233.html)
+
+[HTTP/1.1 : Caching (RFC 7234)](https://www.rfc-editor.org/rfc/rfc7234.html)
+
+[HTTP/1.1 : Authentication (RFC 7235)](https://www.rfc-editor.org/rfc/rfc7235.html)
+
+### Other HTTP (legacy / future) :
+
+[HTTP/1.0 (RFC 1945)](https://www.rfc-editor.org/rfc/rfc1945.html)
+
+[HTTP/2 (RFC 7240)](https://www.rfc-editor.org/rfc/rfc7540.html)
+
+[HTTP/2 : Header Compression (RFC 7241)](https://www.rfc-editor.org/rfc/rfc7541.html)
+
+[FTP (RFC 959)](https://www.rfc-editor.org/rfc/rfc959.html)
+
+### HTTP Header Syntax
+
+[HTTP Request Methods](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Request_methods)
+
+[HTTP Status Codes](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes)
+
+[HTTP Header Break Style](https://stackoverflow.com/questions/5757290/http-header-line-break-style)
+
+### Select and non-blocking
+
+[Select](https://www.lowtek.com/sockets/select.html)
+
+[Non-blocking I/O](https://www.ibm.com/support/knowledgecenter/ssw_ibm_i_72/rzab6/xnonblock.htm)
+
+### CGI
+
+[CGI : Getting Started](http://www.mnuwer.dbasedeveloper.co.uk/dlearn/web/session01.htm)
+
+[CGI 1.1 Documentation](http://www.wijata.com/cgi/cgispec.html#4.0)
+
+- https://www.tutorialspoint.com/http/http_status_codes.htm
+
+- https://docs.nginx.com/nginx/admin-guide/basic-functionality/managing-configuration-files/
+    Creating NGINX Plus and NGINX Configuration Files
+    Understand the basic elements in an NGINX or NGINX Plus configuration file, including directives and contexts.
+- https://docs.nginx.com/nginx/admin-guide/monitoring/logging/
+    Configuring Logging
+    Capture detailed information about errors and request processing in log files, either locally or via syslog.
+- https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/
+    Pitfalls and Common Mistakes | NGINX
+    This page outlines some of the NGINX configuration issues that we see frequently and then explains how to resolve them.
+- http://nginx.org/en/docs/http/ngx_http_core_module.html#try_files
+
+
+# 1 Fork a repository on GitHub
+
+# 2 Clone it onto your computer
+
+# 3 Make a branch and move to it: 
+    git checkout -b fixingBranch
+# 4 Make changes to the files
+
+# 5 Commit the changes to the history
+
+# 6 Push the branch up to your forked version: 
+    git push origin fixingBranch
+
+# 7 On GitHub, submit a Pull Request of your fixingBranch
+
+# 8 Once the pull request is merged, delete the fixingBranch on your forked repo on GitHub and on your computer 
+    git checkout master && git pull upstream master && - git branch -d fixingBranch
+______________________________________
+
+cd - change directory
+directory - the same thing as a folder
+mkdir - make a directory
+echo - print a message to the screen or to a file if > (redirect) is present.
+git init - start or initialize a git repository
+git add - put a file into the staging area, so that git starts tracking it
+git commit - send files in the staging/index area into the history (the git repository)
+git log --graph --oneline --decorate --all - view the commit history in the git repository and the branches, with each commit as one line.
+# This command is long, so shorten it using aliases
+    git config --global alias.lg 'log --graph --oneline --decorate --all'
+git branch - An individual line of commit history that contains files that may differ from other branches.
+git checkout - A way to move across the git commits and branches.
+git merge - Combine a branch into the current checked out branch (i.e. the branch you are on).
+
+<!-- std::ifstream config_file;
+    std::string line;
+    config_file.open(file);
+    if (config_file.is_open())
+    {
+        while (getline(config_file, line))
+        {
+            parser_line(line);
+        }
+        config_file.close();
+    }
+    else
+    {
+        std::cerr << "ERROR: Failed to open file" << std::endl;
+    }
+    return _server;
+}
+
+void parser_line(std::string line)
+{
+    ConfigParser config_parser;
+    config_parser.set_current_line(line);
+    config_parser.set_cursor("");
+    config_parser.set_current_key("");
+    config_parser.set_previous_key("");
+    parser_config_line(config_parser);
+}
+
+void parser_config_line(ConfigParser config_parser)
+{
+    if (config_parser.get_current_line() == "")
+        return;
+    if (config_parser.get_cursor() == "")
+    {
+        if (config_parser.get_current_line()[0] == '#')
+            return;
+        if (config_parser.get_current_line()[0] == ' ')
+            config_parser.set_cursor(config_parser.get_current_line().substr(1, config_parser.get_current_line().length()));
+        else
+            config_parser.set_cursor(config_parser.get_current_line());
+    }
+    if (config_parser.get_current_key() == "")
+    {
+        if (config_parser.get_cursor()[0] == ' ')
+            config_parser.set_current_key(config_parser.get_cursor().substr(1, config_parser.get_cursor().length()));
+        else
+            config_parser.set_current_key(config_parser.get_cursor());
+    }
+    if (config_parser.get_current_key()[0] == '
+}    -->
