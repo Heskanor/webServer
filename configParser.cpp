@@ -357,7 +357,6 @@ void ConfigParser::setRoot(std::string status,std::string line, Root &lvl)
 {
     std::string tko;
     strParser(status, line, tko);
-    // std::cout << tko <<"haha15"<< std::endl;
     lvl.set_root(tko);
 }
 void ConfigParser::setRoot(std::string status,std::string line, Server &lvl)
@@ -484,7 +483,6 @@ void ConfigParser::setAllowedMethods(std::string status,std::string line, Root &
             exit(1);
         }
     }
-    //lvl.set_allowed_methods(meth);
 }
 void ConfigParser::setAllowedMethods(std::string status,std::string line, Server &lvl)
 {
@@ -501,7 +499,6 @@ void ConfigParser::setAllowedMethods(std::string status,std::string line, Server
             exit(1);
         }
     }
-    //lvl.set_allowed_methods(meth);
 }
 void ConfigParser::setAllowedMethods(std::string status,std::string line, Location &lvl)
 {
@@ -592,7 +589,6 @@ Root ConfigParser::Rootparser(std::string file)
     Location location;
     Server server;
     std::string token;
-    int locationsCounter = 0;
     std::map<std::string, int> rootAdminer;
     std::map<std::string, int> serverAdminer;
     std::map<std::string, int> locationAdminer;
@@ -651,7 +647,6 @@ Root ConfigParser::Rootparser(std::string file)
         while (getline(ifs, line))
         {
             action = 0;
-            locationsCounter = 0;
             skipSpaces(line);
             std::stringstream Y(line);
             getline(Y, token,' ');
@@ -740,7 +735,6 @@ Root ConfigParser::Rootparser(std::string file)
                 }
             }
         }
-        //servers iterator
         std::vector<Server> s = root.get_servers();
         for (std::vector<Server>::iterator it = s.begin(); it != s.end(); ++it)
         {
