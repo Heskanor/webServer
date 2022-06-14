@@ -72,6 +72,20 @@ class Response
 				return "301";
 			}
 		};
+		class ConflictError : public std::exception
+		{
+			virtual const char* what() const throw()
+			{
+				return "409";
+			}
+		};
+		class InternalServerError : public std::exception
+		{
+			virtual const char* what() const throw()
+			{
+				return "500";
+			}
+		};
 };
 
 std::map<int, std::string> code_map;

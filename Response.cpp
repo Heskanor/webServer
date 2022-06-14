@@ -210,13 +210,16 @@ int requested_resource_by_delete(std::string& resource, Location& location, Resp
 	{
 		if (S_ISDIR(st.st_mode))
 		{
-			check_directory_resource(resource, location, res);
+			if (resource.back() != '/')
+				throw Response::ConflictError();
+			if (access(resource.c_str(), W_OK))
+				throw Response::InternalServerError();
 			return DIRCODE;
 		}
 		else if (S_ISREG(st.st_mode))
 		{
-			res._body_path = resource;
-			res._status_code = "200";
+			if (access(resource.c_str(), W_OK))
+				throw Response::ForbiddenPath();
 			return FILECODE;
 		}
 	}
