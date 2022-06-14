@@ -30,7 +30,7 @@ class Server : public virtual Root
         Server(Root &src);
         ~Server();
         virtual Server &operator=( Server const & rhs );
-        void clear();
+        void clear(Root &src);
         bool check_empty();
         //geters and seters
         virtual std::vector<std::string> get_server_name();

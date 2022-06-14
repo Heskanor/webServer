@@ -70,12 +70,20 @@ void Location::set_cgi_ext(std::vector<std::string> cgi_ext)
 {
     _cgi_ext = cgi_ext;
 }
-void Location::clear()
+void Location::clear(Server &src)
 {
     // Server::clear();
     _path = "";
     _cgi_path = "";
     _cgi_ext.clear();
+    _index = src.get_index();
+    _root = src.get_root();
+    _bodySizeLimit = src.get_bodySizeLimit();
+    _autoIndex = src.get_auto_index();
+    _error_map = src.get_errors_map();
+    _uploadDirectory = src.get_upload_directory();
+    _allowedMethods = src.get_allowed_methods();
+    _redirection = src.get_redirection();
 }
 bool Location::check_lempty()
 {

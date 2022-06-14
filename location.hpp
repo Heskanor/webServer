@@ -20,7 +20,7 @@ class Location : public virtual Server
         ~Location();
         Location &operator=( Location const & rhs );
         //geters and seters
-        void clear();
+        void clear(Server &src);
         bool check_lempty();
         std::string get_path();
         void set_path(std::string path);
