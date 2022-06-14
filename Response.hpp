@@ -13,6 +13,8 @@
 #include <dirent.h>
 #include <fstream>
 
+
+#define REDIRECTCODE 3
 #define DIRCODE 2
 #define FILECODE 1
 

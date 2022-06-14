@@ -42,7 +42,7 @@ std::string set_date_header()
 
 void set_response_headers(Request& req, Response& res)
 {
-	res._headers += "HTTP/1.1 " + res._status_code + " " + code_map[res._status_code] + "\r\n";
+	res._headers += "HTTP/1.1 " + code_map[res._status_code] + "\r\n";
 	res._headers += "Server: Webserver/1.0\r\n";
 	res._headers += "Date: " + set_date_header() + "\r\n";
 	res._headers += "Content-Type: " + req.content_type + "\r\n";
@@ -53,14 +53,17 @@ void set_response_headers(Request& req, Response& res)
 	res._headers += "\r\n";
 }
 
-bool check_if_entity_exists(std::string path)
+int check_if_entity_exists(std::string path)
 {
 	struct stat st;
 	if (stat(path.c_str(), &st) == 0)
 	{
-		return true;
+		if (S_ISDIR(st.st_mode))
+			return DIRCODE;
+		else if (S_ISREG(st.st_mode))
+			return FILECODE;
 	}
-	return false;
+	return 0;
 }
 
 void check_http_version(std::string version)
@@ -110,12 +113,10 @@ void check_allowed_methods(Response& res, std::string method, std::vector<std::s
 	}
 }
 
-void check_for_redirect(std::vector<std::pair<std::string, std::string>>& redirections, Response& res)
+void redirect_response(std::pair<std::string, std::string>& redirection, std::string& redirection_code, std::string& redirection_path, Response& res)
 {
-	if (redirections.size() == 0)
-		return;
-	std::string new_status_code = redirections[0].first;
-	std::string new_location = redirections[0].second;
+	std::string new_status_code = redirection_code;
+	std::string new_location = redirection_path;
 	std::string location_header = "Location: " + new_location + "\r\n";
 	res._status_code = new_status_code;
 	set_response_headers(req, res, location_header);
@@ -146,6 +147,8 @@ void create_autoindex_file(std:string directory, std::vector<std::string>& entit
 	file << "</html>\n";
 	set_response_headers(req, res, "");
 	res._body_path = file_path;
+	res._status_code = "200";
+	// set content type and length
 	file.close();
 }
 
@@ -173,12 +176,15 @@ void check_for_index_file(Location& location, Response& res)
 		int nbr_indexes = location._index.size();
 		for (int i = 0; i < nbr_indexes; i++)
 		{
-			if (!check_if_entity_exists(location._index[i]))
-				continue;	
-			if (access(location._index[i].c_str(), R_OK) == 0)
+			int index_code = check_if_entity_exists(location._index[i]);
+			if (!index_code)
+				continue;
+			if (index_code == FILECODE && access(location._index[i].c_str(), R_OK) == 0)
 			{
-				// check if it is a directory
+				// check if location has cgi
+				// set content type and length
 				res._body_path = location._index[i];
+				res._status_code = "200";
 				return true;
 			}
 			else
@@ -197,43 +203,78 @@ void check_directory_resource(std::string& resource, Location& location, Respons
 		throw Response::ForbiddenPath();
 }
 
-int find_requested_resource(std::string& resource, Location& location, Response& res)
+int requested_resource_by_delete(std::string& resource, Location& location, Response& res)
+{
+	struct stat st;
+	if (stat(resource.c_str(), &st) == 0)
+	{
+		if (S_ISDIR(st.st_mode))
+		{
+			check_directory_resource(resource, location, res);
+			return DIRCODE;
+		}
+		else if (S_ISREG(st.st_mode))
+		{
+			res._body_path = resource;
+			res._status_code = "200";
+			return FILECODE;
+		}
+	}
+	throw Response::NoMatchedLocation();
+}
+
+int requested_resource_by_get(std::string& resource, Location& location, Response& res)
 {
 	struct stat st;
 	if (stat(resource.c_str(), &st) == 0)
 	{
 		// will modify access permissions later depending on the method
 		// if resource is directory with out / at the end redirect to directory/ before checking permission 
-		// if (S_ISDIR(st.st_mode))
-		// {
-		// 	if (resource.back() != '/')
-		// 	{
-		// 		resource += "/";
-		// 		return find_requested_resource(resource, location, res);
-		// 	}
-		// 	check_directory_resource(resource, location, res);
-		// }
-		if (access(resource.c_str(), R_OK))
-			throw Response::ForbiddenPath();
 		if (S_ISDIR(st.st_mode))
+		{
+			if (resource.back() != '/')
+			{
+				resource += "/";
+				redirect_response(location._redirections, "301", resource, res);
+				return REDIRECTCODE;
+			}
+			if (access(resource.c_str(), R_OK))
+				throw Response::ForbiddenPath();
 			return (DIRCODE);
+		}
 		else if (S_ISREG(st.st_mode))
+		{
+			if (access(resource.c_str(), R_OK))
+				throw Response::ForbiddenPath();
 			return (FILECODE);
+		}
 	}
 	else
 		throw Response::NoMatchedLocation();
 }
 
-void get_method(Response& res, Request& req, Location& location)
+void response_to_delete(Response& res, Request& req, location& location)
 {
 	std::string resource = location._root + location._path;
-	int resource_code = find_requested_resource(resource, location, res);
+	int resource_code = requested_resource_by_delete(resource, location, res);
 
+
+}
+
+void response_to_get(Response& res, Request& req, Location& location)
+{
+	std::string resource = location._root + location._path;
+	int resource_code = requested_resource_by_get(resource, location, res);
+
+	if (resource_code == REDIRECTCODE)
+		return;
 	if (resource_code == DIRCODE)
 		check_directory_resource(resource, location, res);
 	else if (resource_code == FILECODE)
 	{
-		// check if it's extension is a MimeType / cgi
+		// check if location has cgi
+		// set content type and length
+		res._status_code = "200";
 		res._body_path = resource;
 	}
 }
@@ -243,7 +284,7 @@ Response server_response(Request& req, Server& server)
 	Response res;
 	init_code_map();
 	vector<std::string> methods_arr = {"GET", "POST", "DELETE"}; 
-	void (*methods_ptr[])(Response&, Request&, Location&) = {get_method, post_method, delete_method};
+	void (*methods_ptr[])(Response&, Request&, Location&) = {response_to_get, response_to_post, response_to_delete};
 
 	try
 	{
@@ -251,19 +292,14 @@ Response server_response(Request& req, Server& server)
 		check_supported_methods(req.get_method());
 		Location location = find_matched_location(req.get_requestur(), server.locations);
 		check_allowed_methods(req.get_method(), location.allowed_methods);
-		//redirection
+		if (location.redirection.first != "")
+		{
+			redirect_response(location._redirection, location._redirection.first,location._redirection.second, res);
+			return res;
+		}
 		for (int i = 0; i < 3; i++)
 			if (req.get_method() == methods_arr[i])
-				methods_ptr[i](res, req, location);
-		// std::string resource = location._root + location._path;
-		// int resource_code = find_requested_resource(resource, location, res);
-		// if (resource_code == DIRCODE)
-		// 	check_directory_resource(resource, location, res);
-		// else if (resource_code == FILECODE)
-		// {
-		// 	// check if it's extension is a MimeType
-		// 	res._body_path = resource;
-		// }
+				return methods_ptr[i](res, req, location);
 	}
 	catch (std::exception& e)
 	{
