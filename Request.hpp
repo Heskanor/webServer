@@ -45,7 +45,6 @@ class Request
 		std::string ipaddress;
 		std::string port;
 		int setsocketid;
-
 		std::string thhpversion;
 		std::string host;
 		bool thereistraansfer;
