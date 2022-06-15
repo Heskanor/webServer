@@ -207,39 +207,63 @@ int delete_directory(std::string& path)
 				{
 					if (delete_directory(new_path))
 					{
-						cout << "Error deleting directory " << new_path << endl;
+						cerr << "Error deleting directory " << new_path << endl;
 						return 1;
 					}
 					else
-						cout << "deleted directory " << new_path << endl;
+						cerr << "deleted directory " << new_path << endl;
 				}
 				else if (entity_type == FILECODE)
 				{
 					if (remove(new_path.c_str()) != 0)
 					{
-						cout << "Error deleting file " << new_path << endl;
+						cerr << "Error deleting file " << new_path << endl;
 						return 1;
 					}
 					else
-						cout << "deleted file " << new_path << endl;
+						cerr << "deleted file " << new_path << endl;
 				}
 			}
 		}
-		rmdir(path.c_str());
-		cout << "deleted directory " << path << endl;
+		if (rmdir(path.c_str()))
+			cerr << "Error deleting directory " << path << endl;
+		cerr << "deleted directory " << path << endl;
 		closedir(dir);
 		return 0;
 	}
 	return 1;
 }
 
+
+int foofoo(int n)
+{
+	if (n == 0)
+		return 0;
+	else if (n == 2)
+		throw "error";
+	else
+	{
+		cout << n << endl;
+		return foofoo(n - 1);
+	}
+}
+
 int main()
 {
-	string path = "/Users/hmahjour/Desktop/Tobedeleted";
 
-	int ret = delete_directory(path);
-	cout << "return: "<< ret << endl;
-	cout << set_date_header() << endl;
+	try
+	{
+		foofoo(5);
+	}
+	catch (const char* e)
+	{
+		cout << e << endl;
+	}
+	// string path = "/Users/hmahjour/Desktop/Tobedeleted";
+
+	// int ret = delete_directory(path);
+	// cout << "return: "<< ret << endl;
+	// cout << set_date_header() << endl;
 	// if (remove("../TobeDeleted") == 0)
 	// {
 	// 	cout << "Deleted" << endl;

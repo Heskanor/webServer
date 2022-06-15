@@ -8,10 +8,12 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include "ErrorCodes.hpp"
 #include "Request.hpp"
+#include "Location.hpp"
 #include <dirent.h>
 #include <fstream>
+#include <ctime>
+#include <unistd.h>
 
 
 #define REDIRECTCODE 3
@@ -89,6 +91,6 @@ class Response
 		};
 };
 
-std::map<int, std::string> code_map;
+std::map<std::string, std::string> code_map;
 
 #endif
