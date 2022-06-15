@@ -164,8 +164,10 @@ bool check_for_autoindex(std::string directory, Response& res)
 		{
 			entities.push_back(ent->d_name);
 		}
+		closedir(dir);
 	}
-	closedir(dir);
+	else
+		throw Response::ForbiddenPath();
 	create_autoindex_file(directory, entities, res);
 }
 
@@ -293,8 +295,8 @@ Response server_response(Request& req, Server& server)
 	{
 		check_http_version(req.get_httpversion(););
 		check_supported_methods(req.get_method());
-		Location location = find_matched_location(req.get_requestur(), server.locations);
-		check_allowed_methods(req.get_method(), location.allowed_methods);
+		Location location = find_matched_location(req.get_requestur(), server._locations);
+		check_allowed_methods(req.get_method(), location._allowedMethods);
 		if (location.redirection.first != "")
 		{
 			redirect_response(location._redirection, location._redirection.first,location._redirection.second, res);
