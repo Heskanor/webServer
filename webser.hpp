@@ -6,6 +6,9 @@
 #include <vector>
 #include "server.hpp"
 #include "location.hpp"
+#include "MimeType.hpp"
+#include <unistd.h>
+
 
 
 //#include "root.hpp"
