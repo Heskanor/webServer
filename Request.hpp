@@ -5,7 +5,6 @@
 # include <string>
 # include <stdlib.h>
 # include "webser.hpp"
-// # include "MimeType.hpp"
 class Request
 {
 

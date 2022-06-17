@@ -3,15 +3,16 @@
 
 #include <iostream>
 #include "Request.hpp"
+#include "Response.hpp"
 
 class Cgi
 {
     private:
-        std::string _root;
-        std::string _server;
+        std::string _path;
+        std::vector<std::string> _ext;
     public:
-    Cgi(std::string path, std::vector<std::string> ext);
-    ~Cgi();
+    Cgi(std::string path, std::vector<std::string> ext);// done
+    ~Cgi(); //done?
     std::string getPath();
     void setPath(std::string path);
     void setExt(std::vector<std::string> ext);
@@ -20,7 +21,7 @@ class Cgi
     void envMaker(Request *request);
     //I may need a cgi checker here !?
     // Cgi checker(std::string path);
-    void executer(Request *request, Resonse *response);
+    void executer(Request *request, Response *response);
 
 
 
