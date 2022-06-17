@@ -43,7 +43,11 @@ class Request
 		int parserequest(char *buffer, int size);
 		char *accept_encoding();
 		int handleheaders(std::string data2);
+		void setunchunkedbody();
+		void setchunckedbody();
+	//	void settingbody();
 		std::string	getrandomname();
+		void adddata(char *buffer, int c);
 	private:
 		std::string method;
 		std::string ipaddress;
@@ -63,6 +67,8 @@ class Request
 		std::string pathbody;
 		int requeststatus;
 		int filediscriptor;
+		int bodylenght;
+		int Reminder;
 		//this attribut it s about (content L and Tran E )
 		//std::string *Accept_encoding;
 		

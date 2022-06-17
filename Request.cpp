@@ -8,9 +8,11 @@
 Request::Request()
 {
 	requestcomplete = 0;
+	bodylenght = 0;
 	headerscopmlete = 0;
 	requeststatus = 0;
 	pathbody="";
+	Reminder = 0;
 }
 
 Request::Request( const Request & src )
@@ -169,10 +171,73 @@ std::string				Request::getrandomname()
 		result = result + alpha[rand() % alpha.size()];
 	return (result);
 }
+void					Request::adddata(char *buffer, int c)
+{
+	//	data.append(buffer,c//);
+	if (Reminder == 0)
+	{
+		Reminder = 1;
+		std::cout<<"this is the oldest data : "<<data<<std::endl;
+	}
+	data.append(buffer,c);
+	std::cout<<"-----------------------------------------------------"<<std::endl;
+}
+void					Request::setunchunkedbody()
+{
+	//while (!requestcomplete)
+	//{
+		std::cout<<data<<std::endl;
+	//	filediscriptor = open(pathbody.c_str(), O_CREAT | O_RDWR | O_APPEND, 0666);
+		//std::cout<<" size : "<<bodylenght + data.size() <<" content lentgh "<<stoi(content_lenght)<<std::endl;
+		if ((bodylenght + data.size()) <= stoi(content_lenght))
+		{
+			bodylenght += data.size();
+		//	std::cout<< "" the file discriptor "<<std::endl;
+			std::cout<<"charactere created :" << write(filediscriptor,data.c_str(),data.size())<<std::endl;
+		}
+		if (bodylenght == stoi(content_lenght))
+		{
+			requeststatus = 200;
+			requestcomplete = 1;
+			close(filediscriptor);
+			return;
+			//break;
+		}
+		else
+			requeststatus = 400;
+	//	close(filediscriptor);
+	//while (!requestcomplete)
+	}
+
+void					Request::setchunckedbody()
+{
+
+}
+
+
+void					Request::settingbody()
+{
+	if (method == "POST" && content_lenght.empty() == true && thereistraansfer == false)
+	{
+		requeststatus = 400;
+	}
+	else if (content_lenght.empty() == false && thereistraansfer == true)
+	{
+		requeststatus = 400;
+	}
+	else if (content_lenght.empty() == false)
+	{
+		setunchunkedbody();
+	}
+	else
+	{
+		setchunckedbody();
+	}
+}
 int 					Request::parserequest(char *buffer, int size)
 {
 	size_t	foundplace;
-	int filediscriptor;
+	//int filediscriptor;
 	std::string point = ".";
 	data.append(buffer, size);
 	if (!requestcomplete)
@@ -205,7 +270,9 @@ int 					Request::parserequest(char *buffer, int size)
 					std::string name = getrandomname() ;
 					name +=  op.get_extension(content_type);
 					pathbody = name;
-					filediscriptor = open(pathbody.c_str(),777);
+				}
+					filediscriptor = open(pathbody.c_str(), O_CREAT | O_RDWR | O_APPEND, 0666);
+					std::cout<<filediscriptor<<std::endl;
 					point.erase();
 					if (filediscriptor == -1)
 					{
@@ -213,11 +280,10 @@ int 					Request::parserequest(char *buffer, int size)
 						requeststatus = 0;
 						return requestcomplete;
 					}
-					//else // if not a bad request
-					//{
-					//	settingbody();
-					//}
-				}
+					else if (requeststatus == 0)// if not a bad request
+					{
+						settingbody();
+					}
 				if (requestcomplete && requeststatus == 0)
 				{
 					requeststatus = 200;
@@ -262,7 +328,7 @@ int					Request::handleheaders(std::string data2)
 			}
 		}
 		data2 = data2.substr(data2.find("\n") + 1);
-		std::cout<<data2<<std::endl;
+		//std::cout<<data2<<std::endl;
 		int p = 0;
 		int f = 0;
 		int cc = 0;
@@ -273,15 +339,15 @@ int					Request::handleheaders(std::string data2)
 			else
 				tmp = data2.substr(0,p);
 			cc = tmp.find(":");
-			std::cout<<"|"<<tmp.substr(cc + 2)<<"|"<<std::endl;	
-			std::cout<<cc<<std::endl;
+			//std::cout<<"|"<<tmp.substr(cc + 2)<<"|"<<std::endl;	
+		//	std::cout<<cc<<std::endl;
 			std::string headersfield[5] = {"Host","Connection","Content-Length","Content-Type","Transfer-Encoding"};
-			std::cout<<tmp.substr(0, cc ).compare(headersfield[2])<<std::endl;
+		//	std::cout<<tmp.substr(0, cc ).compare(headersfield[2])<<std::endl;
 		//	std::string tmp;
 			std::string c = " ";
 			if (tmp.substr(0,cc ).find(" ") != std::string::npos)
 			{
-std::cout<<tmp.substr(0,cc).compare(headersfield[3])<< "Tmp = " << tmp.substr(0,cc) << " header = "<< headersfield[3]<<std::endl;
+//std::cout<<tmp.substr(0,cc).compare(headersfield[3])<< "Tmp = " << tmp.substr(0,cc) << " header = "<< headersfield[3]<<std::endl;
 				return 0;
 			}
 			if (tmp.substr(0, cc ).compare(headersfield[0])== 0)
@@ -293,7 +359,7 @@ std::cout<<tmp.substr(0,cc).compare(headersfield[3])<< "Tmp = " << tmp.substr(0,
 				setconnection(tmp.substr(cc + 2));
 					
 			if (tmp.substr(0, cc ).compare(headersfield[2])== 0)
-				{std::cout<<"|                 wa zaaaaaaaab ii  |"<<std::endl;	
+				{//std::cout<<"|                 wa zaaaaaaaab ii  |"<<std::endl;	ƒ
 				setcontent_length(tmp.substr(cc + 2));}
 			if (tmp.substr(0, cc ).compare(headersfield[3])== 0)
 				setcontent_type(tmp.substr(cc + 2));
