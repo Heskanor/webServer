@@ -68,6 +68,10 @@ class Request
 		int requeststatus;
 		int filediscriptor;
 		int bodylenght;
+		std::string backup;
+		size_t writingchar;
+		int chunksize;
+		bool chunkcomplete;
 		int Reminder;
 		//this attribut it s about (content L and Tran E )
 		//std::string *Accept_encoding;

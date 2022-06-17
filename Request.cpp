@@ -7,16 +7,20 @@
 
 Request::Request()
 {
+	writingchar = 0;
 	requestcomplete = 0;
+	chunksize = -1;
 	bodylenght = 0;
 	headerscopmlete = 0;
 	requeststatus = 0;
+	chunkcomplete = true;
 	pathbody="";
 	Reminder = 0;
 }
 
 Request::Request( const Request & src )
 {
+	*this = src;
 }
 
 
@@ -35,10 +39,29 @@ Request::~Request()
 
 Request &				Request::operator=( Request const & rhs )
 {
-	//if ( this != &rhs )
-	//{
-	//this->_value = rhs.getValue();
-	//}
+	method = rhs.method;
+	writingchar = rhs.writingchar;
+	chunkcomplete = rhs.chunkcomplete;
+	ipaddress = rhs.ipaddress;
+	port = rhs.	port;
+	setsocketid = rhs.setsocketid;
+	thhpversion = rhs.thhpversion;
+	host = rhs.host;
+	thereistraansfer = rhs.thereistraansfer;
+	requestur = rhs.requestur;
+	Connection = rhs.Connection;
+	transferchunks = rhs.transferchunks;
+	content_type = rhs.content_type;
+	content_lenght = rhs.content_lenght;
+	data = rhs.data;
+	requestcomplete = rhs.requestcomplete;
+	headerscopmlete = rhs.headerscopmlete;
+	pathbody = rhs.pathbody;
+	requeststatus = rhs.requeststatus;
+	filediscriptor = rhs.filediscriptor;
+	bodylenght = rhs.bodylenght;
+	Reminder = rhs.Reminder;	
+	backup = rhs.backup;
 	return *this;
 }
 
@@ -194,6 +217,7 @@ void					Request::setunchunkedbody()
 			bodylenght += data.size();
 		//	std::cout<< "" the file discriptor "<<std::endl;
 			std::cout<<"charactere created :" << write(filediscriptor,data.c_str(),data.size())<<std::endl;
+			data.erase();
 		}
 		if (bodylenght == stoi(content_lenght))
 		{
@@ -204,13 +228,83 @@ void					Request::setunchunkedbody()
 			//break;
 		}
 		else
-			requeststatus = 400;
+			requeststatus = 0;
 	//	close(filediscriptor);
 	//while (!requestcomplete)
 	}
 
 void					Request::setchunckedbody()
 {
+	int found = 0;
+	std::string printstring;
+	backup += data;
+	data.erase();
+	if ((found = backup.find("\r\n"))!= std::string::npos)
+	{
+		
+		//unsigned int i;
+		//backup += 	data;
+		if (chunkcomplete== true)
+		{
+    	std::istringstream iss(backup.substr(0,found));
+		//std::string lop = data.substr(0,found);
+    	iss >> std::hex >> chunksize;
+		//}
+		//if (chunkcomplete == false)
+		//{
+		if ((backup.find("\r\n")) < backup.size() - 2)
+			backup  = backup.substr(found + 2);
+		}
+		if ( chunksize != -1)
+		{
+			size_t t = backup.size();
+			if (backup.size() >= chunksize)
+			{
+				write(filediscriptor,backup.substr(0,chunksize).c_str(),chunksize);
+				if (backup.size() > chunksize)
+				{
+					backup = backup.substr(chunksize + 2);
+				}
+			}
+
+
+		//if (backup.find("\r\n") != std::string::npos)
+		//{
+		//	if(backup.substr(0,backup.find("\r\n")).size() != chunksize)
+		//	{
+		//		requeststatus = 400;
+		//	//	close(filediscriptor);
+		//		requestcomplete = true;
+		//	}
+		//	else
+		//	{
+		//		write(filediscriptor,backup.substr(0,backup.find("\r\n")).c_str(),i);
+		//		chunkcomplete = true;
+		//	}
+		//}
+			else
+			{
+				chunkcomplete = false;
+			}
+			if (chunksize == 0)
+			{
+				chunkcomplete = true;
+				requestcomplete = true;
+			}
+
+		}
+		else
+		{
+			//if (chunksize == 0)
+			//{
+				chunkcomplete = true;
+				requestcomplete = true;
+			//}
+		}
+
+		
+
+	}	
 
 }
 
@@ -228,6 +322,7 @@ void					Request::settingbody()
 	else if (content_lenght.empty() == false)
 	{
 		setunchunkedbody();
+		
 	}
 	else
 	{
@@ -236,7 +331,13 @@ void					Request::settingbody()
 }
 int 					Request::parserequest(char *buffer, int size)
 {
-	size_t	foundplace;
+	//if (backup.size() > 10000)
+	//{
+	//	for (int i = 0; i < 1000; i++)
+	//	std::cout<<"backup > 10000" <<std::endl;
+	//	
+	//}
+	size_t	foundplace = 0;;
 	//int filediscriptor;
 	std::string point = ".";
 	data.append(buffer, size);
@@ -258,6 +359,7 @@ int 					Request::parserequest(char *buffer, int size)
 					return requestcomplete;
 				}
 			}
+		}
 			if (headerscopmlete && !requestcomplete)
 			{
 				// so here i don t need to forget about bodypath so let s start handlig without a bodyy path 
@@ -272,7 +374,7 @@ int 					Request::parserequest(char *buffer, int size)
 					pathbody = name;
 				}
 					filediscriptor = open(pathbody.c_str(), O_CREAT | O_RDWR | O_APPEND, 0666);
-					std::cout<<filediscriptor<<std::endl;
+				//	std::cout<<filediscriptor<<std::endl;
 					point.erase();
 					if (filediscriptor == -1)
 					{
@@ -291,11 +393,10 @@ int 					Request::parserequest(char *buffer, int size)
 				}
 				//after handling headers we need to check on is there is a body nd check the extension 
 				//remind me of taking this one put
-				requestcomplete = 1;
+				//requestcomplete = 1;
 			}
 		}
-	}
-		printingrequestelements();
+	//	printingrequestelements();
 
 	return (requestcomplete);
 }

@@ -12,8 +12,8 @@
 #include <sys/select.h>
 #include <fcntl.h>
 #include <map>
-#define PORT 5050
-
+#define PORT 6060
+#define BUFFERSIZE 70000
 int  findfirstline(std::string data)
 {
 	std::string stringg[9];
@@ -38,7 +38,7 @@ int  findfirstline(std::string data)
 
 
 int main(){
-	char *buffer = (char *)malloc(sizeof(char) * 1024 + 1);
+	char *buffer = (char *)malloc(sizeof(char) * BUFFERSIZE + 1);
 	int activ;
 	int wahedl9laoui;
 	int clientsocket[30];
@@ -47,7 +47,7 @@ int main(){
 	//std::vector<Request> op;
 	int max_sd;
 	int sd;
-	char *hello =  "HTTP/1.1 200 OK\r\nAccept-Ranges: bytes\r\nContent-Length: 45\r\nContent-Type: text/plain\r\n\r\nHello World! My payload includes a trailing CRLF."; 
+	//char *hello =  "HTTP/1.1 200 OK\r\nAccept-Ranges: bytes\r\nContent-Length: 45\r\nContent-Type: text/plain\r\n\r\nHello World! My payload includes a trailing CRLF."; 
 	int opt = 1;
 
 	for (int i = 0;i < 30; i++)
@@ -86,12 +86,15 @@ int main(){
 		{
 			new_socket = accept(sockfd, (struct sockaddr*)&address, (socklen_t*)&addrlen);
 			req.set_socketid(new_socket);
-			valread = read(new_socket, buffer, 1024);
+			valread = read(new_socket, buffer,BUFFERSIZE);
 			buffer[valread] = '\0';
+			std::string str;
+			str.append(buffer);
+		//	std::cout<<str;
 			req.parserequest(buffer, valread);
 			//std::cout<<"im hereeeeeeeeeee"<<std::endl;
 			Requestsmap[new_socket] = req;
-			printf("Hello message sent\n");
+			//printf("Hello message sent\n");
 				for(int i = 0 ;i < 30;i++)
 				{
 					if (clientsocket[i] == 0)
@@ -112,8 +115,8 @@ int main(){
 				std::map<int, Request>::iterator it;
                 //Check if it was for closing , and also read the 
                 //incoming message 
-				wahedl9laoui = open("texttest.txt", O_CREAT | O_RDWR | O_APPEND, 0666);
-                if ((valread = read( sd , buffer, 1024)) == 0)  
+				wahedl9laoui = open("test.txt", O_CREAT | O_RDWR | O_APPEND, 0666);
+                if ((valread = read( sd , buffer, BUFFERSIZE)) == 0)  
                 {  
 					
 					
@@ -130,15 +133,21 @@ int main(){
                 }  
                 else 
                 {  
-					write(wahedl9laoui,buffer,valread);
+					std::string str2;
+			//std::cout<<str2.append(buffer)<<std::endl;
+				//	write(wahedl9laoui,buffer,valread);
                     buffer[valread] = '\0';  
 					for (std::map<int, Request>::iterator it = Requestsmap.begin(); it != Requestsmap.end(); ++it)
 					{
 						if (it->first == sd)
 						{
-							it->second.adddata(buffer, valread);
+						//	if (it->second.)
+						//	it->second.adddata(buffer, valread);
+						//	std::cout<<" i m heree ------------ "<< sd<<std::endl;
+							it->second.parserequest(buffer, valread);
 						}
 					}
+					str2.erase();
                     //send(sd , buffer , strlen(buffer) , 0 );
 			  
                 }  
