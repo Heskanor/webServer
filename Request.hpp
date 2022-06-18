@@ -40,12 +40,18 @@ class Request
 		int get_connection();
 		void set_socketid(int fd);
 		int	 get_socketid();
+		bool get_requestiscomplete()
+		{
+			return requestcomplete;
+		}
 		int parserequest(char *buffer, int size);
 		char *accept_encoding();
 		int handleheaders(std::string data2);
 		void setunchunkedbody();
 		void setchunckedbody();
+		bool IsHex(const std::string& str);
 	//	void settingbody();
+		int iperfect;
 		std::string	getrandomname();
 		void adddata(char *buffer, int c);
 	private:
@@ -70,6 +76,7 @@ class Request
 		int bodylenght;
 		std::string backup;
 		size_t writingchar;
+		bool igottheend;
 		int chunksize;
 		bool chunkcomplete;
 		int Reminder;

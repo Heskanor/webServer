@@ -11,6 +11,8 @@ Request::Request()
 	requestcomplete = 0;
 	chunksize = -1;
 	bodylenght = 0;
+	iperfect = 0;
+	igottheend = false;
 	headerscopmlete = 0;
 	requeststatus = 0;
 	chunkcomplete = true;
@@ -39,6 +41,7 @@ Request::~Request()
 
 Request &				Request::operator=( Request const & rhs )
 {
+	chunksize = rhs.chunksize;
 	method = rhs.method;
 	writingchar = rhs.writingchar;
 	chunkcomplete = rhs.chunkcomplete;
@@ -75,6 +78,10 @@ std::ostream &			operator<<( std::ostream & o, Request const & i )
 /*
  ** --------------------------------- METHODS ----------------------------------
  */
+bool			Request::IsHex(const std::string& str) 
+{
+  return (str.find_first_not_of("0123456789abcdefABCDEF", 0) == std::string::npos);
+}
 void			Request::settransferstat(bool j)
 {
 	thereistraansfer = j;
@@ -237,74 +244,82 @@ void					Request::setchunckedbody()
 {
 	int found = 0;
 	std::string printstring;
+	int printingnum = 0;
 	backup += data;
 	data.erase();
+	while (1)
+	{
 	if ((found = backup.find("\r\n"))!= std::string::npos)
 	{
-		
-		//unsigned int i;
-		//backup += 	data;
 		if (chunkcomplete== true)
 		{
-    	std::istringstream iss(backup.substr(0,found));
-		//std::string lop = data.substr(0,found);
-    	iss >> std::hex >> chunksize;
-		//}
-		//if (chunkcomplete == false)
-		//{
-		if ((backup.find("\r\n")) < backup.size() - 2)
-			backup  = backup.substr(found + 2);
+						//	std::cout<<backup.substr(0,found)<<std::endl;
+
+			if (IsHex(backup.substr(0,found)) == false)
+			{
+				std::cout<<"allo allo allo allo allo "<<std::endl;
+				requestcomplete = 1;
+				requeststatus = 400;
+				chunkcomplete = 1;
+				chunksize = -1;
+				return;
+			}
+			else
+							std::cout<<backup.substr(0,found)<<std::endl;
+
+			std::istringstream iss(backup.substr(0,found));
+			std::cout<<"backup line :"<<backup.substr(0,found)<<std::endl;
+    		iss >> std::hex >> chunksize;
+			if ((backup.find("\r\n") + 2) < backup.size() )
+				backup  = backup.substr(found + 2);
+			if (chunksize == 0)
+			{
+				while(1)
+				{
+					std::cout<<"wlah ta hbss hnaya"<<std::endl;
+				}
+		}
 		}
 		if ( chunksize != -1)
 		{
+			if (chunksize == 0)
+			 {
+				requestcomplete = true;
+				chunkcomplete = true;
+				return;
+			}
 			size_t t = backup.size();
-			if (backup.size() >= chunksize)
+			if (backup.size() >= chunksize + 2)
 			{
-				write(filediscriptor,backup.substr(0,chunksize).c_str(),chunksize);
-				if (backup.size() > chunksize)
+				printingnum =  write(filediscriptor,backup.substr(0,chunksize).c_str(),chunksize);
+				chunkcomplete = 1;
+				if (backup.size() >= chunksize + 2)
 				{
 					backup = backup.substr(chunksize + 2);
 				}
 			}
-
-
-		//if (backup.find("\r\n") != std::string::npos)
-		//{
-		//	if(backup.substr(0,backup.find("\r\n")).size() != chunksize)
-		//	{
-		//		requeststatus = 400;
-		//	//	close(filediscriptor);
-		//		requestcomplete = true;
-		//	}
-		//	else
-		//	{
-		//		write(filediscriptor,backup.substr(0,backup.find("\r\n")).c_str(),i);
-		//		chunkcomplete = true;
-		//	}
-		//}
 			else
 			{
 				chunkcomplete = false;
 			}
-			if (chunksize == 0)
-			{
-				chunkcomplete = true;
-				requestcomplete = true;
-			}
+			if (igottheend == false)
+				break;
 
 		}
-		else
-		{
-			//if (chunksize == 0)
-			//{
-				chunkcomplete = true;
-				requestcomplete = true;
-			//}
-		}
+	//	else
+	//	{
+	//		//if (chunksize == 0)
+	//		//{
+	//			std::cout<<"allo"<<std::endl;
+	//			chunkcomplete = true;
+	//			requestcomplete = true;
+	//		//}
+	//	}
 
 		
 
 	}	
+	}
 
 }
 
@@ -337,14 +352,28 @@ int 					Request::parserequest(char *buffer, int size)
 	//	std::cout<<"backup > 10000" <<std::endl;
 	//	
 	//}
-	size_t	foundplace = 0;;
-	//int filediscriptor;
+	size_t	foundplace = 0;
+	int po = 0;
+	if (iperfect == 602)
+	{
+		;
+	}
 	std::string point = ".";
 	data.append(buffer, size);
+	if(transferchunks == true && data.find("0\r\n\r\n") != std::string::npos)
+	{
+		igottheend = true;
+	}
+	
 	if (!requestcomplete)
 	{
+		po = 1;
 		if (!headerscopmlete)
-		{
+		{ 
+			if (data.find("0\r\n\r\n") != std::string::npos)
+			{
+				std::cout<<"allo "<<std::endl;
+			}
 			if ((foundplace = data.find("\r\n\r\n")) != std::string::npos)
 			{
 				std::string tmp;
@@ -379,8 +408,8 @@ int 					Request::parserequest(char *buffer, int size)
 					if (filediscriptor == -1)
 					{
 						//bad request
-						requeststatus = 0;
-						return requestcomplete;
+						requeststatus = 400;
+						return requestcomplete = 1;
 					}
 					else if (requeststatus == 0)// if not a bad request
 					{
@@ -396,7 +425,11 @@ int 					Request::parserequest(char *buffer, int size)
 				//requestcomplete = 1;
 			}
 		}
-	//	printingrequestelements();
+		if (po == 0)
+			{
+				std::cout<<"i m here "<<std::endl;
+			}
+		printingrequestelements();
 
 	return (requestcomplete);
 }
@@ -440,7 +473,7 @@ int					Request::handleheaders(std::string data2)
 			else
 				tmp = data2.substr(0,p);
 			cc = tmp.find(":");
-			//std::cout<<"|"<<tmp.substr(cc + 2)<<"|"<<std::endl;	
+			//std::ßcout<<"|"<<tmp.substr(cc + 2)<<"|"<<std::endl;	
 		//	std::cout<<cc<<std::endl;
 			std::string headersfield[5] = {"Host","Connection","Content-Length","Content-Type","Transfer-Encoding"};
 		//	std::cout<<tmp.substr(0, cc ).compare(headersfield[2])<<std::endl;
@@ -494,7 +527,22 @@ void			Request::printingrequestelements()
 	std::cout<<"pathbody          : "<<pathbody<<std::endl;
 	std::cout<<"request complete  : "<<requestcomplete<<std::endl;
 	std::cout<<"headers complete  : "<<headerscopmlete<<std::endl;
+//	if (chunkcomplete == false)
+//	
+	if(chunksize != -1)
+	{
+	//	for (int i= 0; i < 50;i++ )
+	//	{
+	//std::cout<<"============================================================================================================="<<std::endl;
+	//	}
+	//		sleep(10);
 
+	}
+	std::cout<<"chunksize  : "<<chunksize<<std::endl;
+
+	std::cout<<"chunked complete  : "<<chunkcomplete<<std::endl;
+	std::cout<<"iperfect : "<<iperfect<<std::endl;
+	iperfect++;
 }
 
 
