@@ -78,6 +78,7 @@ class Request
 		size_t writingchar;
 		bool igottheend;
 		int chunksize;
+		int global;
 		bool chunkcomplete;
 		int Reminder;
 		//this attribut it s about (content L and Tran E )

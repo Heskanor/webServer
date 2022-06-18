@@ -12,8 +12,11 @@
 #include <sys/select.h>
 #include <fcntl.h>
 #include <map>
-#define PORT 5060
-#define BUFFERSIZE 1024
+#define PORT 7799
+#define BUFFERSIZE 2048
+
+
+int readpo = 0;
 int  findfirstline(std::string data)
 {
 	std::string stringg[9];
@@ -23,7 +26,7 @@ int  findfirstline(std::string data)
 
 	std::string tmp;
 	tmp = data.substr(0,data.find(" "));
-	//std::cout<<tmp<<std::endl;
+	////std::cout<<tmp<<std::endl;
 
 	for (int i = 0; i <= 2 ; i++)
 	{
@@ -38,6 +41,7 @@ int  findfirstline(std::string data)
 
 
 int main(){
+	signal(SIGPIPE, SIG_IGN);
 	char *buffer = (char *)malloc(sizeof(char) * BUFFERSIZE + 1);
 	int activ;
 	int wahedl9laoui;
@@ -68,6 +72,7 @@ int main(){
 	listen(sockfd, 3);
 	while (true)
 	{
+	//	//std::cout << "DBG__MAIN__LOOP" << std::endl;
 		FD_ZERO(&readsfds);
 		FD_SET(sockfd, &readsfds);
 		max_sd =  sockfd;
@@ -86,15 +91,16 @@ int main(){
 		{
 			new_socket = accept(sockfd, (struct sockaddr*)&address, (socklen_t*)&addrlen);
 			req.set_socketid(new_socket);
-			valread = read(new_socket, buffer,BUFFERSIZE);
+			
+			readpo +=(valread = read(new_socket, buffer,BUFFERSIZE));
 			buffer[valread] = '\0';
 			std::string str;
 			str.append(buffer);
-		//	std::cout<<str;
+		//	//std::cout<<str;
 			if (req.get_requestiscomplete() == true)
 								break;
 			req.parserequest(buffer, valread);
-			//std::cout<<"im hereeeeeeeeeee"<<std::endl;
+			////std::cout<<"im hereeeeeeeeeee"<<std::endl;
 			Requestsmap[new_socket] = req;
 			//printf("Hello message sent\n");
 				for(int i = 0 ;i < 30;i++)
@@ -110,15 +116,26 @@ int main(){
 		
 	    for (int i = 0; i < 30; i++)  
         {  
-            sd = clientsocket[i];  
-				//std::cout<<"allo"<<std::endl;
+			////std::cout << "DBG__FOR__LOOP" << std::endl;
+            
+			sd = clientsocket[i];  
+				////std::cout<<"allo"<<std::endl;
             if (FD_ISSET( sd , &readsfds))  
             {  
+				////std::cout << "CONDITION__00" << std::endl;
 				std::map<int, Request>::iterator it;
                 //Check if it was for closing , and also read the 
                 //incoming message 
 				wahedl9laoui = open("test.txt", O_CREAT | O_RDWR | O_APPEND, 0666);
-                if ((valread = read( sd , buffer, BUFFERSIZE)) == 0)  
+                // if ((valread = read( sd , buffer, BUFFERSIZE)) == 0)  
+                valread = read( sd , buffer, BUFFERSIZE);
+				buffer[valread] = '\0';
+                //std::cout << "RET_READ : " << valread << std::endl;
+				if (valread < 10)
+					//std::cout << "EXCEPTION : [" << buffer << "]" << std::endl;
+				readpo += valread;
+				 //std::cout << "ALL SIZR: " << readpo<< std::endl;
+				if (valread == 0)  
                 {  
 					
 					
@@ -135,8 +152,9 @@ int main(){
                 }  
                 else 
                 {  
+				////std::cout << "CONDITION__01" << std::endl;
 					std::string str2;
-			//std::cout<<str2.append(buffer)<<std::endl;
+			////std::cout<<str2.append(buffer)<<std::endl;
 				//	write(wahedl9laoui,buffer,valread);
                     buffer[valread] = '\0';  
 					for (std::map<int, Request>::iterator it = Requestsmap.begin(); it != Requestsmap.end(); ++it)
@@ -147,21 +165,17 @@ int main(){
 							if (it->second.get_requestiscomplete() == true)
 								break;
 						//	it->second.adddata(buffer, valread);
-						//	std::cout<<" i m heree ------------ "<< sd<<std::endl;
+						//	//std::cout<<" i m heree ------------ "<< sd<<std::endl;
 							it->second.parserequest(buffer, valread);
 						}
 					}
 					str2.erase();
                     //send(sd , buffer , strlen(buffer) , 0 );
 			  
-                }  
+                }
+				////std::cout << "CONDITION__02" << std::endl;
 				close(wahedl9laoui);
             }  
         } 
-		}
-		
-
-
-		//while (1);
-		return 0;
+	}
 	}

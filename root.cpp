@@ -79,14 +79,14 @@ Server Root::get_server(int index)
 
 void Root::add_server(Server &server)
 {
-    std::cout << "add server" << std::endl;
-    std::cout << server.get_server_name() << std::endl;
+    //std::cout << "add server" << std::endl;
+    //std::cout << server.get_server_name() << std::endl;
     _servers.push_back(server);
-    // std::cout << "push back not error" << std::endl;
+    // //std::cout << "push back not error" << std::endl;
     // print servers vector
     for (std::vector<Server>::iterator it = _servers.begin(); it != _servers.end(); ++it)
     {
-        std::cout <<"lol"<< it->get_server_name() << std::endl;
+        //std::cout <<"lol"<< it->get_server_name() << std::endl;
     }
 }
 

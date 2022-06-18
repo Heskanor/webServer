@@ -8,7 +8,9 @@
 Request::Request()
 {
 	writingchar = 0;
+	global = 0;
 	requestcomplete = 0;
+	transferchunks = false;
 	chunksize = -1;
 	bodylenght = 0;
 	iperfect = 0;
@@ -131,7 +133,7 @@ void					Request::sethost(std::string ho)
 void					Request::setconnection(std::string str)
 {
 
-	//std::cout<<str.compare("keep-alive")<<std::endl;
+	////std::cout<<str.compare("keep-alive")<<std::endl;
 	if (str.compare("keep-alive") == 0)
 	{
 		Connection = 1;
@@ -207,30 +209,30 @@ void					Request::adddata(char *buffer, int c)
 	if (Reminder == 0)
 	{
 		Reminder = 1;
-		std::cout<<"this is the oldest data : "<<data<<std::endl;
+		//std::cout<<"this is the oldest data : "<<data<<std::endl;
 	}
 	data.append(buffer,c);
-	std::cout<<"-----------------------------------------------------"<<std::endl;
+	//std::cout<<"-----------------------------------------------------"<<std::endl;
 }
 void					Request::setunchunkedbody()
 {
 	//while (!requestcomplete)
 	//{
-		std::cout<<data<<std::endl;
+		//std::cout<<data<<std::endl;
 	//	filediscriptor = open(pathbody.c_str(), O_CREAT | O_RDWR | O_APPEND, 0666);
-		//std::cout<<" size : "<<bodylenght + data.size() <<" content lentgh "<<stoi(content_lenght)<<std::endl;
+		////std::cout<<" size : "<<bodylenght + data.size() <<" content lentgh "<<stoi(content_lenght)<<std::endl;
 		if ((bodylenght + data.size()) <= stoi(content_lenght))
 		{
 			bodylenght += data.size();
-		//	std::cout<< "" the file discriptor "<<std::endl;
-			std::cout<<"charactere created :" << write(filediscriptor,data.c_str(),data.size())<<std::endl;
+		//	//std::cout<< "" the file discriptor "<<std::endl;
+			//std::cout<<"charactere created :" << write(filediscriptor,data.c_str(),data.size())<<std::endl;
 			data.erase();
 		}
 		if (bodylenght == stoi(content_lenght))
 		{
 			requeststatus = 200;
 			requestcomplete = 1;
-			close(filediscriptor);
+			//close(filediscriptor);
 			return;
 			//break;
 		}
@@ -253,22 +255,19 @@ void					Request::setchunckedbody()
 	{
 		if (chunkcomplete== true)
 		{
-						//	std::cout<<backup.substr(0,found)<<std::endl;
+						//	//std::cout<<backup.substr(0,found)<<std::endl;
 
 			if (IsHex(backup.substr(0,found)) == false)
 			{
-				std::cout<<"allo allo allo allo allo "<<std::endl;
+				//std::cout<<"allo allo allo allo allo "<<std::endl;
 				requestcomplete = 1;
 				requeststatus = 400;
 				chunkcomplete = 1;
 				chunksize = -1;
 				return;
 			}
-			else
-							std::cout<<backup.substr(0,found)<<std::endl;
-
 			std::istringstream iss(backup.substr(0,found));
-			std::cout<<"backup line :"<<backup.substr(0,found)<<std::endl;
+			////std::cout<<"backup line :"<<backup.substr(0,found)<<std::endl;
     		iss >> std::hex >> chunksize;
 			if ((backup.find("\r\n") + 2) < backup.size() )
 				backup  = backup.substr(found + 2);
@@ -276,7 +275,7 @@ void					Request::setchunckedbody()
 			{
 				while(1)
 				{
-					std::cout<<"wlah ta hbss hnaya"<<std::endl;
+					//std::cout<<"wlah ta hbss hnaya"<<std::endl;
 				}
 		}
 		}
@@ -306,11 +305,12 @@ void					Request::setchunckedbody()
 				break;
 
 		}
+		
 	//	else
 	//	{
 	//		//if (chunksize == 0)
 	//		//{
-	//			std::cout<<"allo"<<std::endl;
+	//			//std::cout<<"allo"<<std::endl;
 	//			chunkcomplete = true;
 	//			requestcomplete = true;
 	//		//}
@@ -318,7 +318,9 @@ void					Request::setchunckedbody()
 
 		
 
-	}	
+	}
+	else
+			break;	
 	}
 
 }
@@ -349,20 +351,17 @@ int 					Request::parserequest(char *buffer, int size)
 	//if (backup.size() > 10000)
 	//{
 	//	for (int i = 0; i < 1000; i++)
-	//	std::cout<<"backup > 10000" <<std::endl;
+	//	//std::cout<<"backup > 10000" <<std::endl;
 	//	
 	//}
 	size_t	foundplace = 0;
 	int po = 0;
-	if (iperfect == 602)
-	{
-		;
-	}
 	std::string point = ".";
 	data.append(buffer, size);
 	if(transferchunks == true && data.find("0\r\n\r\n") != std::string::npos)
-	{
+	{//std::cout<<"allo"<<std::endl;;
 		igottheend = true;
+
 	}
 	
 	if (!requestcomplete)
@@ -372,7 +371,7 @@ int 					Request::parserequest(char *buffer, int size)
 		{ 
 			if (data.find("0\r\n\r\n") != std::string::npos)
 			{
-				std::cout<<"allo "<<std::endl;
+				igottheend = true;
 			}
 			if ((foundplace = data.find("\r\n\r\n")) != std::string::npos)
 			{
@@ -384,7 +383,7 @@ int 					Request::parserequest(char *buffer, int size)
 				headerscopmlete = 1;
 				if(get_method() != "POST")
 				{
-					std::cout<<"surly it s port method|"<<get_method()<<"|"<<std::endl;
+					//std::cout<<"surly it s port method|"<<get_method()<<"|"<<std::endl;
 					return requestcomplete;
 				}
 			}
@@ -403,7 +402,7 @@ int 					Request::parserequest(char *buffer, int size)
 					pathbody = name;
 				}
 					filediscriptor = open(pathbody.c_str(), O_CREAT | O_RDWR | O_APPEND, 0666);
-				//	std::cout<<filediscriptor<<std::endl;
+					//std::cout<<filediscriptor<<std::endl;
 					point.erase();
 					if (filediscriptor == -1)
 					{
@@ -418,8 +417,9 @@ int 					Request::parserequest(char *buffer, int size)
 				if (requestcomplete && requeststatus == 0)
 				{
 					requeststatus = 200;
-					close(filediscriptor);
+				
 				}
+					close(filediscriptor);
 				//after handling headers we need to check on is there is a body nd check the extension 
 				//remind me of taking this one put
 				//requestcomplete = 1;
@@ -427,9 +427,9 @@ int 					Request::parserequest(char *buffer, int size)
 		}
 		if (po == 0)
 			{
-				std::cout<<"i m here "<<std::endl;
+				//std::cout<<"i m here "<<std::endl;
 			}
-		printingrequestelements();
+		//printingrequestelements();
 
 	return (requestcomplete);
 }
@@ -462,7 +462,7 @@ int					Request::handleheaders(std::string data2)
 			}
 		}
 		data2 = data2.substr(data2.find("\n") + 1);
-		//std::cout<<data2<<std::endl;
+		////std::cout<<data2<<std::endl;
 		int p = 0;
 		int f = 0;
 		int cc = 0;
@@ -474,14 +474,14 @@ int					Request::handleheaders(std::string data2)
 				tmp = data2.substr(0,p);
 			cc = tmp.find(":");
 			//std::ßcout<<"|"<<tmp.substr(cc + 2)<<"|"<<std::endl;	
-		//	std::cout<<cc<<std::endl;
+		//	//std::cout<<cc<<std::endl;
 			std::string headersfield[5] = {"Host","Connection","Content-Length","Content-Type","Transfer-Encoding"};
-		//	std::cout<<tmp.substr(0, cc ).compare(headersfield[2])<<std::endl;
+		//	//std::cout<<tmp.substr(0, cc ).compare(headersfield[2])<<std::endl;
 		//	std::string tmp;
 			std::string c = " ";
 			if (tmp.substr(0,cc ).find(" ") != std::string::npos)
 			{
-//std::cout<<tmp.substr(0,cc).compare(headersfield[3])<< "Tmp = " << tmp.substr(0,cc) << " header = "<< headersfield[3]<<std::endl;
+////std::cout<<tmp.substr(0,cc).compare(headersfield[3])<< "Tmp = " << tmp.substr(0,cc) << " header = "<< headersfield[3]<<std::endl;
 				return 0;
 			}
 			if (tmp.substr(0, cc ).compare(headersfield[0])== 0)
@@ -493,7 +493,7 @@ int					Request::handleheaders(std::string data2)
 				setconnection(tmp.substr(cc + 2));
 					
 			if (tmp.substr(0, cc ).compare(headersfield[2])== 0)
-				{//std::cout<<"|                 wa zaaaaaaaab ii  |"<<std::endl;	ƒ
+				{////std::cout<<"|                 wa zaaaaaaaab ii  |"<<std::endl;	ƒ
 				setcontent_length(tmp.substr(cc + 2));}
 			if (tmp.substr(0, cc ).compare(headersfield[3])== 0)
 				setcontent_type(tmp.substr(cc + 2));
@@ -517,31 +517,32 @@ int					Request::handleheaders(std::string data2)
 
 void			Request::printingrequestelements()
 {
-	std::cout<<"Method            : "<<get_method()<<std::endl;
-	std::cout<<"Request UR        : "<<requestur<<std::endl;
-	std::cout<<"HOST              : "<<gethost()<<std::endl;
-	std::cout<<"Content Type      : "<<content_type<<std::endl;
-	std::cout<<"Content length    : "<<content_lenght<<std::endl;
-	std::cout<<"Connection        : "<<Connection<<std::endl;
-	std::cout<<"Socketfd          : "<<setsocketid<<std::endl;
-	std::cout<<"pathbody          : "<<pathbody<<std::endl;
-	std::cout<<"request complete  : "<<requestcomplete<<std::endl;
-	std::cout<<"headers complete  : "<<headerscopmlete<<std::endl;
+	//std::cout<<"Method            : "<<get_method()<<std::endl;
+	//std::cout<<"Request UR        : "<<requestur<<std::endl;
+	//std::cout<<"HOST              : "<<gethost()<<std::endl;
+	//std::cout<<"Content Type      : "<<content_type<<std::endl;
+	//std::cout<<"Content length    : "<<content_lenght<<std::endl;
+	//std::cout<<"Connection        : "<<Connection<<std::endl;
+	//std::cout<<"Socketfd          : "<<setsocketid<<std::endl;
+	//std::cout<<"pathbody          : "<<pathbody<<std::endl;
+	//std::cout<<"request complete  : "<<requestcomplete<<std::endl;
+	//std::cout<<"did i got the end : "<<	igottheend<<std::endl;
+	//std::cout<<"headers complete  : "<<headerscopmlete<<std::endl;
 //	if (chunkcomplete == false)
 //	
 	if(chunksize != -1)
 	{
 	//	for (int i= 0; i < 50;i++ )
 	//	{
-	//std::cout<<"============================================================================================================="<<std::endl;
+	////std::cout<<"============================================================================================================="<<std::endl;
 	//	}
 	//		sleep(10);
 
 	}
-	std::cout<<"chunksize  : "<<chunksize<<std::endl;
+	////std::cout<<"chunksize  : "<<chunksize<<std::endl;
 
-	std::cout<<"chunked complete  : "<<chunkcomplete<<std::endl;
-	std::cout<<"iperfect : "<<iperfect<<std::endl;
+	//std::cout<<"chunked complete  : "<<chunkcomplete<<std::endl;
+	//std::cout<<"iperfect : "<<iperfect<<std::endl;
 	iperfect++;
 }
 
