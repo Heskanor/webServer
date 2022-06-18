@@ -33,6 +33,7 @@ class Request
 		std::string get_port();
 		std::string get_ip();
 		std::string getcontentlenght();
+		std::string getcontenttype();//update
 		bool gettransferstat();
 		void settransferstat(bool j);
 		void set_ip(std::string);
@@ -45,6 +46,8 @@ class Request
 		int handleheaders(std::string data2);
 		void setunchunkedbody();
 		void setchunckedbody();
+		std::string get_pathbody();
+		int Request::getfilediscriptor();
 	//	void settingbody();
 		std::string	getrandomname();
 		void adddata(char *buffer, int c);
@@ -61,10 +64,11 @@ class Request
 		bool transferchunks;
 		std::string content_type;
 		std::string  content_lenght;
-		std::string data;
+		std::string data;	
 		bool requestcomplete;
 		bool headerscopmlete;
 		std::string pathbody;
+		//I need Root;
 		int requeststatus;
 		int filediscriptor;
 		int bodylenght;

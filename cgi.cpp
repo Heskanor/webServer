@@ -55,28 +55,40 @@ bool Cgi::isCgi(std::string path) const
         return true;
     return false;
 }
-
-void Cgi::envMaker(Request *request)
+std::string get_querrystring(std::string path)
 {
-    setenv("SERVER_SOFTWARE", "webserver/1.1", 1);
-    setenv("SERVER_NAME", (request->gethost()).c_str(), 1);
+    std::string querrystring;
+    if (path.find("?") != std::string::npos)
+    {
+        querrystring = path.substr(path.find("?") + 1);
+        return querrystring;
+    }
+}
+
+void Cgi::envMaker(Request *request, Location &location)
+{
+    std::string scriptname = location.get_root() + _path;
+
+
+    //setenv("AUTH_TYPE", "", 1);
+    setenv("CONTENT_LENGTH", (request->getcontentlenght()).c_str(), 1);
+    setenv("CONTENT_TYPE", (request->getcontenttype()).c_str(), 1); // need content type geter
     setenv("GATEWAY_INTERFACE", "CGI/1.1", 1);
-    setenv("SERVER_PROTOCOL", "HTTP/1.1", 1);
-    setenv("SERVER_PORT", (request->get_port()).c_str(), 1);
+    setenv("PATH_INFO", ((request->get_requestur())).substr(0,request->get_requestur().find_first_of('?')).c_str(), 1); // subtr query string
+    setenv("PATH_TRANSLATED", ((request->get_requestur())).substr(0,request->get_requestur().find_first_of('?')).c_str(), 1); // dir b7al path info
+    setenv("QUERY_STRING", get_querrystring(request->get_requestur()).c_str(), 1);// after ?
+    setenv("REMOTE_ADDR", "localhost", 1);
+    setenv("REMOTE_HOST", (request->gethost()).c_str(), 1);// maybe like remote address
+    // setenv("REMOTE_IDENT", "", 1);
+    // setenv("REMOTE_USER", "", 1);
     setenv("REQUEST_METHOD", (request->get_method()).c_str(), 1);
-    setenv("PATH_INFO", (request->getrequestur()).c_str(), 1);
-    setenv("PATH_TRANSLATED", (request->getrequestur()).c_str(), 1);
-    setenv("SCRIPT_NAME", (request->getrequestur()).c_str(), 1);
-    setenv("QUERY_STRING", (request->getquery()).c_str(), 1);
-    setenv("REMOTE_HOST", (request->gethost()).c_str(), 1);
-    setenv("REMOTE_ADDR", (request->getip()).c_str(), 1);
-    setenv("AUTH_TYPE", "", 1);
-    setenv("REMOTE_USER", "", 1);
-    setenv("REMOTE_IDENT", "", 1);
-    setenv("CONTENT_TYPE", (request->getcontenttype()).c_str(), 1);
-    setenv("CONTENT_LENGTH", (request->getcontentlength()).c_str(), 1);
-    setenv("HTTP_ACCEPT", (request->getaccept()).c_str(), 1);
-    setenv("HTTP_USER_AGENT", (request->getuseragent()).c_str(), 1);
+    setenv("SCRIPT_NAME", scriptname.c_str(), 1);); 
+    setenv("SERVER_NAME", (request->gethost()).c_str(), 1);
+    setenv("SERVER_PORT", (request->get_port()).c_str(), 1);
+    setenv("SERVER_PROTOCOL", "HTTP/1.1", 1);
+    setenv("SERVER_SOFTWARE", "webserver/1.1", 1);
+    // setenv("HTTP_ACCEPT", (request->getaccept()).c_str(), 1);
+    // setenv("HTTP_USER_AGENT", (request->getuseragent()).c_str(), 1);
     // setenv("HTTP_ACCEPT_LANGUAGE", (request->getacceptlanguage()).c_str(), 1);
     // setenv("HTTP_ACCEPT_ENCODING", (request->getacceptencoding()).c_str(), 1);
     // setenv("HTTP_ACCEPT_CHARSET", (request->getacceptcharset()).c_str(), 1);
@@ -101,11 +113,59 @@ void Cgi::envMaker(Request *request)
     // setenv("HTTP_X_OPERAMINI_PHONE_UA", (request->getxoperaminiphoneua()).c_str(), 1);
 }
 
-void Cgi::executer(Request *request, Response *response)
+void Cgi::executer(Request *request, Response *response, Location &location)
 {
-    int fd[2];
-    int status;
-    pid_t pid;
-    std::stringstream ss;
+    // int fd[2];
+    // int status;
+    // pid_t pid;
+    // std::stringstream ss;
+    
+    std::string path = location.get_root() + request->get_requestur();
+    int request_fd = open(request->get_pathbody().c_str(), O_RDONLY);
+    int response_fd = open(response->_tmp_file_path.c_str(), O_RDONLY);
+    const char *parm[3];
+    parm[0] = _path.c_str();
+    parm[0] = path.c_str();
+    parm[1] = NULL;
 
+    pid_t pid = fork();
+    if (pid == -1)
+    {
+        //response->set_status(200);
+        response->_status_code = 500;
+        return;
+    }
+    if (pid == 0)
+    {
+        envMaker(request, location);
+        close(STDERR_FILENO);
+        if (hasBody)
+        {
+            dup2(request_fd, STDIN_FILENO);
+            dup2(response_fd, STDOUT_FILENO);
+            close(request_fd);
+            close(response_fd);
+        }
+        else
+        {
+            dup2(response_fd, STDOUT_FILENO);
+            close(request_fd);
+            close(0);
+        }
+        int exitcode = execvp(_path.c_str(), (char *const *)parm);
+        exit(exitcode);
+        // if (exitcode == -1)
+        // {
+        //     //response->set_status(200);
+        //     response->_status_code = 500;
+        //     return;
+        // }
+    }
+    else
+    {
+        if (hasBody)
+            close(request_fd);
+        close(response_fd);
+        // waitpid(pid, NULL, 0);
+    }
 }

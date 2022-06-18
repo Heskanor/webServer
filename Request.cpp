@@ -64,6 +64,10 @@ int			Request::get_connection()
 {
 	return Connection;
 }
+std::string		Request::getcontenttype()
+{
+	return content_type;
+}
 std::string			Request::gethost()
 {
 	return host;
@@ -79,6 +83,11 @@ std::string				Request::get_httpversion()
 std::string				Request::get_method()
 {
 	return method;
+}
+
+std::string Request::get_pathbody()
+{
+	return pathbody;
 }
 
 void					Request::setmethod(std::string me)
@@ -234,6 +243,12 @@ void					Request::settingbody()
 		setchunckedbody();
 	}
 }
+
+int Request::getfilediscriptor()
+{
+	return filediscriptor;
+}
+
 int 					Request::parserequest(char *buffer, int size)
 {
 	size_t	foundplace;
