@@ -21,23 +21,23 @@ std::string default_error_page(std::string& code, std::string& msg)
 	return page;
 }
 
-void init_code_map(void)
+void init_code_map(Response& res)
 {
-	code_map["200"] = "200 OK";
-	code_map["201"] = "201 Created";
-	code_map["202"] = "202 Accepted";
-	code_map["204"] = "204 No Content";
-	code_map["301"] = "301 Move Permanently";
-	code_map["400"] = "400 Bad Request";
-	code_map["403"] = "403 Forbidden";
-	code_map["404"] = "404 Not Found";
-	code_map["405"] = "405 Method Not Allowed";
-	code_map["413"] = "413 Payload Too Large";
-	code_map["414"] = "414 URI Too Long";
-	code_map["500"] = "500 Internal Server Error";
-	code_map["501"] = "501 Not Implemented";
-	code_map["502"] = "502 Bad Gateway";
-	code_map["505"] = "505 HTTP Version Not Supported";
+	res.http_code_map["200"] = "200 OK";
+	res.http_code_map["201"] = "201 Created";
+	res.http_code_map["202"] = "202 Accepted";
+	res.http_code_map["204"] = "204 No Content";
+	res.http_code_map["301"] = "301 Move Permanently";
+	res.http_code_map["400"] = "400 Bad Request";
+	res.http_code_map["403"] = "403 Forbidden";
+	res.http_code_map["404"] = "404 Not Found";
+	res.http_code_map["405"] = "405 Method Not Allowed";
+	res.http_code_map["413"] = "413 Payload Too Large";
+	res.http_code_map["414"] = "414 URI Too Long";
+	res.http_code_map["500"] = "500 Internal Server Error";
+	res.http_code_map["501"] = "501 Not Implemented";
+	res.http_code_map["502"] = "502 Bad Gateway";
+	res.http_code_map["505"] = "505 HTTP Version Not Supported";
 }
 
 // HTTP/1.1 403 Forbidden
@@ -57,7 +57,7 @@ std::string set_date_header()
 
 void set_response_headers(Request& req, Response& res)
 {
-	res._headers += "HTTP/1.1 " + code_map[res._status_code] + "\r\n";
+	res._headers += "HTTP/1.1 " + res.http_code_map[res._status_code] + "\r\n";
 	res._headers += "Server: Webserver/1.0\r\n";
 	res._headers += "Date: " + set_date_header() + "\r\n";
 	res._headers += "Content-Type: " + req.getcontent_type() + "\r\n";
@@ -388,7 +388,7 @@ void response_to_get(Response& res, Request& req, Location& location)
 Response server_response(Request& req, Server& server)
 {
 	Response res;
-	init_code_map();
+	init_code_map(res);
 	std::vector<std::string> methods_arr = {"GET", "POST", "DELETE"}; 
 	void (*methods_ptr[])(Response&, Request&, Location&) = {response_to_get, response_to_post, response_to_delete};
 
@@ -411,6 +411,7 @@ Response server_response(Request& req, Server& server)
 		for (int i = 0; i < 3; i++)
 			if (req.get_method() == methods_arr[i])
 				methods_ptr[i](res, req, location);
+		return res;
 	}
 	catch (std::exception& e)
 	{

@@ -1,10 +1,10 @@
-#include "Response.cpp"
+#include "Response.hpp"
 
 int main()
 {
 	Request req;
 	req.setmethod("GET");
-	req.setrequest("/Desktop");
+	req.setrequest("/Desktop/");
 	req.sethttpversion("HTTP/1.1");
 	req.setcontent_length("0");
 	req.setcontent_type("text/html");
@@ -34,7 +34,11 @@ int main()
 	serv.add_location(loc2);
 
 	Response res = server_response(req, serv);
+	std::cout << "------------------------------------" << std::endl;
 	std::cout << res._status_code << std::endl;
-	std::cout << res._body_path << std::endl;
+	std::cout << "------------------------------------" << std::endl;
 	std::cout << res._headers << std::endl;
+	std::cout << "------------------------------------" << std::endl;
+	std::cout << res._body_path << std::endl;
+	std::cout << "------------------------------------" << std::endl;
 }

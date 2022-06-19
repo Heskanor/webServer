@@ -23,6 +23,22 @@
 #define DIRCODE 2
 #define FILECODE 1
 
+// #define C200 "200 OK"
+// #define C201 "201 Created"
+// #define C202 "202 Accepted"
+// #define C204 "204 No Content"
+// #define C301 "301 Move Permanently"
+// #define C400 "400 Bad Request"
+// #define C403 "403 Forbidden"
+// #define C404 "404 Not Found"
+// #define C405 "405 Method Not Allowed"
+// #define C413 "413 Payload Too Large"
+// #define C414 "414 URI Too Long"
+// #define C500 "500 Internal Server Error"
+// #define C501 "501 Not Implemented"
+// #define C502 "502 Bad Gateway"
+// #define C505 "505 HTTP Version Not Supported"
+
 class Response
 {
 	public:
@@ -35,6 +51,7 @@ class Response
 		std::string _content_length;
 		std::string _tmp_file_path;
 
+		std::map<std::string, std::string> http_code_map;
 
 		Response(void) {}
 		Response(const Response& src) {
@@ -113,6 +130,8 @@ class Response
 		};
 };
 
-std::map<std::string, std::string> code_map;
+
+
+Response server_response(Request& req, Server& server);
 
 #endif
