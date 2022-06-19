@@ -9,7 +9,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-
+#include <sstream>
 using namespace std;
 
 #define FILECODE 1
@@ -189,50 +189,50 @@ int check_if_entity_exists(std::string path)
 	return 0;
 }
 
-int delete_directory(std::string& path)
-{
-	DIR* dir;
-	struct dirent* entry;
-	if ((dir = opendir(path.c_str())) != NULL)
-	{
-		while ((entry = readdir(dir)) != NULL)
-		{
-			if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0)
-			{
-				if (path.back() != '/')
-					path += "/";
-				std::string new_path = path + string(entry->d_name);
-				int entity_type = check_if_entity_exists(new_path);
-				if (entity_type == DIRCODE)
-				{
-					if (delete_directory(new_path))
-					{
-						cerr << "Error deleting directory " << new_path << endl;
-						return 1;
-					}
-					else
-						cerr << "deleted directory " << new_path << endl;
-				}
-				else if (entity_type == FILECODE)
-				{
-					if (remove(new_path.c_str()) != 0)
-					{
-						cerr << "Error deleting file " << new_path << endl;
-						return 1;
-					}
-					else
-						cerr << "deleted file " << new_path << endl;
-				}
-			}
-		}
-		if (rmdir(path.c_str()))
-			cerr << "Error deleting directory " << path << endl;
-		cerr << "deleted directory " << path << endl;
-		closedir(dir);
-		return 0;
-	}
-	return 1;
-}
+// int delete_directory(std::string& path)
+// {
+// 	DIR* dir;
+// 	struct dirent* entry;
+// 	if ((dir = opendir(path.c_str())) != NULL)
+// 	{
+// 		while ((entry = readdir(dir)) != NULL)
+// 		{
+// 			if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0)
+// 			{
+// 				if (path.back() != '/')
+// 					path += "/";
+// 				std::string new_path = path + string(entry->d_name);
+// 				int entity_type = check_if_entity_exists(new_path);
+// 				if (entity_type == DIRCODE)
+// 				{
+// 					if (delete_directory(new_path))
+// 					{
+// 						cerr << "Error deleting directory " << new_path << endl;
+// 						return 1;
+// 					}
+// 					else
+// 						cerr << "deleted directory " << new_path << endl;
+// 				}
+// 				else if (entity_type == FILECODE)
+// 				{
+// 					if (remove(new_path.c_str()) != 0)
+// 					{
+// 						cerr << "Error deleting file " << new_path << endl;
+// 						return 1;
+// 					}
+// 					else
+// 						cerr << "deleted file " << new_path << endl;
+// 				}
+// 			}
+// 		}
+// 		if (rmdir(path.c_str()))
+// 			cerr << "Error deleting directory " << path << endl;
+// 		cerr << "deleted directory " << path << endl;
+// 		closedir(dir);
+// 		return 0;
+// 	}
+// 	return 1;
+// }
 
 
 int foofoo(int n)
@@ -248,30 +248,27 @@ int foofoo(int n)
 	}
 }
 
+std::string create_temporary_file(std::string& path, std::string& file_name, std::string& extension)
+{
+	time_t time_since1970;
+  	time_since1970 = time(NULL);
+	std::stringstream ss;
+	ss << time_since1970;
+	string time_since1970_string = ss.str();
+	std::string tmp_file_path = path + time_since1970_string + "_" + file_name + extension;
+	std::ofstream tmp_file(tmp_file_path.c_str());
+	tmp_file.close();
+	return tmp_file_path;
+}
+
 int main()
 {
-
-	try
-	{
-		foofoo(5);
-	}
-	catch (const char* e)
-	{
-		cout << e << endl;
-	}
-	// string path = "/Users/hmahjour/Desktop/Tobedeleted";
-
-	// int ret = delete_directory(path);
-	// cout << "return: "<< ret << endl;
-	// cout << set_date_header() << endl;
-	// if (remove("../TobeDeleted") == 0)
-	// {
-	// 	cout << "Deleted" << endl;
-	// }
-	// else
-	// {
-	// 	cout << "Not deleted" << endl;
-	// 	cerr << "Error: " << strerror(errno) << endl;;
-    //  	return(EXIT_FAILURE);
-	// }
+	std::string path = "/home/sigma/webserver/";
+	std::string file_name = "test";
+	std::string extension = ".txt";
+	std::string tmp_file_path = create_temporary_file(path, file_name, extension);
+		// std::ofstream tmp_file(tmp_file_path.c_str());
+		// tmp_file << "Hello World!";
+	//tmp_file.close();
+	return 0;
 }

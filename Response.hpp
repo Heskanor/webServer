@@ -3,18 +3,21 @@
 
 #include <iostream>
 #include <string>
+#include <cstring>
 #include <vector>
 #include <map>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include "Request.hpp"
-#include "Location.hpp"
 #include <dirent.h>
 #include <fstream>
 #include <ctime>
 #include <unistd.h>
+#include <stdlib.h>
+#include <sstream>
 
+#include "Request.hpp"
+#include "location.hpp"
 
 #define REDIRECTCODE 3
 #define DIRCODE 2
@@ -32,6 +35,25 @@ class Response
 		std::string _content_length;
 		std::string _tmp_file_path;
 
+
+		Response(void) {}
+		Response(const Response& src) {
+			*this = src;
+		}
+		Response& operator=(const Response& rhs) {
+			if (this != &rhs) {
+				//_response_file = rhs._response_file;
+				_headers = rhs._headers;
+				_special_headers = rhs._special_headers;
+				_body_path = rhs._body_path;
+				_status_code = rhs._status_code;
+				_content_type = rhs._content_type;
+				_content_length = rhs._content_length;
+				_tmp_file_path = rhs._tmp_file_path;
+			}
+			return *this;
+		}
+		~Response(void) {}
 
 		class InvalidHttpVersion : public std::exception
 		{

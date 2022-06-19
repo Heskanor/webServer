@@ -1,6 +1,19 @@
 #include "Response.hpp"
 
-std::string deffault_error_page(std::string& code, std::string& msg)
+std::string create_temporary_file(std::string& path, std::string& file_name, std::string& extension)
+{
+	time_t time_since1970;
+  	time_since1970 = time(NULL);
+	std::stringstream ss;
+	ss << time_since1970;
+	std::string time_since1970_string = ss.str();
+	std::string tmp_file_path = path + time_since1970_string + "_" + file_name + extension;
+	std::ofstream tmp_file(tmp_file_path.c_str());
+	tmp_file.close();
+	return tmp_file_path;
+}
+
+std::string default_error_page(std::string& code, std::string& msg)
 {
 	std::string page;
 	page = "<html><head><title>" + code + " " + msg + "</title></head><body><center><h1>" 
@@ -107,7 +120,12 @@ Location find_matched_location(std::string& path, std::vector<Location>& locatio
 
 void check_allowed_methods(Response& res, std::string method, std::vector<std::string>& allowed_methods)
 {
-	if (std::find(allowed_methods.begin(), allowed_methods.end(), method) == allowed_methods.end())
+	int nbr_allowed_methods = allowed_methods.size();
+	bool found = false;
+	for (int i = 0; i < nbr_allowed_methods; i++)
+		if (allowed_methods[i] == method)
+			found = true;
+	if (!found)
 	{
 		res._status_code = "405";
 		std::string allow_header = "Allow: ";
@@ -131,7 +149,10 @@ void redirect_response(std::pair<std::string, std::string>& redirection, std::st
 
 void create_autoindex_file(std::string directory, std::vector<std::string>& entities, Request& req, Response& res)
 {
-	std::string file_path = "/tmp/autoindex.html";
+	std::string autoindex_file_path = "/tmp/";
+	std::string autoindex_file_name = "autoindex";
+	std::string autoindex_file_extension = ".html";
+	std::string file_path = create_temporary_file(autoindex_file_path, autoindex_file_name, autoindex_file_extension);
 	std::ofstream file;
 	file.open(file_path);
 	file << "<!DOCTYPE html>\n";
@@ -304,7 +325,25 @@ int delete_directory(std::string& path)
 
 void response_to_post(Response& res, Request& req, Location& location)
 {
-	
+	if (!location.get_upload_directory().empty())
+	{
+		std::string upload_directory = location.get_upload_directory();
+		if (upload_directory.back() != '/')
+			upload_directory += "/";
+		std::string tmp_file_name = "upload_file";
+		std::string file_extension = ".txt"; //check mime types later
+		std::string file_name = create_temporary_file(upload_directory, tmp_file_name, file_extension);
+		std::ofstream file_stream(file_name);
+		if (file_stream.is_open())
+		{
+			//file_stream << req._body; // need request body 
+			file_stream.close();
+		}
+		else
+			throw Response::InternalServerError();
+		// set response headers and body
+	}
+	// check if location supports cgi
 }
 
 void response_to_delete(Response& res, Request& req, Location& location)
@@ -377,6 +416,7 @@ Response server_response(Request& req, Server& server)
 	{
 		const char* error_code = e.what();
 		// check for error pages
+		std::cout << error_code << std::endl;
 	}
 }
 
