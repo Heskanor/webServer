@@ -1,6 +1,6 @@
 #include "Response.hpp"
 
-std::string create_temporary_file(std::string& path, std::string& file_name, std::string& extension)
+std::string create_temporary_file(std::string path, std::string file_name, std::string extension)
 {
 	time_t time_since1970;
   	time_since1970 = time(NULL);
@@ -13,12 +13,21 @@ std::string create_temporary_file(std::string& path, std::string& file_name, std
 	return tmp_file_path;
 }
 
-std::string default_error_page(std::string& code, std::string& msg)
+void default_error_page(Response& res, std::string& code, std::string& msg)
 {
-	std::string page;
-	page = "<html><head><title>" + code + " " + msg + "</title></head><body><center><h1>" 
-	+ code + " " + msg + "</h1></center><hr><center>Webserver</center></body></html>";
-	return page;
+	std::string error_page_tmp_file = create_temporary_file("/tmp/", "error_page", ".html");
+	std::ofstream error_page(error_page_tmp_file.c_str());
+	error_page << "<html><head><title>" << code << " " << msg << "</title></head><body><center><h1>" 
+	<< code << " " << msg << "</h1></center><hr><center>Webserver</center></body></html>";
+	error_page.close();
+	res._status_code = code;
+	res._body_path = error_page_tmp_file;
+	res._headers += "HTTP/1.1 " + res.http_code_map[res._status_code] + "\r\n";
+	res._headers += "Server: Webserver/1.0\r\n";
+	res._headers += "Date: " + set_date_header() + "\r\n";
+	res._headers += "Content-Type: " + res._content_type + "\r\n"; // to be set later
+	res._headers += "Content-Length: " + res._content_length + "\r\n";
+	res._headers += "\r\n";
 }
 
 void init_code_map(Response& res)
@@ -348,7 +357,7 @@ void response_to_post(Response& res, Request& req, Location& location)
 
 void response_to_delete(Response& res, Request& req, Location& location)
 {
-	std::string resource = location.get_root() + location.get_path();
+	std::string resource = location.get_root() + req.get_requestur();
 	int resource_code = requested_resource_by_delete(resource, location, res);
 
 	if (resource_code == DIRCODE)
@@ -369,7 +378,7 @@ void response_to_delete(Response& res, Request& req, Location& location)
 
 void response_to_get(Response& res, Request& req, Location& location)
 {
-	std::string resource = location.get_root() + location.get_path();
+	std::string resource = location.get_root() + req.get_requestur();
 	int resource_code = requested_resource_by_get(resource, location, req, res);
 
 	if (resource_code == REDIRECTCODE)
@@ -382,6 +391,34 @@ void response_to_get(Response& res, Request& req, Location& location)
 		// set content type and length
 		res._status_code = "200";
 		res._body_path = resource;
+	}
+}
+
+Response custom_and_default_error_pages(Response& res, std::string error_code)
+{
+	try
+	{
+		std::map<std::string, std::string> error_map = server.get_errors_map();
+		std::string error_page = error_map[error_code];
+		std::vector<Location> server_locations = server.get_locations();
+		Location errror_location = find_matched_location(error_page, server_locations);
+		std::vector<std::string> allowed_methods_in_location = error_location.get_allowed_methods();
+		std::string get_error_method = "GET";
+		check_allowed_methods(res, get_error_method, allowed_methods_in_location);
+		// if (redirection.first != "" && redirection.second != "")
+		// {
+		// 	redirect_response(redirection, redirection.first,redirection.second, req, res);
+		// 	//return res; need to redirect internally in this case or ignore the redirection in error page location
+		// }
+		return res;
+	}
+	catch (std::exception& e)
+	{
+		const char* second_error_code = e.what();
+		std::cout << second_error_code << std::endl;
+		// get default error page
+		default_error_page(res, second_error_code, res.http_code_map[second_error_code]);
+		return res;
 	}
 }
 
@@ -418,6 +455,8 @@ Response server_response(Request& req, Server& server)
 		const char* error_code = e.what();
 		// check for error pages
 		std::cout << error_code << std::endl;
+
+		return custom_and_default_error_pages(error_code);
 	}
 }
 
