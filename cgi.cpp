@@ -121,11 +121,11 @@ void Cgi::executer(Request *request, Response *response, Location &location)
     // std::stringstream ss;
     
     std::string path = location.get_root() + request->get_requestur();
-    int request_fd = open(request->get_pathbody().c_str(), O_RDONLY);
+    int request_fd = open(request->get_pathbody().c_str(), O_RDONLY);   
     int response_fd = open(response->_tmp_file_path.c_str(), O_RDONLY);
     const char *parm[3];
     parm[0] = _path.c_str();
-    parm[0] = path.c_str();
+    parm[0] = path.c_str(); 
     parm[1] = NULL;
 
     pid_t pid = fork();
@@ -162,10 +162,47 @@ void Cgi::executer(Request *request, Response *response, Location &location)
         // }
     }
     else
-    {
+    {   
         if (hasBody)
             close(request_fd);
-        close(response_fd);
+        //close(response_fd);
+        
         // waitpid(pid, NULL, 0);
     }
 }
+
+
+// else {
+
+//             if (request->IsHasBody()) {
+
+//                 close(request->GetBodyFd());
+//             }
+
+//             request->cgiPid = pid;
+//             request->cgiRunning = true;
+
+//         }
+//     } else {
+
+//         int state;
+//         int status = waitpid(request->cgiPid, &state, WNOHANG);
+//         if (status == -1) {
+//             response->setStatusCode(INTERNAL_SERVER_ERROR);\
+//             request->cgiRunning = false;
+//             return;
+//         } else if (status != 0) {
+//             if (WIFEXITED(state) == 0) {
+//                 response->setStatusCode(INTERNAL_SERVER_ERROR);
+
+//                 request->cgiRunning = false;
+//                 return;
+//             }
+//             response->getTempFile()._close();
+//             response->getTempFile()._open();
+//             response->readFromCgi();
+//             request->cgiRunning = false;
+//         }
+
+//     }
+// }
