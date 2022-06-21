@@ -13,15 +13,22 @@ std::string create_temporary_file(std::string path, std::string file_name, std::
 	return tmp_file_path;
 }
 
-void default_error_page(Response& res, std::string& code, std::string& msg)
+std::string set_date_header()
+{
+	time_t ttime = time(0);
+    char* dt = ctime(&ttime);
+	std::string date = std::string(dt);
+	return (date.substr(0, date.size() - 1));
+}
+
+void default_error_page(Response& res)
 {
 	std::string error_page_tmp_file = create_temporary_file("/tmp/", "error_page", ".html");
 	std::ofstream error_page(error_page_tmp_file.c_str());
-	error_page << "<html><head><title>" << code << " " << msg << "</title></head><body><center><h1>" 
-	<< code << " " << msg << "</h1></center><hr><center>Webserver</center></body></html>";
+	error_page << "<html><head><title>" << res.http_code_map[res._status_code] << "</title></head><body><center><h1>" 
+	<< res.http_code_map[res._status_code] << "</h1></center><hr><center>Webserver</center></body></html>";
 	error_page.close();
-	res._status_code = code;
-	res._body_path = error_page_tmp_file;
+	res._tmp_file_path = error_page_tmp_file;
 	res._headers += "HTTP/1.1 " + res.http_code_map[res._status_code] + "\r\n";
 	res._headers += "Server: Webserver/1.0\r\n";
 	res._headers += "Date: " + set_date_header() + "\r\n";
@@ -56,13 +63,6 @@ void init_code_map(Response& res)
 // Content-Length: 555
 // Connection: keep-alive
 
-std::string set_date_header()
-{
-	time_t ttime = time(0);
-    char* dt = ctime(&ttime);
-	std::string date = std::string(dt);
-	return (date.substr(0, date.size() - 1));
-}
 
 void set_response_headers(Request& req, Response& res)
 {
@@ -182,9 +182,9 @@ void create_autoindex_file(std::string directory, std::vector<std::string>& enti
 	file << "<hr>\n";
 	file << "</body>\n";
 	file << "</html>\n";
-	set_response_headers(req, res);
-	res._body_path = file_path;
+	res._tmp_file_path = file_path;
 	res._status_code = "200";
+	set_response_headers(req, res);
 	// set content type and length
 	file.close();
 }
@@ -296,6 +296,23 @@ int requested_resource_by_get(std::string& resource, Location& location, Request
 		throw Response::NoMatchedLocation();
 }
 
+void requested_resource_by_error_page(std::string& error_page_path, Location& error_location, Response& res)
+{
+	struct stat st;
+	if (stat(error_page_path.c_str(), &st) == 0)
+	{
+		if (S_ISDIR(st.st_mode))
+			throw Response::ForbiddenPath();
+		else if (S_ISREG(st.st_mode))
+		{
+			if (access(error_page_path.c_str(), R_OK))
+				throw Response::ForbiddenPath();
+		}
+	}
+	else
+		throw Response::NoMatchedLocation();
+}
+
 int delete_directory(std::string& path)
 {
 	DIR* dir;
@@ -391,33 +408,46 @@ void response_to_get(Response& res, Request& req, Location& location)
 		// set content type and length
 		res._status_code = "200";
 		res._body_path = resource;
+		set_response_headers(req, res);
 	}
 }
 
-Response custom_and_default_error_pages(Response& res, std::string error_code)
+Response custom_and_default_error_pages(Request& req, Response& res, Server& server, std::string error_code)
 {
 	try
 	{
 		std::map<std::string, std::string> error_map = server.get_errors_map();
+		if (error_map.find(error_code) == error_map.end())
+		{
+			res._status_code = error_code;
+			default_error_page(res);
+			return res;
+		}
 		std::string error_page = error_map[error_code];
 		std::vector<Location> server_locations = server.get_locations();
-		Location errror_location = find_matched_location(error_page, server_locations);
+		Location error_location = find_matched_location(error_page, server_locations);
 		std::vector<std::string> allowed_methods_in_location = error_location.get_allowed_methods();
 		std::string get_error_method = "GET";
 		check_allowed_methods(res, get_error_method, allowed_methods_in_location);
+		std::string error_page_path = error_location.get_root() + error_page;
+		requested_resource_by_error_page(error_page_path, error_location, res);
 		// if (redirection.first != "" && redirection.second != "")
 		// {
 		// 	redirect_response(redirection, redirection.first,redirection.second, req, res);
 		// 	//return res; need to redirect internally in this case or ignore the redirection in error page location
 		// }
+		res._status_code = error_code;
+		res._body_path = error_page_path;
+		set_response_headers(req, res);
 		return res;
 	}
 	catch (std::exception& e)
 	{
-		const char* second_error_code = e.what();
+		std::string second_error_code = e.what();
 		std::cout << second_error_code << std::endl;
 		// get default error page
-		default_error_page(res, second_error_code, res.http_code_map[second_error_code]);
+		res._status_code = second_error_code;
+		default_error_page(res);
 		return res;
 	}
 }
@@ -426,7 +456,10 @@ Response server_response(Request& req, Server& server)
 {
 	Response res;
 	init_code_map(res);
-	std::vector<std::string> methods_arr = {"GET", "POST", "DELETE"}; 
+	std::vector<std::string> methods_arr;
+	methods_arr.push_back("GET");
+	methods_arr.push_back("POST");
+	methods_arr.push_back("DELETE");
 	void (*methods_ptr[])(Response&, Request&, Location&) = {response_to_get, response_to_post, response_to_delete};
 
 	try
@@ -452,11 +485,11 @@ Response server_response(Request& req, Server& server)
 	}
 	catch (std::exception& e)
 	{
-		const char* error_code = e.what();
+		std::string error_code = e.what();
 		// check for error pages
 		std::cout << error_code << std::endl;
-
-		return custom_and_default_error_pages(error_code);
+	
+		return custom_and_default_error_pages(req, res, server, error_code);
 	}
 }
 
