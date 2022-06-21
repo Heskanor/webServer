@@ -18,6 +18,7 @@
 
 #include "Request.hpp"
 #include "location.hpp"
+#include "MimeType.hpp"
 
 #define REDIRECTCODE 3
 #define DIRCODE 2

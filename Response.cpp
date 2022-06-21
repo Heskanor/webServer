@@ -21,6 +21,14 @@ std::string set_date_header()
 	return (date.substr(0, date.size() - 1));
 }
 
+void set_content_type_and_length(Request& req, Response& res)
+{
+	if (req.getcontent_type() != "")
+		res._content_type = req.getcontent_type();
+	else if (req.get_method() == "POST")
+		res.setcontent_type("text/html");
+}
+
 void default_error_page(Response& res)
 {
 	std::string error_page_tmp_file = create_temporary_file("/tmp/", "error_page", ".html");
@@ -358,11 +366,17 @@ void response_to_post(Response& res, Request& req, Location& location)
 {
 	if (!location.get_upload_directory().empty())
 	{
-		std::string upload_directory = location.get_upload_directory();
+		std::string upload_directory = location.get_root() + location.get_upload_directory();
 		if (upload_directory.back() != '/')
 			upload_directory += "/";
 		std::string tmp_file_name = "upload_file";
-		std::string file_extension = ".txt"; //check mime types later
+		MimeType mime_type;
+		std::string file_extension = mime_type.get_mime_type(req.getcontent_type());
+		int check_code = check_if_entity_exists(upload_directory);
+		if (check_code != DIRCODE)
+			throw Response::NoMatchedLocation();
+		if (access(upload_directory.c_str(), W_OK))
+			throw Response::ForbiddenPath();
 		std::string file_name = create_temporary_file(upload_directory, tmp_file_name, file_extension);
 		std::ofstream file_stream(file_name);
 		if (file_stream.is_open())
@@ -436,11 +450,6 @@ Response custom_and_default_error_pages(Request& req, Response& res, Server& ser
 		check_allowed_methods(res, get_error_method, allowed_methods_in_location);
 		std::string error_page_path = error_location.get_root() + error_page;
 		requested_resource_by_error_page(error_page_path, error_location, res);
-		// if (redirection.first != "" && redirection.second != "")
-		// {
-		// 	redirect_response(redirection, redirection.first,redirection.second, req, res);
-		// 	//return res; need to redirect internally in this case or ignore the redirection in error page location
-		// }
 		res._status_code = error_code;
 		res._body_path = error_page_path;
 		set_response_headers(req, res);
