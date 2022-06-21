@@ -79,6 +79,7 @@ void set_response_headers(Request& req, Response& res)
 
 int check_if_entity_exists(std::string path)
 {
+	std::cout << "Checking if entity exists: " << path << std::endl;
 	struct stat st;
 	if (stat(path.c_str(), &st) == 0)
 	{
@@ -208,23 +209,26 @@ bool check_for_autoindex(std::string directory, Request& req, Response& res)
 	create_autoindex_file(directory, entities, req, res);
 }
 
-bool check_for_index_file(Location& location, Response& res)
+bool check_for_index_file(Request& req, Location& location, Response& res)
 {
 	std::vector<std::string> index_files = location.get_index();
-	if (index_files.empty())
+	if (!index_files.empty())
 	{
 		int nbr_indexes = index_files.size();
 		for (int i = 0; i < nbr_indexes; i++)
 		{
-			int index_code = check_if_entity_exists(index_files[i]);
+			std::string index_file_path = location.get_root() + req.get_requestur() + index_files[i];
+			int index_code = check_if_entity_exists(index_file_path);
+			std::cout << "index_code : "<< index_code << std::endl;
 			if (!index_code)
 				continue;
-			if (index_code == FILECODE && access(index_files[i].c_str(), R_OK) == 0)
+			if (index_code == FILECODE && access(index_file_path.c_str(), R_OK) == 0)
 			{
 				// check if location has cgi
 				// set content type and length
-				res._body_path = index_files[i];
+				res._body_path = index_file_path;
 				res._status_code = "200";
+				set_response_headers(req, res);
 				return true;
 			}
 			else
@@ -236,7 +240,8 @@ bool check_for_index_file(Location& location, Response& res)
 
 void check_directory_resource(std::string& resource, Location& location, Request& req, Response& res)
 {
-	bool index_file = check_for_index_file(location, res);
+	bool index_file = check_for_index_file(req, location, res);
+	std::cout << "index_file: " << index_file << std::endl;
 	if (!index_file && location.get_auto_index())
 		check_for_autoindex(resource, req, res);
 	else if (!index_file && !location.get_auto_index())

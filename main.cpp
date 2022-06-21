@@ -36,8 +36,8 @@ int main()
 	loc2.set_root("/Users/hmahjour/Desktop");
 	loc2.set_path("/CPP_pool");
 	std::vector<std::string> indexes2;
-	indexes2.push_back("chill.txt");
 	indexes2.push_back("comp.html");
+	indexes2.push_back("pool.txt");
 	loc2.set_index(indexes2);
 	loc2.set_auto_index(false);
 	loc2.set_upload_directory("");
