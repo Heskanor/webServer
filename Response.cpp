@@ -13,6 +13,13 @@ std::string create_temporary_file(std::string path, std::string file_name, std::
 	return tmp_file_path;
 }
 
+std::string better_to_string(int value)
+{
+	std::stringstream ss;
+	ss << value;
+	return ss.str();
+}
+
 std::string set_date_header()
 {
 	time_t ttime = time(0);
@@ -21,12 +28,19 @@ std::string set_date_header()
 	return (date.substr(0, date.size() - 1));
 }
 
-void set_content_type_and_length(Request& req, Response& res)
+int get_file_size(std::string& file_path)
 {
-	if (req.getcontent_type() != "")
-		res._content_type = req.getcontent_type();
-	else if (req.get_method() == "POST")
-		res.setcontent_type("text/html");
+	struct stat st;
+	stat(file_path.c_str(), &st);
+	return st.st_size;
+}
+
+void set_content_type_and_length(Request& req, Response& res, std::string& file_path)
+{
+	MimeType mime_type;
+	std::string extension = file_path.substr(file_path.find_last_of("."));
+	res._content_type = mime_type.get_mime_type(extension);
+	res._content_length = get_file_size(file_path);
 }
 
 void default_error_page(Response& res)
@@ -40,8 +54,9 @@ void default_error_page(Response& res)
 	res._headers += "HTTP/1.1 " + res.http_code_map[res._status_code] + "\r\n";
 	res._headers += "Server: Webserver/1.0\r\n";
 	res._headers += "Date: " + set_date_header() + "\r\n";
-	res._headers += "Content-Type: " + res._content_type + "\r\n"; // to be set later
-	res._headers += "Content-Length: " + res._content_length + "\r\n";
+	res._headers += "Content-Type: text/html\r\n";
+	res._content_length = get_file_size(error_page_tmp_file);
+	res._headers += "Content-Length: " + better_to_string(res._content_length) + "\r\n";
 	res._headers += "\r\n";
 }
 
@@ -77,9 +92,10 @@ void set_response_headers(Request& req, Response& res)
 	res._headers += "HTTP/1.1 " + res.http_code_map[res._status_code] + "\r\n";
 	res._headers += "Server: Webserver/1.0\r\n";
 	res._headers += "Date: " + set_date_header() + "\r\n";
-	res._headers += "Content-Type: " + req.getcontent_type() + "\r\n";
-	res._headers += "Content-Length: " + res._content_length + "\r\n";
-	// res._headers += "Connection: keep-alive\r\n";
+	if (res._content_type != "")
+		res._headers += "Content-Type: " + res._content_type + "\r\n";
+	if (res._content_length)
+		res._headers += "Content-Length: " + better_to_string(res._content_length) + "\r\n";
 	if (res._special_headers != "")
 		res._headers += res._special_headers + "\r\n";
 	res._headers += "\r\n";
@@ -193,6 +209,7 @@ void create_autoindex_file(std::string directory, std::vector<std::string>& enti
 	file << "</html>\n";
 	res._tmp_file_path = file_path;
 	res._status_code = "200";
+	set_content_type_and_length(req, res, file_path);
 	set_response_headers(req, res);
 	// set content type and length
 	file.close();
@@ -233,9 +250,9 @@ bool check_for_index_file(Request& req, Location& location, Response& res)
 			if (index_code == FILECODE && access(index_file_path.c_str(), R_OK) == 0)
 			{
 				// check if location has cgi
-				// set content type and length
 				res._body_path = index_file_path;
 				res._status_code = "200";
+				set_content_type_and_length(req, res, index_file_path);
 				set_response_headers(req, res);
 				return true;
 			}
@@ -452,6 +469,7 @@ Response custom_and_default_error_pages(Request& req, Response& res, Server& ser
 		requested_resource_by_error_page(error_page_path, error_location, res);
 		res._status_code = error_code;
 		res._body_path = error_page_path;
+		set_content_type_and_length(req, res, error_page_path);
 		set_response_headers(req, res);
 		return res;
 	}

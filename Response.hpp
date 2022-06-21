@@ -49,8 +49,8 @@ class Response
 		std::string _body_path;
 		std::string _status_code;
 		std::string _content_type;
-		std::string _content_length;
 		std::string _tmp_file_path;
+		int _content_length;
 
 		std::map<std::string, std::string> http_code_map;
 
