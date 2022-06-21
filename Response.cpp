@@ -181,6 +181,17 @@ void redirect_response(std::pair<std::string, std::string>& redirection, std::st
 	set_response_headers(req, res);
 }
 
+bool check_if_cgi_is_applicable(Location& location, std::string& path)
+{
+	std::string file_extension = path.substr(path.find_last_of("."));
+	std::vector<std::string> cgi_extensions = location.get_cgi_ext();
+	int nbr_cgi_extensions = cgi_extensions.size();
+	for (int i = 0; i < nbr_cgi_extensions; i++)
+		if (cgi_extensions[i] == file_extension)
+			return true;
+	return false;
+}
+
 void create_autoindex_file(std::string directory, std::vector<std::string>& entities, Request& req, Response& res)
 {
 	std::string autoindex_file_path = "/tmp/";
