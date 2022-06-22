@@ -112,14 +112,9 @@ void Cgi::envMaker(Request *request, Location &location)
     // setenv("HTTP_X_WAP_CLIENTID", (request->getxwapclientid()).c_str(), 1);
     // setenv("HTTP_X_OPERAMINI_PHONE_UA", (request->getxoperaminiphoneua()).c_str(), 1);
 }
-
+//int hasBody 
 void Cgi::executer(Request *request, Response *response, Location &location)
-{
-    // int fd[2];
-    // int status;
-    // pid_t pid;
-    // std::stringstream ss;
-    
+{   
     std::string path = location.get_root() + request->get_requestur();
     int request_fd = open(request->get_pathbody().c_str(), O_RDONLY);   
     int response_fd = open(response->_tmp_file_path.c_str(), O_RDONLY);
@@ -127,19 +122,21 @@ void Cgi::executer(Request *request, Response *response, Location &location)
     parm[0] = _path.c_str();
     parm[0] = path.c_str(); 
     parm[1] = NULL;
+    pid_t cgi_pid;
 
     pid_t pid = fork();
+    std::string methode = request->get_method();
     if (pid == -1)
     {
         //response->set_status(200);
-        response->_status_code = 500;
+        response->_status_code = "500";
         return;
     }
     if (pid == 0)
     {
         envMaker(request, location);
         close(STDERR_FILENO);
-        if (hasBody)
+        if (methode == "POST" || methode == "DELETE")
         {
             dup2(request_fd, STDIN_FILENO);
             dup2(response_fd, STDOUT_FILENO);
@@ -149,60 +146,32 @@ void Cgi::executer(Request *request, Response *response, Location &location)
         else
         {
             dup2(response_fd, STDOUT_FILENO);
-            close(request_fd);
+            // close(STDIN_FILENO);
+            close(response_fd);
             close(0);
         }
         int exitcode = execvp(_path.c_str(), (char *const *)parm);
         exit(exitcode);
-        // if (exitcode == -1)
-        // {
-        //     //response->set_status(200);
-        //     response->_status_code = 500;
-        //     return;
-        // }
     }
     else
     {   
-        if (hasBody)
+        if (methode == "POST" || methode == "DELETE")
             close(request_fd);
-        //close(response_fd);
-        
-        // waitpid(pid, NULL, 0);
+        cgi_pid = pid;
+    }
+    int state;
+    int status = waitpid(cgi_pid, &state, WNOHANG);
+    if (status == -1) {
+        response->_status_code = "500";
+        return;
+    }
+    else if (status != 0)
+    {
+        if (WIFEXITED(state) == 0)
+        {
+            response->_status_code = "500";
+            return;
+        }
+        //close response tmp file
     }
 }
-
-
-// else {
-
-//             if (request->IsHasBody()) {
-
-//                 close(request->GetBodyFd());
-//             }
-
-//             request->cgiPid = pid;
-//             request->cgiRunning = true;
-
-//         }
-//     } else {
-
-//         int state;
-//         int status = waitpid(request->cgiPid, &state, WNOHANG);
-//         if (status == -1) {
-//             response->setStatusCode(INTERNAL_SERVER_ERROR);\
-//             request->cgiRunning = false;
-//             return;
-//         } else if (status != 0) {
-//             if (WIFEXITED(state) == 0) {
-//                 response->setStatusCode(INTERNAL_SERVER_ERROR);
-
-//                 request->cgiRunning = false;
-//                 return;
-//             }
-//             response->getTempFile()._close();
-//             response->getTempFile()._open();
-//             response->readFromCgi();
-//             request->cgiRunning = false;
-//         }
-
-//     }
-// }
