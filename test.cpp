@@ -263,10 +263,15 @@ std::string create_temporary_file(std::string& path, std::string& file_name, std
 
 int main()
 {
-	std::string path = "/home/sigma/webserver/";
-	std::string file_name = "test";
+	std::string path = "/Users/hmahjour/Desktop/CPP_pool/";
+	std::string file_name = "toberenamed";
 	std::string extension = ".txt";
 	std::string tmp_file_path = create_temporary_file(path, file_name, extension);
+	std::string new_file_path = "/Users/hmahjour/Desktop/cotest/renamedfile.txt";
+	if (rename(tmp_file_path.c_str(), new_file_path.c_str()))
+		cout << "failed to rename file" << endl;
+	else
+		cout << "renamed file successfully" << endl;
 		// std::ofstream tmp_file(tmp_file_path.c_str());
 		// tmp_file << "Hello World!";
 	//tmp_file.close();
