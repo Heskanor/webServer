@@ -3,19 +3,18 @@ server:
     listen: 127.0.0.1:4040
     root: ./root
 server:
-    serverName: Server2
+    serverName: Server1
     listen: 127.0.0.1:2020
     root: ./root
     location:
-        path: /the2
-        autoIndex: true
-        root: ./rootchild
-        index: index.html index.htm
+        path: /Desktop
+        index: testindex.txt
+        autoIndex: false
+        root: /Users/aali-mou
         errorPage: 399 ./Notworking/index.html
         errorPage: 500 ./Networking/index.html
         uploadDirectory: /var/www/html/public/uploads
         allowedMethods: POST GET DELETE
-        return:  566 haha
         cgiPath: ./Networking/index.html
         cgiExt: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6
 server:
@@ -23,14 +22,14 @@ server:
     listen: 127.0.0.1:3030
     root: ./root
     location:
-        path: /the2
-        autoIndex: true
-        root: ./rootchild
-        index: index.html index.htm
+        path: /Desktop
+        index: testindex.txt
+        return: 301 https://www.google.com
+        autoIndex: false
+        root: /Users/aali-mou
         errorPage: 399 ./Notworking/index.html
         errorPage: 500 ./Networking/index.html
         uploadDirectory: /var/www/html/public/uploads
         allowedMethods: POST GET DELETE
-        return:  566 haha
         cgiPath: ./Networking/index.html
         cgiExt: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6

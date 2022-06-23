@@ -175,7 +175,8 @@ void redirect_response(std::pair<std::string, std::string>& redirection, std::st
 {
 	std::string new_status_code = redirection_code;
 	std::string new_location = redirection_path;
-	std::string location_header = "Location: " + new_location + "\r\n";
+	//std::string location_header = "Location: " + new_location + "\r\n";
+	std::string location_header = "Location: http://www.google.com\r\n";
 	res._special_headers += location_header;
 	res._status_code = new_status_code;
 	set_response_headers(req, res);
@@ -218,12 +219,12 @@ void create_autoindex_file(std::string directory, std::vector<std::string>& enti
 	file << "<hr>\n";
 	file << "</body>\n";
 	file << "</html>\n";
+	file.close();
 	res._tmp_file_path = file_path;
 	res._status_code = "200";
 	set_content_type_and_length(req, res, file_path);
 	set_response_headers(req, res);
 	// set content type and length
-	file.close();
 }
 
 bool check_for_autoindex(std::string directory, Request& req, Response& res)

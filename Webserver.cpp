@@ -134,6 +134,9 @@ void				Webserver::Runmywebserver()
 							 valread = read( i , buffer, BUFFERSIZE);
 							 std::cout<<valread<<std::endl;
 								buffer[valread] = '\0';
+								std::string op;
+								op.append(buffer);
+								std::cout<<buffer<<std::endl;
 								if(valread == 0)
 									{
 										std::cout<<"sadsadasD"<<std::endl;
@@ -157,12 +160,15 @@ void				Webserver::Runmywebserver()
 							if (it->second.get_requestiscomplete() == true)
 							{
 								std::cout<<" im here "<<std::endl;
+								std::cout<<Requestsmap[i].get_requestur()<<std::endl;
 								Response resp;
 								std::cout<<req.getserver_fd()<<std::endl;
 								resp = server_response(it->second,servers[req.getserver_fd()]);
+								//std::cout<<"im hereeee |||||||||||||||||"<<std::endl;
 								Responsemap[it->first] = resp;
 								FD_CLR(it->first,&readsfds);
 								FD_SET(it->first, &writefds);
+							//	Requestsmap.erase(i);
 
 							}
 						//	it->second.adddata(buffer, valread);
@@ -181,23 +187,25 @@ void				Webserver::Runmywebserver()
 						if (!Responsemap[i]._body_path.empty())
 						{
 							lop.erase();
-							char *buffer = (char *)malloc(sizeof(char) * (Responsemap[i]._content_length + 1));
+							char *buffer2 = (char *)malloc(sizeof(char) * (Responsemap[i]._content_length + 1));
 							int fd = open(Responsemap[i]._body_path.c_str(),  O_RDWR,  0666);
-							read (fd, buffer,Responsemap[i]._content_length);
-							write(i,buffer, Responsemap[i]._content_length);
+							read (fd, buffer2,Responsemap[i]._content_length);
+							write(i,buffer2, Responsemap[i]._content_length);
 							close(fd);
-							free(buffer);
+							free(buffer2);
 							//write(i,)
 						}
 						else if (!Responsemap[i]._tmp_file_path.empty()){
 							lop.erase();
-							char *buffer = (char *)malloc(sizeof(char) * (Responsemap[i]._content_length + 1));
+							std::cout<<Responsemap[i]._tmp_file_path<<std::endl;
+							std::cout<<Responsemap[i]._content_length<<std::endl;
+							char *buffer2 = (char *)malloc(sizeof(char) * (Responsemap[i]._content_length + 1));
 							int fd = open(Responsemap[i]._tmp_file_path.c_str(),  O_RDWR,  0666);
-							read (fd, buffer,Responsemap[i]._content_length);
-							write(i,buffer, Responsemap[i]._content_length);
+							read (fd, buffer2,Responsemap[i]._content_length);
+							write(i,buffer2, Responsemap[i]._content_length);
 							close(fd);
-							free(buffer);
-							remove(Responsemap[i]._tmp_file_path.c_str());
+							free(buffer2);
+							//remove(Responsemap[i]._tmp_file_path.c_str());
 
 						}
 	//	re								
