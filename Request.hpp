@@ -38,7 +38,26 @@ class Request
 		void set_ip(std::string);
 		void set_port(std::string);
 		int get_connection();
+		std::string getcontent_type()
+		{
+			return content_type;
+		}
 		void set_socketid(int fd);
+		void set_timeout(long int op){
+			timeout = op;
+		}
+		void setserver_fd(int a )
+		{
+			serverfd = a;
+		}
+		int getserver_fd()
+		{
+			return serverfd;
+		}
+		long int get_timeout()
+		{
+			return timeout;
+		}
 		int	 get_socketid();
 		bool get_requestiscomplete()
 		{
@@ -74,12 +93,14 @@ class Request
 		int requeststatus;
 		int filediscriptor;
 		int bodylenght;
+		long int timeout;
 		std::string backup;
 		size_t writingchar;
 		bool igottheend;
 		int chunksize;
 		int global;
 		bool chunkcomplete;
+		int serverfd;
 		int Reminder;
 		//this attribut it s about (content L and Tran E )
 		//std::string *Accept_encoding;

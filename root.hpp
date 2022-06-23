@@ -6,6 +6,7 @@
 #include <list>
 #include <vector>
 #include <string>
+//#include "server.hpp"
 #include <map>
 
 class Server;
@@ -26,7 +27,7 @@ class Root
 
     public:
         Root();
-        // Root(const Root &src){}
+        Root(const Root &src);
         virtual ~Root();
         virtual Root &operator=( Root const & rhs );
         //geters and seters
@@ -46,9 +47,12 @@ class Root
         //virtual void add_server(Server &server);
         virtual void add_error_map(std::string error, std::string error_url);
         virtual std::string get_error_map(std::string error);
+        virtual std::map<std::string, std::string> get_errors_map();
+        virtual std::map<std::string, std::string> get_errmap();
         virtual std::string get_upload_directory();
         virtual void set_upload_directory(std::string upload_directory);
         virtual std::vector<std::string> get_allowed_methods();
+        virtual void add_allowed_method(std::string method);
         virtual void set_allowed_methods(std::vector<std::string> allowed_methods);
 
 

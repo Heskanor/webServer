@@ -273,10 +273,9 @@ void					Request::setchunckedbody()
 				backup  = backup.substr(found + 2);
 			if (chunksize == 0)
 			{
-				while(1)
-				{
-					//std::cout<<"wlah ta hbss hnaya"<<std::endl;
-				}
+				requestcomplete = 1;
+				chunkcomplete = 1;
+				return;
 		}
 		}
 		if ( chunksize != -1)
@@ -384,6 +383,7 @@ int 					Request::parserequest(char *buffer, int size)
 				if(get_method() != "POST")
 				{
 					//std::cout<<"surly it s port method|"<<get_method()<<"|"<<std::endl;
+					requestcomplete = 1;
 					return requestcomplete;
 				}
 			}

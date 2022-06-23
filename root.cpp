@@ -1,10 +1,10 @@
 #include "root.hpp"
-#include "server.hpp"
 #include "location.hpp"
 
 Root::Root()
 {
-
+    _autoIndex = false;
+    _bodySizeLimit = 125;
 }
 
 Root::~Root()
@@ -12,8 +12,21 @@ Root::~Root()
 
 }
 
+Root::Root(const Root &src)
+{
+    *this = src;
+}
+
 Root &Root::operator=(Root const & rhs)
 {
+    _index = rhs._index;
+    _servers = rhs._servers;
+    _root = rhs._root;
+    _bodySizeLimit = rhs._bodySizeLimit;
+    _autoIndex = rhs._autoIndex;
+    _error_map = rhs._error_map;
+    _uploadDirectory = rhs._uploadDirectory;
+    _allowedMethods = rhs._allowedMethods;
     return *this;
 }
 
@@ -30,6 +43,11 @@ void Root::set_root(std::string root)
 void Root::set_index(std::vector<std::string> index)
 {
     _index = index;
+}
+
+std::map<std::string, std::string> Root::get_errmap()
+{
+    return _error_map;
 }
 
 std::vector<std::string> Root::get_index()
@@ -49,11 +67,13 @@ bool Root::get_auto_index()
 
 int Root::get_bodySizeLimit()
 {
+    
     return _bodySizeLimit;
 }
 
 void Root::set_bodySizeLimit(int bodySizeLimit)
 {
+    
     _bodySizeLimit = bodySizeLimit;
 }
 
@@ -79,20 +99,16 @@ Server Root::get_server(int index)
 
 void Root::add_server(Server &server)
 {
-    //std::cout << "add server" << std::endl;
-    //std::cout << server.get_server_name() << std::endl;
     _servers.push_back(server);
-    // //std::cout << "push back not error" << std::endl;
-    // print servers vector
-    for (std::vector<Server>::iterator it = _servers.begin(); it != _servers.end(); ++it)
-    {
-        //std::cout <<"lol"<< it->get_server_name() << std::endl;
-    }
 }
 
 std::string Root::get_error_map(std::string error)
 {
     return _error_map[error];
+}
+std::map<std::string, std::string> Root::get_errors_map()
+{
+    return _error_map;
 }
 
 void Root::add_error_map(std::string error, std::string error_url)
@@ -118,6 +134,11 @@ std::vector<std::string> Root::get_allowed_methods()
 void Root::set_allowed_methods(std::vector<std::string> allowed_methods)
 {
     _allowedMethods = allowed_methods;
+}
+
+void Root::add_allowed_method(std::string allowed_method)
+{
+    _allowedMethods.push_back(allowed_method);
 }
 
 
