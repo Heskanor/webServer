@@ -165,6 +165,11 @@ std::string Request::getcontent_type()
 	return content_type;
 }
 
+std::string Request::get_pathbody(void)
+{
+	return pathbody;
+}
+
 /*
 ** --------------------------------- ACCESSOR ---------------------------------
 */

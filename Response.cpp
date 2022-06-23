@@ -1,13 +1,18 @@
 #include "Response.hpp"
 
-std::string create_temporary_file(std::string path, std::string file_name, std::string extension)
+std::string create_tmp_file_name(std::string path, std::string file_name, std::string extension)
 {
 	time_t time_since1970;
   	time_since1970 = time(NULL);
 	std::stringstream ss;
 	ss << time_since1970;
 	std::string time_since1970_string = ss.str();
-	std::string tmp_file_path = path + time_since1970_string + "_" + file_name + extension;
+	return (path + time_since1970_string + "_" + file_name + extension);
+}
+
+std::string create_temporary_file(std::string path, std::string file_name, std::string extension)
+{
+	std::string tmp_file_path = create_tmp_file_name(path, file_name, extension);
 	std::ofstream tmp_file(tmp_file_path.c_str());
 	tmp_file.close();
 	return tmp_file_path;
@@ -419,16 +424,19 @@ bool check_for_upload_directory(Response& res, Request& req, Location& location)
 		std::string upload_directory = location.get_root() + location.get_upload_directory();
 		if (upload_directory.back() != '/')
 			upload_directory += "/";
-		std::string tmp_file_name = "upload_file";
-		MimeType mime_type;
-		std::string file_extension = mime_type.get_mime_type(req.getcontent_type());
 		int check_code = check_if_entity_exists(upload_directory);
 		if (check_code != DIRCODE)
 			throw Response::NoMatchedLocation();
 		if (access(upload_directory.c_str(), W_OK))
-			throw Response::ForbiddenPath(); 
-		// res._tmp_file_path = req.get_pathbody(); NEED TO MOVE FILE TO UPLOAD DIRECTORY
+			throw Response::ForbiddenPath();
+		std::string file_name = "uploaded_file";
+		MimeType mime_type;
+		std::string file_extension = mime_type.get_mime_type(req.getcontent_type());
+		std::string tmp_file_name = create_tmp_file_name(upload_directory, file_name, file_extension);
+		if (rename(req.get_pathbody().c_str(), tmp_file_name.c_str()))
+			throw Response::ForbiddenPath();
 		res._status_code = "201";
+		res._tmp_file_path = tmp_file_name;
 		set_content_type_and_length(req, res, res._tmp_file_path);
 		set_response_headers(req, res);
 		return true;

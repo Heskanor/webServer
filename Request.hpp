@@ -32,6 +32,7 @@ class Request
 		std::string get_ip();
 		std::string getcontentlenght();
 		std::string getcontent_type(); //ADDED BY SIGMA
+		std::string get_pathbody(); //ALSO ADDED BY SIGMA
 		bool gettransferstat();
 		void settransferstat(bool j);
 		void set_ip(std::string);
@@ -42,6 +43,7 @@ class Request
 		char *accept_encoding();
 
 	private:
+		std::string  pathbody;
 		std::string method;
 		std::string ipaddress;
 		std::string port;
