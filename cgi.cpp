@@ -69,7 +69,6 @@ void Cgi::envMaker(Request *request, Location &location)
 {
     std::string scriptname = location.get_root() + _path;
 
-
     //setenv("AUTH_TYPE", "", 1);
     setenv("CONTENT_LENGTH", (request->getcontentlenght()).c_str(), 1);
     setenv("CONTENT_TYPE", (request->getcontenttype()).c_str(), 1); // need content type geter
@@ -113,6 +112,30 @@ void Cgi::envMaker(Request *request, Location &location)
     // setenv("HTTP_X_OPERAMINI_PHONE_UA", (request->getxoperaminiphoneua()).c_str(), 1);
 }
 //int hasBody 
+void cgi_reader()
+{
+    char buf[1024];
+    int ret;
+    std::string bd;
+
+    while ((ret = read(_tmp_file_path.c_str(), buf, 1024)) > 0)
+    {
+        bd.append(buf, ret);
+        if (bd.find("\r\n\r\n") != std::string::npos)
+            break;
+        //write(1, buf, ret);
+    }
+    _status_code = "200";
+    std::string headers = bd.substr(0, bd.find("\r\n\r\n") + 4);
+    parse_headers(headers);
+    body = bd.substr(bd.find("\r\n\r\n") + 4);
+    bodySkiped = body.size();
+    cgiHeaderSize = headers.size();
+    contentLength = countFileSize(_tmp_file_path.c_str());
+    contentLength -= headers.length();
+
+}
+
 void Cgi::executer(Request *request, Response *response, Location &location)
 {   
     std::string path = location.get_root() + request->get_requestur();
@@ -172,6 +195,7 @@ void Cgi::executer(Request *request, Response *response, Location &location)
             response->_status_code = "500";
             return;
         }
+        cgi_reader();
         //close response tmp file
     }
 }
