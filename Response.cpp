@@ -169,11 +169,13 @@ void check_allowed_methods(Response& res, std::string method, std::vector<std::s
 	}
 }
 
-void redirect_response(std::pair<std::string, std::string>& redirection, std::string& redirection_code, std::string& redirection_path, Request& req, Response& res)
+void redirect_response(std::string& redirection_code, std::string& redirection_path, Request& req, Response& res)
 {
 	std::string new_status_code = redirection_code;
 	std::string new_location = redirection_path;
 	std::string location_header = "Location: " + new_location + "\r\n";
+		// std::string location_header = "Location: " + new_location + "\r\n";
+
 	res._special_headers += location_header;
 	res._status_code = new_status_code;
 	set_response_headers(req, res);
@@ -243,7 +245,7 @@ bool check_for_autoindex(std::string directory, Request& req, Response& res)
 	create_autoindex_file(directory, entities, req, res);
 }
 
-bool check_for_index_file(Request& req, Location& location, Response& res)
+bool check_for_index_file(Request& req, Location& location, std::string& resource, Response& res)
 {
 	std::vector<std::string> index_files = location.get_index();
 	if (!index_files.empty())
@@ -251,7 +253,7 @@ bool check_for_index_file(Request& req, Location& location, Response& res)
 		int nbr_indexes = index_files.size();
 		for (int i = 0; i < nbr_indexes; i++)
 		{
-			std::string index_file_path = location.get_root() + req.get_requestur() + index_files[i];
+			std::string index_file_path = resource + index_files[i];
 			int index_code = check_if_entity_exists(index_file_path);
 			std::cout << "index_code : "<< index_code << std::endl;
 			if (!index_code)
@@ -274,7 +276,7 @@ bool check_for_index_file(Request& req, Location& location, Response& res)
 
 void check_directory_resource(std::string& resource, Location& location, Request& req, Response& res)
 {
-	bool index_file = check_for_index_file(req, location, res);
+	bool index_file = check_for_index_file(req, location, resource, res);
 	std::cout << "index_file: " << index_file << std::endl;
 	if (!index_file && location.get_auto_index())
 		check_for_autoindex(resource, req, res);
@@ -315,10 +317,9 @@ int requested_resource_by_get(std::string& resource, Location& location, Request
 			if (resource.back() != '/')
 			{
 				resource += "/";
-				std::pair<std::string, std::string> redirections = location.get_redirection();
-				res._status_code = "301";
-				redirect_response(redirections, res._status_code, resource, req, res);
-				return REDIRECTCODE;
+				// res._status_code = "301";
+				// redirect_response(res._status_code, directory, req, res);
+				// return REDIRECTCODE;
 			}
 			if (access(resource.c_str(), R_OK))
 				throw Response::ForbiddenPath();
@@ -345,10 +346,9 @@ int requested_resource_by_post(std::string& resource, Location& location, Reques
 			if (resource.back() != '/')
 			{
 				resource += "/";
-				std::pair<std::string, std::string> redirections = location.get_redirection();
-				res._status_code = "301";
-				redirect_response(redirections, res._status_code, resource, req, res);
-				return REDIRECTCODE;
+				// res._status_code = "301";
+				// redirect_response(res._status_code, resource, req, res);
+				// return REDIRECTCODE;
 			}
 			if (access(resource.c_str(), R_OK))
 				throw Response::ForbiddenPath();
@@ -456,7 +456,7 @@ void response_to_post(Response& res, Request& req, Location& location)
 		return;
 		if (resource_code == DIRCODE)
 		{
-			if (!check_for_index_file(req, location, res))
+			if (!check_for_index_file(req, location, resource, res))
 				throw Response::ForbiddenPath();
 		}
 		else if (resource_code == FILECODE)
@@ -573,7 +573,7 @@ Response server_response(Request& req, Server& server)
 		std::pair<std::string, std::string> redirection = location.get_redirection();
 		if (redirection.first != "" && redirection.second != "")
 		{
-			redirect_response(redirection, redirection.first,redirection.second, req, res);
+			redirect_response(redirection.first, redirection.second, req, res);
 			return res;
 		}
 		for (int i = 0; i < 3; i++)

@@ -54,7 +54,15 @@ class Response
 
 		std::map<std::string, std::string> http_code_map;
 
-		Response(void) {}
+		Response(void) {
+		this->_headers = "";
+		this->_special_headers = "";
+		this->_body_path = "";
+		this->_status_code = "";
+		this->_content_type = "";
+		this->_tmp_file_path = "";
+		this->_content_length = 0;
+		}
 		Response(const Response& src) {
 			*this = src;
 		}

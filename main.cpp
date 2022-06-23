@@ -3,8 +3,8 @@
 int main()
 {
 	Request req;
-	req.setmethod("DELETE");
-	req.setrequest("/Tobedeleted/");
+	req.setmethod("GET");
+	req.setrequest("/Desktop");
 	req.sethttpversion("HTTP/1.1");
 	req.setcontent_length("0");
 	req.setcontent_type("request type");
