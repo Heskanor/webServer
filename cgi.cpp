@@ -125,22 +125,30 @@ void cgi_reader()
             break;
         //write(1, buf, ret);
     }
-    _status_code = "200";
+    if(_status_code != "500")
+        _status_code = "200";
     std::string headers = bd.substr(0, bd.find("\r\n\r\n") + 4);
     parse_headers(headers);
     body = bd.substr(bd.find("\r\n\r\n") + 4);
-    bodySkiped = body.size();
-    cgiHeaderSize = headers.size();
-    contentLength = countFileSize(_tmp_file_path.c_str());
-    contentLength -= headers.length();
+    //close tmp
+    struct stat st;
+
+    if (stat(_tmp_file_path, &st) == 0)
+        st.st_size;
+
+    // bodySkiped = body.size();
+    // cgiHeaderSize = headers.size();
+    // contentLength = countFileSize(_tmp_file_path.c_str());
+    // contentLength -= headers.length();
 
 }
 
 void Cgi::executer(Request *request, Response *response, Location &location)
-{   
+{   std::string methode = request->get_method();
     std::string path = location.get_root() + request->get_requestur();
-    int request_fd = open(request->get_pathbody().c_str(), O_RDONLY);   
-    int response_fd = open(response->_tmp_file_path.c_str(), O_RDONLY);
+    if (methode == "POST" || methode == "DELETE")
+        int request_fd = open(request->get_pathbody().c_str(), O_RDONLY);   
+    int response_fd = open(response->_tmp_file_path.c_str(), O_WRONLY);
     const char *parm[3];
     parm[0] = _path.c_str();
     parm[0] = path.c_str(); 
@@ -148,7 +156,7 @@ void Cgi::executer(Request *request, Response *response, Location &location)
     pid_t cgi_pid;
 
     pid_t pid = fork();
-    std::string methode = request->get_method();
+    
     if (pid == -1)
     {
         //response->set_status(200);
