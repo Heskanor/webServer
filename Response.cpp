@@ -130,7 +130,7 @@ void check_supported_methods(std::string method)
 }
 
 
-Location find_matched_location(std::string& path, std::vector<Location>& locations)
+int find_matched_location(Location& loc, std::string& path, std::vector<Location>& locations)
 {
 	if (path != "")
 	{
@@ -138,16 +138,19 @@ Location find_matched_location(std::string& path, std::vector<Location>& locatio
 		for (int i = 0; i < nbr_locations; i++)
 		{
 			if (locations[i].get_path() == path)
-				return locations[i];
+			{
+				loc = locations[i];
+				return 0;
+			}
 		}
 		size_t found = path.find_last_of("/");
 		if (found != std::string::npos)
 		{
 			std::string path_without_last_slash = path.substr(0, found);
-			return find_matched_location(path_without_last_slash, locations);
+			return find_matched_location(loc, path_without_last_slash, locations);
 		}
 	}
-	throw Response::NoMatchedLocation();
+	return 1;
 }
 
 void check_allowed_methods(Response& res, std::string method, std::vector<std::string>& allowed_methods)
@@ -535,7 +538,10 @@ Response custom_and_default_error_pages(Request& req, Response& res, Server& ser
 		}
 		std::string error_page = error_map[error_code];
 		std::vector<Location> server_locations = server.get_locations();
-		Location error_location = find_matched_location(error_page, server_locations);
+		Location error_location;
+		int loc = find_matched_location(error_location, error_page, server_locations);
+		if (loc)
+			throw Response::NoMatchedLocation();
 		std::vector<std::string> allowed_methods_in_location = error_location.get_allowed_methods();
 		std::string get_error_method = "GET";
 		check_allowed_methods(res, get_error_method, allowed_methods_in_location);
@@ -573,7 +579,10 @@ Response server_response(Request& req, Server& server)
 		check_supported_methods(req.get_method());
 		std::string req_uri = req.get_requestur();
 		std::vector<Location> server_locations = server.get_locations();
-		Location location = find_matched_location(req_uri, server_locations);
+		Location location;
+		int loc = find_matched_location(location, req_uri, server_locations);
+		if (loc)
+			throw Response::NoMatchedLocation();
 		std::vector<std::string> allowed_methods_in_location = location.get_allowed_methods();
 		std::string request_method = req.get_method();
 		check_allowed_methods(res, request_method, allowed_methods_in_location);
@@ -591,7 +600,7 @@ Response server_response(Request& req, Server& server)
 	catch (std::exception& e)
 	{
 		std::string error_code = e.what();
-		std::cout << error_code << std::endl;
+		std::cout << "fuuuuu " << error_code << std::endl;
 		return custom_and_default_error_pages(req, res, server, error_code);
 	}
 }

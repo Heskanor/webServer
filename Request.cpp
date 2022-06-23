@@ -44,6 +44,7 @@ Request::~Request()
 Request &				Request::operator=( Request const & rhs )
 {
 	chunksize = rhs.chunksize;
+	serverfd = rhs.serverfd;
 	method = rhs.method;
 	writingchar = rhs.writingchar;
 	chunkcomplete = rhs.chunkcomplete;

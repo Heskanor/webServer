@@ -30,7 +30,7 @@ int checkingservers(std::vector<Server> lop, Request req)
             {
                 if (op[i] == j)
                 {
-                    if (lop[i].get_server_name() == req.get_ip())
+                    if (lop[i].get_server_name() == req.get)
                     {
                         return op[i];
                     }

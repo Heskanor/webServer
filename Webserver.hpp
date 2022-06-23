@@ -41,6 +41,7 @@ class Webserver
 			return ((right1.tv_sec * 1000) + (long int)(right1.tv_usec / 1000));
 		}
 		fd_set master;
+		fd_set master2;
 		std::string path;
 		std::map<int, Myserver> lopserver;
 		std::vector<Server> servers ;
