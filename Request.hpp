@@ -33,6 +33,10 @@ class Request
 		std::string get_port();
 		std::string get_ip();
 		std::string getcontentlenght();
+	std::string	get_pathbody()
+	{
+		return pathbody;
+	}
 		bool gettransferstat();
 		void settransferstat(bool j);
 		void set_ip(std::string);

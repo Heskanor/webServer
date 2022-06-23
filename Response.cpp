@@ -1,13 +1,18 @@
 #include "Response.hpp"
 
-std::string create_temporary_file(std::string path, std::string file_name, std::string extension)
+std::string create_tmp_file_name(std::string path, std::string file_name, std::string extension)
 {
 	time_t time_since1970;
   	time_since1970 = time(NULL);
 	std::stringstream ss;
 	ss << time_since1970;
 	std::string time_since1970_string = ss.str();
-	std::string tmp_file_path = path + time_since1970_string + "_" + file_name + extension;
+	return (path + time_since1970_string + "_" + file_name + extension);
+}
+
+std::string create_temporary_file(std::string path, std::string file_name, std::string extension)
+{
+	std::string tmp_file_path = create_tmp_file_name(path, file_name, extension);
 	std::ofstream tmp_file(tmp_file_path.c_str());
 	tmp_file.close();
 	return tmp_file_path;
@@ -79,23 +84,16 @@ void init_code_map(Response& res)
 	res.http_code_map["505"] = "505 HTTP Version Not Supported";
 }
 
-// HTTP/1.1 403 Forbidden
-// Server: nginx/1.21.6
-// Date: Sun, 12 Jun 2022 02:41:52 GMT
-// Content-Type: text/html
-// Content-Length: 555
-// Connection: keep-alive
-
-
 void set_response_headers(Request& req, Response& res)
 {
 	res._headers += "HTTP/1.1 " + res.http_code_map[res._status_code] + "\r\n";
 	res._headers += "Server: Webserver/1.0\r\n";
 	res._headers += "Date: " + set_date_header() + "\r\n";
 	if (res._content_type != "")
+	{
 		res._headers += "Content-Type: " + res._content_type + "\r\n";
-	if (res._content_length)
 		res._headers += "Content-Length: " + better_to_string(res._content_length) + "\r\n";
+	}
 	if (res._special_headers != "")
 		res._headers += res._special_headers + "\r\n";
 	res._headers += "\r\n";
@@ -171,12 +169,13 @@ void check_allowed_methods(Response& res, std::string method, std::vector<std::s
 	}
 }
 
-void redirect_response(std::pair<std::string, std::string>& redirection, std::string& redirection_code, std::string& redirection_path, Request& req, Response& res)
+void redirect_response(std::string& redirection_code, std::string& redirection_path, Request& req, Response& res)
 {
 	std::string new_status_code = redirection_code;
 	std::string new_location = redirection_path;
-	//std::string location_header = "Location: " + new_location + "\r\n";
-	std::string location_header = "Location: http://www.google.com\r\n";
+	std::string location_header = "Location: " + new_location + "\r\n";
+		// std::string location_header = "Location: " + new_location + "\r\n";
+
 	res._special_headers += location_header;
 	res._status_code = new_status_code;
 	set_response_headers(req, res);
@@ -185,6 +184,7 @@ void redirect_response(std::pair<std::string, std::string>& redirection, std::st
 bool check_if_cgi_is_applicable(Location& location, std::string& path)
 {
 	std::string file_extension = path.substr(path.find_last_of("."));
+	// check for query string
 	std::vector<std::string> cgi_extensions = location.get_cgi_ext();
 	int nbr_cgi_extensions = cgi_extensions.size();
 	for (int i = 0; i < nbr_cgi_extensions; i++)
@@ -219,12 +219,11 @@ void create_autoindex_file(std::string directory, std::vector<std::string>& enti
 	file << "<hr>\n";
 	file << "</body>\n";
 	file << "</html>\n";
-	file.close();
 	res._tmp_file_path = file_path;
+	file.close();
 	res._status_code = "200";
 	set_content_type_and_length(req, res, file_path);
 	set_response_headers(req, res);
-	// set content type and length
 }
 
 bool check_for_autoindex(std::string directory, Request& req, Response& res)
@@ -246,7 +245,7 @@ bool check_for_autoindex(std::string directory, Request& req, Response& res)
 	create_autoindex_file(directory, entities, req, res);
 }
 
-bool check_for_index_file(Request& req, Location& location, Response& res)
+bool check_for_index_file(Request& req, Location& location, std::string& resource, Response& res)
 {
 	std::vector<std::string> index_files = location.get_index();
 	if (!index_files.empty())
@@ -254,7 +253,7 @@ bool check_for_index_file(Request& req, Location& location, Response& res)
 		int nbr_indexes = index_files.size();
 		for (int i = 0; i < nbr_indexes; i++)
 		{
-			std::string index_file_path = location.get_root() + req.get_requestur() + index_files[i];
+			std::string index_file_path = resource + index_files[i];
 			int index_code = check_if_entity_exists(index_file_path);
 			std::cout << "index_code : "<< index_code << std::endl;
 			if (!index_code)
@@ -277,7 +276,7 @@ bool check_for_index_file(Request& req, Location& location, Response& res)
 
 void check_directory_resource(std::string& resource, Location& location, Request& req, Response& res)
 {
-	bool index_file = check_for_index_file(req, location, res);
+	bool index_file = check_for_index_file(req, location, resource, res);
 	std::cout << "index_file: " << index_file << std::endl;
 	if (!index_file && location.get_auto_index())
 		check_for_autoindex(resource, req, res);
@@ -318,10 +317,38 @@ int requested_resource_by_get(std::string& resource, Location& location, Request
 			if (resource.back() != '/')
 			{
 				resource += "/";
-				std::pair<std::string, std::string> redirections = location.get_redirection();
-				res._status_code = "301";
-				redirect_response(redirections, res._status_code, resource, req, res);
-				return REDIRECTCODE;
+				// res._status_code = "301";
+				// redirect_response(res._status_code, directory, req, res);
+				// return REDIRECTCODE;
+			}
+			if (access(resource.c_str(), R_OK))
+				throw Response::ForbiddenPath();
+			return (DIRCODE);
+		}
+		else if (S_ISREG(st.st_mode))
+		{
+			if (access(resource.c_str(), R_OK))
+				throw Response::ForbiddenPath();
+			return (FILECODE);
+		}
+	}
+	else
+		throw Response::NoMatchedLocation();
+}
+
+int requested_resource_by_post(std::string& resource, Location& location, Request& req, Response& res)
+{
+	struct stat st;
+	if (stat(resource.c_str(), &st) == 0)
+	{
+		if (S_ISDIR(st.st_mode))
+		{
+			if (resource.back() != '/')
+			{
+				resource += "/";
+				// res._status_code = "301";
+				// redirect_response(res._status_code, resource, req, res);
+				// return REDIRECTCODE;
 			}
 			if (access(resource.c_str(), R_OK))
 				throw Response::ForbiddenPath();
@@ -391,33 +418,65 @@ int delete_directory(std::string& path)
 	return 1;
 }
 
-void response_to_post(Response& res, Request& req, Location& location)
+bool check_for_upload_directory(Response& res, Request& req, Location& location)
 {
 	if (!location.get_upload_directory().empty())
 	{
 		std::string upload_directory = location.get_root() + location.get_upload_directory();
 		if (upload_directory.back() != '/')
 			upload_directory += "/";
-		std::string tmp_file_name = "upload_file";
-		MimeType mime_type;
-		std::string file_extension = mime_type.get_mime_type(req.getcontent_type());
 		int check_code = check_if_entity_exists(upload_directory);
+		std::cout << "check_code: " << check_code << std::endl; 
 		if (check_code != DIRCODE)
 			throw Response::NoMatchedLocation();
 		if (access(upload_directory.c_str(), W_OK))
 			throw Response::ForbiddenPath();
-		std::string file_name = create_temporary_file(upload_directory, tmp_file_name, file_extension);
-		std::ofstream file_stream(file_name);
-		if (file_stream.is_open())
+		std::string file_name = "uploaded_file";
+		MimeType mime_type;
+		std::cout << req.getcontent_type() << std::endl;
+		std::string file_extension = mime_type.get_extension(req.getcontent_type());
+		std::cout << file_extension << std::endl;
+		std::string tmp_file_name = create_tmp_file_name(upload_directory, file_name, file_extension);
+		if (rename(req.get_pathbody().c_str(), tmp_file_name.c_str()))
 		{
-			//file_stream << req._body; // need request body 
-			file_stream.close();
+			std::cout << "rename failed" << std::endl;
+			std::cout << req.get_pathbody() << " " << tmp_file_name << std::endl;
+			throw Response::ForbiddenPath();
 		}
-		else
-			throw Response::InternalServerError();
-		// set response headers and body
+		res._status_code = "201";
+		res._tmp_file_path = tmp_file_name;
+		set_content_type_and_length(req, res, res._tmp_file_path);
+		set_response_headers(req, res);
+		return true;
 	}
-	// check if location supports cgi
+	return false;
+}
+
+void response_to_post(Response& res, Request& req, Location& location)
+{
+	if (!check_for_upload_directory(res, req, location))
+	{
+		std::string resource = location.get_root() + req.get_requestur();
+		int resource_code = requested_resource_by_post(resource, location, req, res);
+
+		if (resource_code == REDIRECTCODE)
+		return;
+		if (resource_code == DIRCODE)
+		{
+			if (!check_for_index_file(req, location, resource, res))
+				throw Response::ForbiddenPath();
+		}
+		else if (resource_code == FILECODE)
+		{
+			// check if location has cgi
+			if (check_if_cgi_is_applicable(location, resource))
+			{
+				
+			}
+			else
+				throw Response::ForbiddenPath();
+		}
+	}
 }
 
 void response_to_delete(Response& res, Request& req, Location& location)
@@ -430,12 +489,14 @@ void response_to_delete(Response& res, Request& req, Location& location)
 		if (delete_directory(resource))
 			throw Response::InternalServerError();
 		res._status_code = "204";
+		set_response_headers(req, res);
 	}
 	else if (resource_code == FILECODE)
 	{
 		if (remove(resource.c_str()) != 0)
 			throw Response::InternalServerError();
 		res._status_code = "204";
+		set_response_headers(req, res);
 	}
 	else
 		throw Response::InternalServerError();
@@ -456,6 +517,7 @@ void response_to_get(Response& res, Request& req, Location& location)
 		// set content type and length
 		res._status_code = "200";
 		res._body_path = resource;
+		set_content_type_and_length(req, res, resource);
 		set_response_headers(req, res);
 	}
 }
@@ -489,7 +551,6 @@ Response custom_and_default_error_pages(Request& req, Response& res, Server& ser
 	{
 		std::string second_error_code = e.what();
 		std::cout << second_error_code << std::endl;
-		// get default error page
 		res._status_code = second_error_code;
 		default_error_page(res);
 		return res;
@@ -519,7 +580,7 @@ Response server_response(Request& req, Server& server)
 		std::pair<std::string, std::string> redirection = location.get_redirection();
 		if (redirection.first != "" && redirection.second != "")
 		{
-			redirect_response(redirection, redirection.first,redirection.second, req, res);
+			redirect_response(redirection.first, redirection.second, req, res);
 			return res;
 		}
 		for (int i = 0; i < 3; i++)
@@ -530,9 +591,7 @@ Response server_response(Request& req, Server& server)
 	catch (std::exception& e)
 	{
 		std::string error_code = e.what();
-		// check for error pages
 		std::cout << error_code << std::endl;
-	
 		return custom_and_default_error_pages(req, res, server, error_code);
 	}
 }

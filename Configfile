@@ -24,12 +24,11 @@ server:
     location:
         path: /Desktop
         index: testindex.txt
-        return: 301 https://www.google.com
         autoIndex: false
         root: /Users/aali-mou
         errorPage: 399 ./Notworking/index.html
         errorPage: 500 ./Networking/index.html
-        uploadDirectory: /var/www/html/public/uploads
+        uploadDirectory: /Desktop/sigma3
         allowedMethods: POST GET DELETE
         cgiPath: ./Networking/index.html
         cgiExt: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6

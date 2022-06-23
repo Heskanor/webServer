@@ -467,12 +467,15 @@ int					Request::handleheaders(std::string data2)
 		int f = 0;
 		int cc = 0;
 		while (((p = data2.find("\n")) != std::string::npos || (p =  data2.find("\r\n\r\n")) != std::string::npos))
-		{
+		{	std::cout<<"|||||||||||||||||||||||||||||||||1"<<std::endl;
+
 			if (f != 1)
 			 tmp = data2.substr(0, p - 1);
 			else
 				tmp = data2.substr(0,p);
 			cc = tmp.find(":");
+				std::cout<<"|||||||||||||||||||||||||||||||||2"<<std::endl;
+
 			//std::ßcout<<"|"<<tmp.substr(cc + 2)<<"|"<<std::endl;	
 		//	//std::cout<<cc<<std::endl;
 			std::string headersfield[5] = {"Host","Connection","Content-Length","Content-Type","Transfer-Encoding"};
@@ -501,10 +504,14 @@ int					Request::handleheaders(std::string data2)
 				settransferchunks(tmp.substr(cc + 2));
 			if (f != 1)
 				data2 = data2.substr(p + 1);
+				
+
 			else
 			{
+				std::cout<<"|||||||||||||||||||||||||||||||||3"<<std::endl;
 				break;
 			}
+			std::cout<<"|||||||||||||||||||||||||||||||||4"<<std::endl;
 			if (data2.find("\n") == std::string::npos)
 			{
 				f = 1;

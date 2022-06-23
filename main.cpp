@@ -41,6 +41,7 @@ int  findfirstline(std::string data)
 
 
 int main(int argc, char **argv){
+	signal(SIGPIPE,SIG_IGN);
 	std::string lop;
 	lop.append(argv[1]);
 	Webserver op(lop);
