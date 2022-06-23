@@ -218,10 +218,10 @@ void create_autoindex_file(std::string directory, std::vector<std::string>& enti
 	file << "</body>\n";
 	file << "</html>\n";
 	res._tmp_file_path = file_path;
+	file.close();
 	res._status_code = "200";
 	set_content_type_and_length(req, res, file_path);
 	set_response_headers(req, res);
-	file.close();
 }
 
 bool check_for_autoindex(std::string directory, Request& req, Response& res)
