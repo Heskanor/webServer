@@ -30,7 +30,7 @@ class Response
 		std::string _status_code;
 		std::string _content_type;
 		std::string _content_length;
-		std::string _tmp_file_path;
+		std::string ç;
 
 
 		class InvalidHttpVersion : public std::exception

@@ -112,43 +112,41 @@ void Cgi::envMaker(Request *request, Location &location)
     // setenv("HTTP_X_OPERAMINI_PHONE_UA", (request->getxoperaminiphoneua()).c_str(), 1);
 }
 //int hasBody 
-void cgi_reader()
+void cgi_reader(Response *resp, int fd)
 {
     char buf[1024];
     int ret;
     std::string bd;
+    int body_size;
 
-    while ((ret = read(_tmp_file_path.c_str(), buf, 1024)) > 0)
+    while ((ret = read(fd, buf, 1024)) > 0)
     {
         bd.append(buf, ret);
         if (bd.find("\r\n\r\n") != std::string::npos)
             break;
-        //write(1, buf, ret);
     }
-    if(_status_code != "500")
-        _status_code = "200";
+    if(resp->_status_code != "500")
+        resp->_status_code = "200";
     std::string headers = bd.substr(0, bd.find("\r\n\r\n") + 4);
-    parse_headers(headers);
-    body = bd.substr(bd.find("\r\n\r\n") + 4);
-    //close tmp
+    resp->_headers = headers;
+    close (fd);
     struct stat st;
-
-    if (stat(_tmp_file_path, &st) == 0)
-        st.st_size;
-
-    // bodySkiped = body.size();
-    // cgiHeaderSize = headers.size();
-    // contentLength = countFileSize(_tmp_file_path.c_str());
-    // contentLength -= headers.length();
-
+    if (stat(resp->_tmp_file_path.c_str(), &st) == 0)
+        body_size = st.st_size;
+    int cgiHeaderSize = headers.size();
+    resp->_content_length = body_size - cgiHeaderSize;
 }
 
 void Cgi::executer(Request *request, Response *response, Location &location)
-{   std::string methode = request->get_method();
+{
+    int request_fd;
+    int response_fd;
+
+    std::string methode = request->get_method();
     std::string path = location.get_root() + request->get_requestur();
     if (methode == "POST" || methode == "DELETE")
-        int request_fd = open(request->get_pathbody().c_str(), O_RDONLY);   
-    int response_fd = open(response->_tmp_file_path.c_str(), O_WRONLY);
+        request_fd = open(request->get_pathbody().c_str(), O_RDONLY);   
+    response_fd = open(response->_tmp_file_path.c_str(), O_WRONLY);
     const char *parm[3];
     parm[0] = _path.c_str();
     parm[0] = path.c_str(); 
@@ -203,7 +201,7 @@ void Cgi::executer(Request *request, Response *response, Location &location)
             response->_status_code = "500";
             return;
         }
-        cgi_reader();
+        cgi_reader(response,response_fd);
         //close response tmp file
     }
 }
