@@ -426,16 +426,23 @@ bool check_for_upload_directory(Response& res, Request& req, Location& location)
 		if (upload_directory.back() != '/')
 			upload_directory += "/";
 		int check_code = check_if_entity_exists(upload_directory);
+		std::cout << "check_code: " << check_code << std::endl; 
 		if (check_code != DIRCODE)
 			throw Response::NoMatchedLocation();
 		if (access(upload_directory.c_str(), W_OK))
 			throw Response::ForbiddenPath();
 		std::string file_name = "uploaded_file";
 		MimeType mime_type;
-		std::string file_extension = mime_type.get_mime_type(req.getcontent_type());
+		std::cout << req.getcontent_type() << std::endl;
+		std::string file_extension = mime_type.get_extension(req.getcontent_type());
+		std::cout << file_extension << std::endl;
 		std::string tmp_file_name = create_tmp_file_name(upload_directory, file_name, file_extension);
 		if (rename(req.get_pathbody().c_str(), tmp_file_name.c_str()))
+		{
+			std::cout << "rename failed" << std::endl;
+			std::cout << req.get_pathbody() << " " << tmp_file_name << std::endl;
 			throw Response::ForbiddenPath();
+		}
 		res._status_code = "201";
 		res._tmp_file_path = tmp_file_name;
 		set_content_type_and_length(req, res, res._tmp_file_path);

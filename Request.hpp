@@ -33,6 +33,7 @@ class Request
 		std::string getcontentlenght();
 		std::string getcontent_type(); //ADDED BY SIGMA
 		std::string get_pathbody(); //ALSO ADDED BY SIGMA
+		void set_pathbody(std::string str); //ALSO ADDED BY SIGMA
 		bool gettransferstat();
 		void settransferstat(bool j);
 		void set_ip(std::string);

@@ -170,6 +170,11 @@ std::string Request::get_pathbody(void)
 	return pathbody;
 }
 
+void Request::set_pathbody(std::string str)
+{
+	this->pathbody = str;
+}
+
 /*
 ** --------------------------------- ACCESSOR ---------------------------------
 */

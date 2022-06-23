@@ -3,11 +3,12 @@
 int main()
 {
 	Request req;
-	req.setmethod("GET");
+	req.setmethod("POST");
 	req.setrequest("/Desktop");
 	req.sethttpversion("HTTP/1.1");
 	req.setcontent_length("0");
-	req.setcontent_type("request type");
+	req.setcontent_type("image/jpeg");
+	req.set_pathbody("/Users/hmahjour/Downloads/cry.jpeg");
 
 	Server serv;
 	Location loc1;
@@ -28,7 +29,7 @@ int main()
 	indexes.push_back("pool.html");
 	loc1.set_index(indexes);
 	loc1.set_auto_index(true);
-	loc1.set_upload_directory("");
+	loc1.set_upload_directory("/Desktop/CPP_pool/");
 	std::vector<std::string> allowed_methods;
 	allowed_methods.push_back("GET");
 	allowed_methods.push_back("POST");
