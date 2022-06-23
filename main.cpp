@@ -3,8 +3,8 @@
 int main()
 {
 	Request req;
-	req.setmethod("GET");
-	req.setrequest("/CPP_pool/");
+	req.setmethod("DELETE");
+	req.setrequest("/Tobedeleted/");
 	req.sethttpversion("HTTP/1.1");
 	req.setcontent_length("0");
 	req.setcontent_type("request type");
@@ -13,6 +13,7 @@ int main()
 	Location loc1;
 	Location loc2;
 	Location loc3;
+	Location loc4;
 
 	std::map<std::string, std::string> err_map;
 	serv.add_error_map("400", "/Desktop/webserver/ErrorPages/400.html");
@@ -59,9 +60,24 @@ int main()
 	allowed_methods3.push_back("POST");
 	loc3.set_allowed_methods(allowed_methods3);
 
+
+	loc4.set_root("/Users/hmahjour/Desktop");
+	loc4.set_path("/Tobedeleted");
+	std::vector<std::string> indexes4;
+	indexes4.push_back("index.txt");
+	indexes4.push_back("file.html");
+	loc4.set_index(indexes4);
+	loc4.set_auto_index(true);
+	loc4.set_upload_directory("");
+	std::vector<std::string> allowed_methods4;
+	allowed_methods4.push_back("GET");
+	allowed_methods4.push_back("DELETE");
+	loc4.set_allowed_methods(allowed_methods4);
+
 	serv.add_location(loc1);
 	serv.add_location(loc2);
 	serv.add_location(loc3);
+	serv.add_location(loc4);
 
 	Response res = server_response(req, serv);
 	std::cout << "------------------------------------" << std::endl;

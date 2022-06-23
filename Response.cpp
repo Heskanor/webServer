@@ -90,9 +90,10 @@ void set_response_headers(Request& req, Response& res)
 	res._headers += "Server: Webserver/1.0\r\n";
 	res._headers += "Date: " + set_date_header() + "\r\n";
 	if (res._content_type != "")
+	{
 		res._headers += "Content-Type: " + res._content_type + "\r\n";
-	if (res._content_length)
 		res._headers += "Content-Length: " + better_to_string(res._content_length) + "\r\n";
+	}
 	if (res._special_headers != "")
 		res._headers += res._special_headers + "\r\n";
 	res._headers += "\r\n";
@@ -481,12 +482,14 @@ void response_to_delete(Response& res, Request& req, Location& location)
 		if (delete_directory(resource))
 			throw Response::InternalServerError();
 		res._status_code = "204";
+		set_response_headers(req, res);
 	}
 	else if (resource_code == FILECODE)
 	{
 		if (remove(resource.c_str()) != 0)
 			throw Response::InternalServerError();
 		res._status_code = "204";
+		set_response_headers(req, res);
 	}
 	else
 		throw Response::InternalServerError();
@@ -581,9 +584,7 @@ Response server_response(Request& req, Server& server)
 	catch (std::exception& e)
 	{
 		std::string error_code = e.what();
-		// check for error pages
 		std::cout << error_code << std::endl;
-	
 		return custom_and_default_error_pages(req, res, server, error_code);
 	}
 }
