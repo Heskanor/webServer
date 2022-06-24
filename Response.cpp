@@ -198,6 +198,16 @@ void redirect_response(std::string& redirection_code, std::string& redirection_p
 	set_response_headers(req, res);
 }
 
+void redirect_directory(Request& req, Response& res)
+{
+    std::string new_status_code = "301";
+    std::string new_location = req.get_requestur() + "/";
+    std::string location_header = "Location: " + new_location + "\r\n";
+    res._special_headers += location_header;
+    res._status_code = new_status_code;
+    set_response_headers(req, res);
+}
+
 void run_cgi_script(Request& req, Response& res, Location& location, std::string& path)
 {
 	std::string cgi_path = location.get_cgi_path();
@@ -358,9 +368,9 @@ int requested_resource_by_get(std::string& resource, Location& location, Request
 			if (resource.back() != '/')
 			{
 				resource += "/";
-				// res._status_code = "301";
-				// redirect_response(res._status_code, directory, req, res);
-				// return REDIRECTCODE;
+				res._status_code = "301";
+				redirect_directory(req, res);
+				return REDIRECTCODE;
 			}
 			if (access(resource.c_str(), R_OK))
 				throw Response::ForbiddenPath();
@@ -388,9 +398,9 @@ int requested_resource_by_post(std::string& resource, Location& location, Reques
 			if (resource.back() != '/')
 			{
 				resource += "/";
-				// res._status_code = "301";
-				// redirect_response(res._status_code, resource, req, res);
-				// return REDIRECTCODE;
+				res._status_code = "301";
+				redirect_directory(req, res);
+				return REDIRECTCODE;
 			}
 			if (access(resource.c_str(), R_OK))
 				throw Response::ForbiddenPath();
