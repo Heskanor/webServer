@@ -68,10 +68,11 @@ std::string get_querrystring(std::string path)
 
 void Cgi::envMaker(Request *request, Location &location)
 {
-    //std::string scriptname = location.get_root() + _path;
-	std::string scriptname = "/Users/hmahjour/Desktop/test.php";
-
-    //setenv("AUTH_TYPE", "", 1);
+    std::string scriptname = location.get_root() + _path;
+	// std::string scriptname = "/Users/hmahjour/Desktop/test.php";
+    setenv("DOCUMENT_URI", ((request->get_requestur())).substr(0,request->get_requestur().find_first_of('?')).c_str(), 1);
+    setenv("REQUEST_URI", request->get_requestur().c_str(), 1);
+    setenv("AUTH_TYPE", "", 1);
     setenv("CONTENT_LENGTH", (request->getcontentlenght()).c_str(), 1);
     setenv("CONTENT_TYPE", (request->getcontent_type()).c_str(), 1); // need content type geter
     setenv("GATEWAY_INTERFACE", "CGI/1.1", 1);
@@ -80,8 +81,8 @@ void Cgi::envMaker(Request *request, Location &location)
     setenv("QUERY_STRING", get_querrystring(request->get_requestur()).c_str(), 1);// after ?
     setenv("REMOTE_ADDR", "localhost", 1);
     setenv("REMOTE_HOST", "localhost", 1);// maybe like remote address
-    // setenv("REMOTE_IDENT", "", 1);
-    // setenv("REMOTE_USER", "", 1);
+    setenv("REMOTE_IDENT", "", 1);
+    setenv("REMOTE_USER", "", 1);
     setenv("REQUEST_METHOD", (request->get_method()).c_str(), 1);
     setenv("SCRIPT_NAME", scriptname.c_str(), 1); 
     setenv("SERVER_NAME", (request->gethost()).c_str(), 1);
@@ -151,8 +152,9 @@ void Cgi::executer(Request *request, Response *response, Location &location)
     response_fd = open(response->_tmp_file_path.c_str(), O_WRONLY);
     const char *parm[3];
     parm[0] = _path.c_str();
-    parm[0] = path.c_str(); 
-    parm[1] = NULL;
+    std::cout << _path << " " << path << std::endl;
+    parm[1] = path.c_str(); 
+    parm[2] = NULL;
     pid_t cgi_pid;
 	
     pid_t pid = fork();

@@ -6,11 +6,11 @@ int main()
 	req.setmethod("GET");
 	req.setrequest("/Desktop/test.php");
 	req.sethttpversion("HTTP/1.1");
-	std::string file = "/Users/hmahjour/Desktop/test.php";
+	std::string file = "/Users/ashite/Desktop/test.php";
 	int haha = get_file_size(file);
 	req.setcontent_length(better_to_string(haha));
 	req.setcontent_type("text/x-php");
-	req.set_pathbody("/Users/hmahjour/Downloads/cry.jpeg");
+	req.set_pathbody("/Users/ashite/Downloads/cry.jpeg");
 
 	Server serv;
 	Location loc1;
@@ -24,7 +24,7 @@ int main()
 	serv.add_error_map("404", "/Desktop/webserver/ErrorPages/404.html");
 
 
-	loc1.set_root("/Users/hmahjour");
+	loc1.set_root("/Users/ashite");
 	loc1.set_path("/Desktop");
 	std::vector<std::string> indexes;
 	indexes.push_back("ngin.txt");
@@ -43,7 +43,7 @@ int main()
 
 
 
-	loc2.set_root("/Users/hmahjour/Desktop");
+	loc2.set_root("/Users/ashite/Desktop");
 	loc2.set_path("/CPP_pool");
 	std::vector<std::string> indexes2;
 	indexes2.push_back("comp.html");
@@ -56,7 +56,7 @@ int main()
 	allowed_methods2.push_back("DELETE");
 	loc2.set_allowed_methods(allowed_methods2);
 
-	loc3.set_root("/Users/hmahjour");
+	loc3.set_root("/Users/ashite");
 	loc3.set_path("/Downloads");
 	std::vector<std::string> indexes3;
 	indexes3.push_back("ngin.txt");
@@ -70,7 +70,7 @@ int main()
 	loc3.set_allowed_methods(allowed_methods3);
 
 
-	loc4.set_root("/Users/hmahjour/Desktop");
+	loc4.set_root("/Users/ashite/Desktop");
 	loc4.set_path("/Tobedeleted");
 	std::vector<std::string> indexes4;
 	indexes4.push_back("index.txt");
