@@ -1,5 +1,5 @@
 #include "Webserver.hpp"
-#define BUFFERSIZE 15000
+#define BUFFERSIZE 5000
 #include <stdio.h> 
 #include <string.h>   //strlen 
 #include <stdlib.h> 
@@ -77,17 +77,19 @@ bool				Webserver::checkifitsfdserver(int i)
 }
 void				Webserver::Runmywebserver()
 {
-	fd_set readsfds;
-	fd_set writefds;
-	char *buffer = (char *)malloc(sizeof(char) * (BUFFERSIZE + 1));
-	int valread = 0;
+	fd_set	readsfds;
+	fd_set	writefds;
+	char 	*buffer = (char *)malloc(sizeof(char) * (BUFFERSIZE));
+	int	 	valread = 0;
+	int 	fd = -1;;
 	FD_ZERO(&readsfds);
 	FD_ZERO(&writefds);
-	int new_socket ;
+	int 	new_socket ;
+	char 	*buffer4;
 	Request req;
-	int checker = 0;
-	int activ;
-	int max_sd = -1;
+	int 	checker = 0;
+	int 	activ;
+	int 	max_sd = -1;
 	std::map<int,Myserver>::iterator it;
 	for(std::map<int,Myserver>::iterator it = lopserver.begin(); it != lopserver.end(); it++)
 	{
@@ -96,17 +98,9 @@ void				Webserver::Runmywebserver()
 	}
 	while (true)
 	{
-		checker++;
-		if (checker == 2)
-		{
-			std::cout<<" im heeeeeeere asdasdasd a"<<std::endl;
-		}
 
-		//	//std::cout << "DBG__MAIN__LOOP" << std::endl;
 		readsfds =  master ;
-
-		//max_sd =  sockfd;
-
+		writefds = master2;
 		activ = select(max_sd + 1, &readsfds, &writefds, NULL, NULL);
 		for (int i =0; i < max_sd + 1; i++)
 		{
@@ -114,8 +108,13 @@ void				Webserver::Runmywebserver()
 			{
 				if (checkifisserver(i) == true)
 				{
+					hoole++;
 					new_socket = accept(lopserver[i].fd, (struct sockaddr*)&lopserver[i].address, (socklen_t*)&lopserver[i].addrlen);
 					req.set_socketid(new_socket);
+					if (hoole == 2)
+					{
+						std::cout<<"DsadsaDAS"<<std::endl;
+					}
 					req.set_timeout(time_now());
 					for(std::map<int,Myserver>::iterator it = lopserver.begin(); it != lopserver.end(); it++)
 					{
@@ -125,10 +124,7 @@ void				Webserver::Runmywebserver()
 							req.setserver_fd(it->second.index);
 							std::cout<<it->second.index<<"|||||||||||"<<std::endl;
 						}
-						//if (it->second.fd > max_sd)
-						//max_sd = it->second.fd;
 					}
-					//req.setserver_fd(i);
 					Requestsmap[new_socket] = req;
 					FD_SET(new_socket,&master);
 					if (new_socket > max_sd)
@@ -143,7 +139,7 @@ void				Webserver::Runmywebserver()
 						buffer[valread] = '\0';
 						std::string op;
 						op.append(buffer);
-						//std::cout<<buffer<<std::endl;
+						std::cout<<time_now() - Requestsmap[i].get_timeout()<<std::endl;
 						if (valread > 0 && Requestsmap[i].get_requestiscomplete() == true)
 						{
 							Request req2;
@@ -151,15 +147,12 @@ void				Webserver::Runmywebserver()
 						}
 						if (valread == -1)
 						{
-
 							FD_CLR(i,&readsfds);
 							FD_CLR(i,&master);
 							close(i);
 						}
 						else if(valread == 0  && ((time_now() - Requestsmap[i].get_timeout()) >5000))
 						{
-							std::cout<<" im here  6666 "<<std::endl;
-							//
 							FD_CLR(i,&readsfds);
 							close(i); 
 						}
@@ -170,222 +163,135 @@ void				Webserver::Runmywebserver()
 								if (it->first == i)
 								{
 									it->second.parserequest(buffer, valread);
+									//free(buffer);
 									Requestsmap[i].set_timeout(time_now());
 									if (it->second.get_requestiscomplete() == true)
 									{
 										std::cout<<" im here "<<std::endl;
 										std::cout<<Requestsmap[i].get_requestur()<<std::endl;
 										Response resp;
+										std::cout<<req.getserver_fd()<<std::endl;
 										resp = server_response(it->second,servers[req.getserver_fd()]);
 										Responsemap[it->first] = resp;
-										FD_CLR(it->first,&readsfds);
+										FD_CLR(it->first,&master);
 										FD_SET(it->first, &writefds);
-										std::cout<<"|||||||||||||||||||||||||||||||||7"<<std::endl;
-									//	Requestsmap.erase(i);
+										FD_SET(it->first, &master2);											//	Requestsmap.erase(i);
 
 									}
-									//	it->second.adddata(buffer, valread);
-									//	//std::cout<<" i m heree ------------ "<< sd<<std::endl;
-									//}
 							}
 						}
-						//}
 				}
-				if (FD_ISSET(i, &writefds))
+					}
+				if (FD_ISSET(i, &writefds) && Responsemap[i]._Responecomplete == 0)
 				{
 					std::string lop;
-				//	Requestsmap.erase(i);
-					lop = Responsemap[i]._headers;
-
-					write(i,lop.c_str(),lop.size());
+					int n = 0;
+					int rest = 0;
+					std::string path;
 					if (!Responsemap[i]._body_path.empty())
 					{
-						lop.erase();
-						char *buffer2 = (char *)malloc(sizeof(char) * (Responsemap[i]._content_length + 1));
-						int fd = open(Responsemap[i]._body_path.c_str(),  O_RDWR,  0666);
-						read (fd, buffer2,Responsemap[i]._content_length);
-						write(i,buffer2, Responsemap[i]._content_length);
-						close(fd);
-						free(buffer2);
-						//write(i,)
+						path = Responsemap[i]._body_path;
 					}
-					else if (!Responsemap[i]._tmp_file_path.empty()){
-						lop.erase();
-						std::cout<<Responsemap[i]._tmp_file_path<<std::endl;
-						std::cout<<Responsemap[i]._content_length<<std::endl;
-						char *buffer2 = (char *)malloc(sizeof(char) * (Responsemap[i]._content_length + 1));
-						int fd = open(Responsemap[i]._tmp_file_path.c_str(),  O_RDWR,  0666);
-						read (fd, buffer2,Responsemap[i]._content_length);
-						write(i,buffer2, Responsemap[i]._content_length);
-						close(fd);
-						free(buffer2);
-						//remove(Responsemap[i]._tmp_file_path.c_str());
+					else if (!Responsemap[i]._tmp_file_path.empty())
+					{
+						path = Responsemap[i]._tmp_file_path;
+					}
+					if (Responsemap[i].sentheader == 0)
+					{
 
+						fd = open(path.c_str(),  O_RDONLY,  0666);
+						lop = Responsemap[i]._headers;
+						Responsemap[i].headersize = lop.size();
+						Responsemap[i].sentheader = 1;
+						Responsemap[i]._content_length += lop.size();
 					}
-					Responsemap.erase(i);
-					//	re								
-					FD_CLR(i,&writefds);
-					FD_SET(i, &readsfds);
+					else if((Responsemap[i]._content_length - Responsemap[i].homuchiwrite) >= BUFFERSIZE)
+					{
+							char buffer4[BUFFERSIZE + 1];
+							n = read (fd, buffer4, BUFFERSIZE);
+							buffer4[n] = '\0';
+							std::string tmp(buffer4, n);
+							lop = tmp;
+							// free(buffer4);
+					}
+					else
+				{
+						char buffer4[BUFFERSIZE + 1];
+						n = read(fd, buffer4, BUFFERSIZE);
+						buffer4[n] = '\0';
+						Responsemap[i]._Responecomplete = 1;
+						std::string tmp(buffer4, n);
+						lop = tmp;
+						// free(buffer4);
+					}
+					// std::cout<<"im printing hereeee "<<std::endl;
+					ssize_t sent_bytes = write(i, lop.c_str(),lop.size());
+					// std::cout << "send bytes : " << sent_bytes<< std::endl;
+					Responsemap[i].homuchiwrite += sent_bytes;
+					// std::cout<<"Response :"<<Responsemap[i].homuchiwrite<<"|||"<<Responsemap[i]._content_length<<std::endl;
+					if (Responsemap[i]._Responecomplete == 1)
+					{
+						// //std::cout<<"Response :"<<Responsemap[i].homuchiwrite<<std::endl;
+					FD_CLR(i,&master2);
+					//FD_CLR(i,&writefds);
+					FD_SET(i, &master);
+						close (fd);
+					//close(i);									
+					}
 				}
-			}
-
-
+				}
+				}
+		}
 		}
 	}
-}
-//FD_ISSET(i, &readsfds) || FD_ISSET(i,&writefds))
-//
 
-//
-//
-//		if (FD_ISSET(3, &readsfds) )
-//		{
-//			new_socket = accept(lopserver[3].fd, (struct sockaddr*)&lopserver[3].address, (socklen_t*)&lopserver[3].addrlen);
-//			req.set_socketid(new_socket);
-//			Requestsmap[new_socket] = req;
-//			FD_SET(new_socket,&master);
-//			if (new_socket > max_sd)
-//				max_sd = new_socket;
-//		}
-//		for (int i = 0; i < max_sd + 1; i++)
-//{
-//	if (FD_ISSET(i, &readsfds) || FD_ISSET(i,&writefds))
-//	{
-//		//else
-//		//{
-//				if (FD_ISSET(i, &readsfds))
-//				{
-//					 valread = read( i , buffer, BUFFERSIZE);
-//						buffer[valread] = '\0';
-//			for (std::map<int, Request>::iterator it = Requestsmap.begin(); it != Requestsmap.end(); ++it)
-//			{
-//				if (it->first == i)
-//				{
-//				//	if (it->second.)
-//					if (it->second.get_requestiscomplete() == true)
-//					{
-//						Response res;
-//					}
-//				//	it->second.adddata(buffer, valread);
-//				//	//std::cout<<" i m heree ------------ "<< sd<<std::endl;
-//					it->second.parserequest(buffer, valread);
-//				//}
-//			}
-//				}
-//		//}
-//	}
-//	}
-//if fd isset i read ||  fd isset i write
-/*
-   {
-   if i is server socket fd  
-   then it is a new connection must be accptedd 
-   else
-   {
-   wash read
-   shuf lklian ash bgha 
-   wash write
-   jawb lkliyan 
-   }
-   }
-   else docvnothing
-*/
 
-//if (FD_ISSET(i, &readsfds))
-//{
-//	new_socket = accept(lopserver[i].fd, (struct sockaddr*)&lopserver[i].address, (socklen_t*)&lopserver[i].addrlen);
-//	req.set_socketid(new_socket);
-//	Requestsmap[new_socket] = req;
-//	//printf("Hello message sent\n");
-//		for(int i = 0 ;i < 30;i++)
-//		{
-//			if (clientsocket[i] == 0)
-//			{
-//				clientsocket[i] = new_socket;
-//				break;
-//			}
-//		}
-//}
-//	      //else its some IO operation on some other socket
-//
-//for (int i = 0; i < 30; i++)  
-//{  
-//	////std::cout << "DBG__FOR__LOOP" << std::endl;
-//    
-//	sd = clientsocket[i];  
-//		////std::cout<<"allo"<<std::endl;
-//    if (FD_ISSET( sd , &readsfds))  
-//    {  
-//		////std::cout << "CONDITION__00" << std::endl;
-//		std::map<int, Request>::iterator it;
-//        //Check if it was for closing , and also read the 
-//        //incoming message 
-//        // if ((valread = read( sd , buffer, BUFFERSIZE)) == 0)  
-//        valread = read( sd , buffer, BUFFERSIZE);
-//		buffer[valread] = '\0';
-//        //std::cout << "RET_READ : " << valread << std::endl;
-//		if (valread < 10)
-//			//std::cout << "EXCEPTION : [" << buffer << "]" << std::endl;
-//		readpo += valread;
-//		 //std::cout << "ALL SIZR: " << readpo<< std::endl;
-//		if (valread == 0)  
-//        {  
-//			
-//			
-//            //Somebody disconnected , get his details and print 
-//            getpeername(sd , (struct sockaddr*)&address , \
-//                (socklen_t*)&addrlen);  
-//            printf("Host disconnected , ip %s , port %d \n" , 
-//                  inet_ntoa(address.sin_addr) , ntohs(address.sin_port));  
-//                 
-//            //Close the socket and mark as 0 in list for reuse 
-//            close( sd );  
-//			
-//            clientsocket[i] = 0;  
-//        }  
-//        else 
-//        {  
-//		////std::cout << "CONDITION__01" << std::endl;
-//			std::string str2;
-//	////std::cout<<str2.append(buffer)<<std::endl;
-//		//	write(wahedl9laoui,buffer,valread);
-//            buffer[valread] = '\0';  
-//			for (std::map<int, Request>::iterator it = Requestsmap.begin(); it != Requestsmap.end(); ++it)
-//			{
-//				if (it->first == sd)
-//				{
-//				//	if (it->second.)
-//					if (it->second.get_requestiscomplete() == true)
-//					{
-//						Response res;
-//					//res = server_response(req,server);
-//					//res._headers;
-//					//if (!res._tmp_file_path.empty())
-//					//{
-//					//	//reading nd remove
-//					//	res._tmp_file_path;
-//					//}
-//					//if (!res._body_path.empty())
-//					//{
-//					//	res._body_path();
-//					//}
-//					}
-//				//	it->second.adddata(buffer, valread);
-//				//	//std::cout<<" i m heree ------------ "<< sd<<std::endl;
-//					it->second.parserequest(buffer, valread);
-//				}
-//			}
-//			str2.erase();
-//            //send(sd , buffer , strlen(buffer) , 0 );
-//	  
-//        }
-//		////std::cout << "CONDITION__02" << std::endl;
-//    }  
-//} 
-//}
-}
-}
+	
 
+int 			Webserver::checkingservers(std::vector<Server> lop, Request req)
+{
+    std::vector<int> op;
+    int i =0;
+    int size = 0;
+    int storingi = -1;
+    
+    for (int i = 0;i < lop.size();i++)
+    {
+        if (lop[i].get_listenAddress() == req.get_ip() && std::to_string(lop[i].get_listenPort()) == req.get_port())
+        {
+            //std::cout<<"----"<<i<<"---"<<std::endl;
+            //std::cout<<lop[i].get_listenAddress()<<std::endl;
+            //std::cout<<lop[i].get_listenPort()<<std::endl;
+            //std::cout<<req.get_port()<<std::endl;
+            //std::cout<< req.get_ip()<<std::endl;
+            op.push_back(i);
+        }
+    }
+    if (op.empty() == false)
+    {
+        for (int i = 0; i < op.size(); i++)
+        {
+            for (int j = 0; j < lop.size(); j++)
+            {
+                if (op[i] == j)
+                {
+					if (lop[i].get_server_name().empty() == false)
+					{
+						for (int c = 0; c < lop[i].get_server_name().size();c++ )
+						{
+							if (lop[i].get_server_name()[c] == req.get_ip())
+							{
+								return op[i];
+							}
+						}
+					}
+                }
+            }
+        }
+		return op[0]; 
+    }
+    return 0;
+}
 void				Webserver::webservbuild()
 {
 	ConfigParser parser;

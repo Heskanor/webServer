@@ -37,14 +37,23 @@ int get_file_size(std::string& file_path)
 {
 	struct stat st;
 	stat(file_path.c_str(), &st);
+
+	std::cerr << "FilePath ----->" << file_path << std::endl;
+	std::cerr << "FileSize ----->" << st.st_size << std::endl;
+
 	return st.st_size;
 }
 
 void set_content_type_and_length(Request& req, Response& res, std::string& file_path)
 {
 	MimeType mime_type;
-	std::string extension = file_path.substr(file_path.find_last_of("."));
-	res._content_type = mime_type.get_mime_type(extension);
+	if (file_path.find_last_of(".") != std::string::npos)
+	{
+		std::string extension = file_path.substr(file_path.find_last_of("."));
+		res._content_type = mime_type.get_mime_type(extension);
+	}
+	else
+		res._content_type = "text/plain";
 	res._content_length = get_file_size(file_path);
 }
 
@@ -581,6 +590,7 @@ Response server_response(Request& req, Server& server)
 		std::vector<Location> server_locations = server.get_locations();
 		Location location;
 		int loc = find_matched_location(location, req_uri, server_locations);
+		
 		if (loc)
 			throw Response::NoMatchedLocation();
 		std::vector<std::string> allowed_methods_in_location = location.get_allowed_methods();

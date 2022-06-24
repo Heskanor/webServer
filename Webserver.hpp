@@ -29,9 +29,11 @@ class Webserver
 		Webserver(std::string _path);
 		Webserver( Webserver const & src );
 		~Webserver();
+		int hoole = 0;
 		void webservbuild();
 		void Runmywebserver();
 		bool checkifitsfdserver(int i);
+		int checkingservers(std::vector<Server> lop, Request req);
 		bool checkifisserver(int i);
 		long	int	time_now(void)
 		{

@@ -44,22 +44,35 @@ class Response
 	public:
 		//std::string _response_file;
 		std::string _headers;
+		size_t totallength;
+		bool _Responecomplete;
+		size_t neededtoberight;
+		size_t homuchiwrite;
 		std::string _special_headers;
 		std::string _body_path;
 		std::string _status_code;
 		std::string _content_type;
 		std::string _tmp_file_path;
 		int _content_length;
+		bool sentheader;
+
+		long long headersize;
 
 		std::map<std::string, std::string> http_code_map;
 
 		Response(void) {
+			this->headersize = 0;
 		this->_headers = "";
 		this->_special_headers = "";
 		this->_body_path = "";
 		this->_status_code = "";
+		this->totallength = 0;
 		this->_content_type = "";
 		this->_tmp_file_path = "";
+		this->_Responecomplete = false;
+		this->neededtoberight = 0;
+		this->homuchiwrite = 0;
+		this->sentheader = 0;
 		this->_content_length = 0;
 		}
 		Response(const Response& src) {
@@ -67,7 +80,13 @@ class Response
 		}
 		Response& operator=(const Response& rhs) {
 			if (this != &rhs) {
+				this->headersize = rhs.headersize;
 				//_response_file = rhs._response_file;
+				_Responecomplete = rhs._Responecomplete;
+				totallength = rhs.totallength;
+				sentheader = rhs.sentheader;
+				homuchiwrite = rhs.homuchiwrite;
+				neededtoberight = rhs.neededtoberight;
 				_headers = rhs._headers;
 				_special_headers = rhs._special_headers;
 				_body_path = rhs._body_path;
