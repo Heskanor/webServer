@@ -143,7 +143,7 @@ void				Webserver::Runmywebserver()
 						buffer[valread] = '\0';
 						std::string op;
 						op.append(buffer);
-						std::cout<<buffer<<std::endl;
+						//std::cout<<buffer<<std::endl;
 						if (valread > 0 && Requestsmap[i].get_requestiscomplete() == true)
 						{
 							Request req2;
@@ -156,11 +156,6 @@ void				Webserver::Runmywebserver()
 							FD_CLR(i,&master);
 							close(i);
 						}
-
-					//else if(valread == 0)
-					//{
-					//	std::cout<<"sadsadasD"<<std::endl;
-					//}
 						else if(valread == 0  && ((time_now() - Requestsmap[i].get_timeout()) >5000))
 						{
 							std::cout<<" im here  6666 "<<std::endl;
@@ -174,7 +169,6 @@ void				Webserver::Runmywebserver()
 							{
 								if (it->first == i)
 								{
-									//	if (it->second.)
 									it->second.parserequest(buffer, valread);
 									Requestsmap[i].set_timeout(time_now());
 									if (it->second.get_requestiscomplete() == true)
@@ -182,10 +176,7 @@ void				Webserver::Runmywebserver()
 										std::cout<<" im here "<<std::endl;
 										std::cout<<Requestsmap[i].get_requestur()<<std::endl;
 										Response resp;
-										//std::cout<<Requestsmap[i<<std::endl;
-										//	std::cout<<req.getserver_fd()<<std::endl;
 										resp = server_response(it->second,servers[req.getserver_fd()]);
-										//std::cout<<"im hereeee |||||||||||||||||"<<std::endl;
 										Responsemap[it->first] = resp;
 										FD_CLR(it->first,&readsfds);
 										FD_SET(it->first, &writefds);

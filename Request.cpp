@@ -60,14 +60,18 @@ Request &				Request::operator=( Request const & rhs )
 	content_type = rhs.content_type;
 	content_lenght = rhs.content_lenght;
 	data = rhs.data;
+	igottheend = rhs.igottheend;
 	requestcomplete = rhs.requestcomplete;
 	headerscopmlete = rhs.headerscopmlete;
 	pathbody = rhs.pathbody;
 	requeststatus = rhs.requeststatus;
 	filediscriptor = rhs.filediscriptor;
+	timeout = rhs.timeout;
 	bodylenght = rhs.bodylenght;
 	Reminder = rhs.Reminder;	
+	global = rhs.global;
 	backup = rhs.backup;
+	writingchar = rhs.writingchar;
 	return *this;
 }
 
@@ -226,7 +230,7 @@ void					Request::setunchunkedbody()
 		{
 			bodylenght += data.size();
 		//	//std::cout<< "" the file discriptor "<<std::endl;
-			//std::cout<<"charactere created :" << write(filediscriptor,data.c_str(),data.size())<<std::endl;
+			write(filediscriptor,data.c_str(),data.size());
 			data.erase();
 		}
 		if (bodylenght == stoi(content_lenght))
@@ -252,6 +256,8 @@ void					Request::setchunckedbody()
 	data.erase();
 	while (1)
 	{
+		//std::cout<<"--------------"<<std::endl;
+		//perror("error");
 	if ((found = backup.find("\r\n"))!= std::string::npos)
 	{
 		if (chunkcomplete== true)
