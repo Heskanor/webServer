@@ -261,17 +261,30 @@ std::string create_temporary_file(std::string& path, std::string& file_name, std
 	return tmp_file_path;
 }
 
+std::string remove_query_string(std::string str)
+{
+	std::cout << "str: " << str << std::endl; 
+	std::string::size_type pos = str.find('?');
+	if (pos != std::string::npos)
+	{
+		str = str.substr(0, pos);
+	}
+	std::cout << "str: " << str << std::endl;
+	return str;
+}
+
 int main()
 {
 	// std::string path = "/Users/hmahjour/Desktop/CPP_pool/";
-	std::string file_name = "/Users/hmahjour/Desktop/CPP_pool/toberenamed.txt";
+	std::string file_name = "/Users/hmahjour/Desktop/CPP_pool/?toberenamed.txt";
 	// std::string extension = ".txt";
 	// std::string tmp_file_path = create_temporary_file(path, file_name, extension);
 	std::string new_file_path = "/Users/hmahjour/Desktop/cotest/renamedfile.txt";
-	if (rename(file_name.c_str(), new_file_path.c_str()))
-		cout << "failed to rename file" << endl;
-	else
-		cout << "renamed file successfully" << endl;
+	std::string str = remove_query_string(file_name);
+	// if (rename(file_name.c_str(), new_file_path.c_str()))
+	// 	cout << "failed to rename file" << endl;
+	// else
+	// 	cout << "renamed file successfully" << endl;
 		// std::ofstream tmp_file(tmp_file_path.c_str());
 		// tmp_file << "Hello World!";
 	//tmp_file.close();

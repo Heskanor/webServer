@@ -3,7 +3,7 @@
 int main()
 {
 	Request req;
-	req.setmethod("POST");
+	req.setmethod("GET");
 	req.setrequest("/Desktop");
 	req.sethttpversion("HTTP/1.1");
 	req.setcontent_length("0");
@@ -34,6 +34,7 @@ int main()
 	allowed_methods.push_back("GET");
 	allowed_methods.push_back("POST");
 	loc1.set_allowed_methods(allowed_methods);
+	loc1.set_redirection("301", "http://www.codeforces.com/");
 
 	loc2.set_root("/Users/hmahjour/Desktop");
 	loc2.set_path("/CPP_pool");

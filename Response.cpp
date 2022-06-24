@@ -10,6 +10,18 @@ std::string create_tmp_file_name(std::string path, std::string file_name, std::s
 	return (path + time_since1970_string + "_" + file_name + extension);
 }
 
+std::string remove_query_string(std::string str)
+{
+	std::cout << "str: " << str << std::endl; 
+	std::string::size_type pos = str.find('?');
+	if (pos != std::string::npos)
+	{
+		str = str.substr(0, pos);
+	}
+	std::cout << "str: " << str << std::endl;
+	return str;
+}
+
 std::string create_temporary_file(std::string path, std::string file_name, std::string extension)
 {
 	std::string tmp_file_path = create_tmp_file_name(path, file_name, extension);
@@ -174,17 +186,25 @@ void redirect_response(std::string& redirection_code, std::string& redirection_p
 	std::string new_status_code = redirection_code;
 	std::string new_location = redirection_path;
 	std::string location_header = "Location: " + new_location + "\r\n";
-		// std::string location_header = "Location: " + new_location + "\r\n";
-
 	res._special_headers += location_header;
 	res._status_code = new_status_code;
 	set_response_headers(req, res);
 }
 
+void run_cgi_script(Request& req, Response& res, Location& location, std::string& path)
+{
+	std::string cgi_path = location.get_cgi_path();
+	std::vector<std::string> cgi_extensions = location.get_cgi_ext();
+	std::string file_extension = path.substr(path.find_last_of("."));
+	std::string tmp_file = create_temporary_file("/tmp/", "_cgi_output", file_extension);
+	res._tmp_file_path = tmp_file;
+	Cgi the_cgi(cgi_path, cgi_extensions);
+	the_cgi.executer(&req, &res, location);
+}
+
 bool check_if_cgi_is_applicable(Location& location, std::string& path)
 {
 	std::string file_extension = path.substr(path.find_last_of("."));
-	// check for query string
 	std::vector<std::string> cgi_extensions = location.get_cgi_ext();
 	int nbr_cgi_extensions = cgi_extensions.size();
 	for (int i = 0; i < nbr_cgi_extensions; i++)
@@ -261,6 +281,11 @@ bool check_for_index_file(Request& req, Location& location, std::string& resourc
 			if (index_code == FILECODE && access(index_file_path.c_str(), R_OK) == 0)
 			{
 				// check if location has cgi
+				if (check_if_cgi_is_applicable(location, resource))
+				{
+					run_cgi_script(req, res, location, resource);
+					return true;
+				}
 				res._body_path = index_file_path;
 				res._status_code = "200";
 				set_content_type_and_length(req, res, index_file_path);
@@ -444,7 +469,8 @@ bool check_for_upload_directory(Response& res, Request& req, Location& location)
 			throw Response::ForbiddenPath();
 		}
 		res._status_code = "201";
-		res._tmp_file_path = tmp_file_name;
+		//change to _body_path
+		res._body_path = tmp_file_name;
 		set_content_type_and_length(req, res, res._tmp_file_path);
 		set_response_headers(req, res);
 		return true;
@@ -456,7 +482,7 @@ void response_to_post(Response& res, Request& req, Location& location)
 {
 	if (!check_for_upload_directory(res, req, location))
 	{
-		std::string resource = location.get_root() + req.get_requestur();
+		std::string resource = location.get_root() + remove_query_string(req.get_requestur());
 		int resource_code = requested_resource_by_post(resource, location, req, res);
 
 		if (resource_code == REDIRECTCODE)
@@ -471,7 +497,8 @@ void response_to_post(Response& res, Request& req, Location& location)
 			// check if location has cgi
 			if (check_if_cgi_is_applicable(location, resource))
 			{
-				
+				run_cgi_script(req, res, location, resource);
+				return;
 			}
 			else
 				throw Response::ForbiddenPath();
@@ -481,7 +508,7 @@ void response_to_post(Response& res, Request& req, Location& location)
 
 void response_to_delete(Response& res, Request& req, Location& location)
 {
-	std::string resource = location.get_root() + req.get_requestur();
+	std::string resource = location.get_root() + remove_query_string(req.get_requestur());
 	int resource_code = requested_resource_by_delete(resource, location, res);
 
 	if (resource_code == DIRCODE)
@@ -504,7 +531,7 @@ void response_to_delete(Response& res, Request& req, Location& location)
 
 void response_to_get(Response& res, Request& req, Location& location)
 {
-	std::string resource = location.get_root() + req.get_requestur();
+	std::string resource = location.get_root() + remove_query_string(req.get_requestur());
 	int resource_code = requested_resource_by_get(resource, location, req, res);
 
 	if (resource_code == REDIRECTCODE)
@@ -514,7 +541,11 @@ void response_to_get(Response& res, Request& req, Location& location)
 	else if (resource_code == FILECODE)
 	{
 		// check if location has cgi
-		// set content type and length
+		if (check_if_cgi_is_applicable(location, resource))
+		{
+			run_cgi_script(req, res, location, resource);
+			return;
+		}
 		res._status_code = "200";
 		res._body_path = resource;
 		set_content_type_and_length(req, res, resource);
@@ -571,7 +602,7 @@ Response server_response(Request& req, Server& server)
 	{
 		check_http_version(req.get_httpversion());
 		check_supported_methods(req.get_method());
-		std::string req_uri = req.get_requestur();
+		std::string req_uri = remove_query_string(req.get_requestur());
 		std::vector<Location> server_locations = server.get_locations();
 		Location location = find_matched_location(req_uri, server_locations);
 		std::vector<std::string> allowed_methods_in_location = location.get_allowed_methods();

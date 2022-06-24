@@ -19,6 +19,7 @@
 #include "Request.hpp"
 #include "location.hpp"
 #include "MimeType.hpp"
+#include "cgi.hpp"
 
 #define REDIRECTCODE 3
 #define DIRCODE 2
