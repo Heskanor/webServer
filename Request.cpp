@@ -154,6 +154,7 @@ bool					Request::settransferchunks(std::string len)
 			std::cout<<"im hererereree is true"<<std::endl;
 		else
 			std::cout<<"im hererereree is false"<<std::endl;
+		return false;
 }
 bool					Request::gettransferchunks()
 {

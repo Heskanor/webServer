@@ -256,7 +256,7 @@ void create_autoindex_file(std::string directory, std::vector<std::string>& enti
 	set_response_headers(req, res);
 }
 
-bool check_for_autoindex(std::string directory, Request& req, Response& res)
+void check_for_autoindex(std::string directory, Request& req, Response& res)
 {
 	DIR *dir;
 	struct dirent *ent;
@@ -369,6 +369,7 @@ int requested_resource_by_get(std::string& resource, Location& location, Request
 	}
 	else
 		throw Response::NoMatchedLocation();
+	return 0;
 }
 
 int requested_resource_by_post(std::string& resource, Location& location, Request& req, Response& res)
@@ -398,6 +399,7 @@ int requested_resource_by_post(std::string& resource, Location& location, Reques
 	}
 	else
 		throw Response::NoMatchedLocation();
+	return 0;
 }
 
 void requested_resource_by_error_page(std::string& error_page_path, Location& error_location, Response& res)
