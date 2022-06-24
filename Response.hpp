@@ -141,7 +141,8 @@ class Response
 };
 
 
-
+std::string remove_query_string(std::string str);
 Response server_response(Request& req, Server& server);
-
+int get_file_size(std::string& file_path);
+std::string better_to_string(int value);
 #endif

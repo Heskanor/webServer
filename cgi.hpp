@@ -6,6 +6,8 @@
 #include "Response.hpp"
 #include "location.hpp"
 
+class Response;
+
 class Cgi
 {
     private:

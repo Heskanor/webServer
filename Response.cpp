@@ -149,6 +149,7 @@ Location find_matched_location(std::string& path, std::vector<Location>& locatio
 		int nbr_locations = locations.size();
 		for (int i = 0; i < nbr_locations; i++)
 		{
+			//std::cout << "Checking if " << path << " matches " << locations[i].get_path() << std::endl;
 			if (locations[i].get_path() == path)
 				return locations[i];
 		}
@@ -195,8 +196,9 @@ void run_cgi_script(Request& req, Response& res, Location& location, std::string
 {
 	std::string cgi_path = location.get_cgi_path();
 	std::vector<std::string> cgi_extensions = location.get_cgi_ext();
-	std::string file_extension = path.substr(path.find_last_of("."));
-	std::string tmp_file = create_temporary_file("/tmp/", "_cgi_output", file_extension);
+	std::cout << cgi_path << " " << cgi_extensions[0] << std::endl;
+	// std::string file_extension = path.substr(path.find_last_of("."));
+	std::string tmp_file = create_temporary_file("/tmp/", "_cgi_output", ".txt");
 	res._tmp_file_path = tmp_file;
 	Cgi the_cgi(cgi_path, cgi_extensions);
 	the_cgi.executer(&req, &res, location);
@@ -533,7 +535,7 @@ void response_to_get(Response& res, Request& req, Location& location)
 {
 	std::string resource = location.get_root() + remove_query_string(req.get_requestur());
 	int resource_code = requested_resource_by_get(resource, location, req, res);
-
+	std::cout << "resource code: " << resource_code << std::endl;
 	if (resource_code == REDIRECTCODE)
 		return;
 	if (resource_code == DIRCODE)
@@ -543,6 +545,7 @@ void response_to_get(Response& res, Request& req, Location& location)
 		// check if location has cgi
 		if (check_if_cgi_is_applicable(location, resource))
 		{
+			std::cout << "cgi script is applicable" << std::endl;
 			run_cgi_script(req, res, location, resource);
 			return;
 		}

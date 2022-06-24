@@ -4,10 +4,12 @@ int main()
 {
 	Request req;
 	req.setmethod("GET");
-	req.setrequest("/Desktop");
+	req.setrequest("/Desktop/test.php");
 	req.sethttpversion("HTTP/1.1");
-	req.setcontent_length("0");
-	req.setcontent_type("image/jpeg");
+	std::string file = "/Users/hmahjour/Desktop/test.php";
+	int haha = get_file_size(file);
+	req.setcontent_length(better_to_string(haha));
+	req.setcontent_type("text/x-php");
 	req.set_pathbody("/Users/hmahjour/Downloads/cry.jpeg");
 
 	Server serv;
@@ -26,15 +28,20 @@ int main()
 	loc1.set_path("/Desktop");
 	std::vector<std::string> indexes;
 	indexes.push_back("ngin.txt");
-	indexes.push_back("pool.html");
 	loc1.set_index(indexes);
 	loc1.set_auto_index(true);
-	loc1.set_upload_directory("/Desktop/CPP_pool/");
+	// loc1.set_upload_directory("/Desktop/CPP_pool/");
 	std::vector<std::string> allowed_methods;
 	allowed_methods.push_back("GET");
 	allowed_methods.push_back("POST");
 	loc1.set_allowed_methods(allowed_methods);
-	loc1.set_redirection("301", "http://www.codeforces.com/");
+	// loc1.set_redirection("301", "http://www.codeforces.com/");
+	loc1.set_cgi_path("/usr/bin/php");
+	std::vector<std::string> v_ext;
+	v_ext.push_back(".php");
+	loc1.set_cgi_ext(v_ext);
+
+
 
 	loc2.set_root("/Users/hmahjour/Desktop");
 	loc2.set_path("/CPP_pool");

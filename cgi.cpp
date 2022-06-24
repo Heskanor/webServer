@@ -57,31 +57,33 @@ bool Cgi::isCgi(std::string path) const
 }
 std::string get_querrystring(std::string path)
 {
-    std::string querrystring;
+    std::string querrystring = "";
     if (path.find("?") != std::string::npos)
     {
         querrystring = path.substr(path.find("?") + 1);
         return querrystring;
     }
+	return querrystring;
 }
 
 void Cgi::envMaker(Request *request, Location &location)
 {
-    std::string scriptname = location.get_root() + _path;
+    //std::string scriptname = location.get_root() + _path;
+	std::string scriptname = "/Users/hmahjour/Desktop/test.php";
 
     //setenv("AUTH_TYPE", "", 1);
     setenv("CONTENT_LENGTH", (request->getcontentlenght()).c_str(), 1);
-    setenv("CONTENT_TYPE", (request->getcontenttype()).c_str(), 1); // need content type geter
+    setenv("CONTENT_TYPE", (request->getcontent_type()).c_str(), 1); // need content type geter
     setenv("GATEWAY_INTERFACE", "CGI/1.1", 1);
     setenv("PATH_INFO", ((request->get_requestur())).substr(0,request->get_requestur().find_first_of('?')).c_str(), 1); // subtr query string
     setenv("PATH_TRANSLATED", ((request->get_requestur())).substr(0,request->get_requestur().find_first_of('?')).c_str(), 1); // dir b7al path info
     setenv("QUERY_STRING", get_querrystring(request->get_requestur()).c_str(), 1);// after ?
     setenv("REMOTE_ADDR", "localhost", 1);
-    setenv("REMOTE_HOST", (request->gethost()).c_str(), 1);// maybe like remote address
+    setenv("REMOTE_HOST", "localhost", 1);// maybe like remote address
     // setenv("REMOTE_IDENT", "", 1);
     // setenv("REMOTE_USER", "", 1);
     setenv("REQUEST_METHOD", (request->get_method()).c_str(), 1);
-    setenv("SCRIPT_NAME", scriptname.c_str(), 1);); 
+    setenv("SCRIPT_NAME", scriptname.c_str(), 1); 
     setenv("SERVER_NAME", (request->gethost()).c_str(), 1);
     setenv("SERVER_PORT", (request->get_port()).c_str(), 1);
     setenv("SERVER_PROTOCOL", "HTTP/1.1", 1);
@@ -143,7 +145,7 @@ void Cgi::executer(Request *request, Response *response, Location &location)
     int response_fd;
 
     std::string methode = request->get_method();
-    std::string path = location.get_root() + request->get_requestur();
+    std::string path = location.get_root() + remove_query_string(request->get_requestur());
     if (methode == "POST" || methode == "DELETE")
         request_fd = open(request->get_pathbody().c_str(), O_RDONLY);   
     response_fd = open(response->_tmp_file_path.c_str(), O_WRONLY);
@@ -152,9 +154,9 @@ void Cgi::executer(Request *request, Response *response, Location &location)
     parm[0] = path.c_str(); 
     parm[1] = NULL;
     pid_t cgi_pid;
-
+	
     pid_t pid = fork();
-    
+    envMaker(request, location);
     if (pid == -1)
     {
         //response->set_status(200);
@@ -163,21 +165,21 @@ void Cgi::executer(Request *request, Response *response, Location &location)
     }
     if (pid == 0)
     {
-        envMaker(request, location);
+		write(2, methode.c_str(), 4);
+        
         close(STDERR_FILENO);
         if (methode == "POST" || methode == "DELETE")
-        {
+        {//write(2, methode.c_str(), 4);
             dup2(request_fd, STDIN_FILENO);
-            dup2(response_fd, STDOUT_FILENO);
+           dup2(response_fd, STDOUT_FILENO);
             close(request_fd);
             close(response_fd);
         }
         else
-        {
+        {			//write(2, methode.c_str(), 4);
             dup2(response_fd, STDOUT_FILENO);
-            // close(STDIN_FILENO);
+            close(STDIN_FILENO);
             close(response_fd);
-            close(0);
         }
         int exitcode = execvp(_path.c_str(), (char *const *)parm);
         exit(exitcode);
