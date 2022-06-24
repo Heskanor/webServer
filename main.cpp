@@ -3,8 +3,8 @@
 int main()
 {
 	Request req;
-	req.setmethod("GET");
-	req.setrequest("/Desktop/test.php");
+	req.setmethod("POST");
+	req.setrequest("/Desktop/up.php");
 	req.sethttpversion("HTTP/1.1");
 	std::string file = "/Users/hmahjour/Desktop/test.php";
 	int haha = get_file_size(file);

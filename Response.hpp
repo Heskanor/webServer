@@ -138,6 +138,27 @@ class Response
 				return "500";
 			}
 		};
+		class BadRequest : public std::exception
+		{
+			virtual const char* what() const throw()
+			{
+				return "400";
+			}
+		};
+		class RequestUriTooLong : public std::exception
+		{
+			virtual const char* what() const throw()
+			{
+				return "414";
+			}
+		};
+		class RequestEntityTooLarge : public std::exception
+		{
+			virtual const char* what() const throw()
+			{
+				return "413";
+			}
+		};
 };
 
 

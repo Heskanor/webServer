@@ -198,10 +198,18 @@ void run_cgi_script(Request& req, Response& res, Location& location, std::string
 	std::vector<std::string> cgi_extensions = location.get_cgi_ext();
 	std::cout << cgi_path << " " << cgi_extensions[0] << std::endl;
 	// std::string file_extension = path.substr(path.find_last_of("."));
-	std::string tmp_file = create_temporary_file("/tmp/", "_cgi_output", ".txt");
+	std::string tmp_file = create_temporary_file("/tmp/", "_cgi_output", ".html");
 	res._tmp_file_path = tmp_file;
 	Cgi the_cgi(cgi_path, cgi_extensions);
 	the_cgi.executer(&req, &res, location);
+	if (res._status_code == "500")
+		throw Response::InternalServerError();
+	if (res._headers == "")
+	{
+		res._status_code = "200";
+		set_content_type_and_length(req, res, res._tmp_file_path);
+		set_response_headers(req, res);
+	}
 }
 
 bool check_if_cgi_is_applicable(Location& location, std::string& path)
@@ -591,6 +599,35 @@ Response custom_and_default_error_pages(Request& req, Response& res, Server& ser
 	}
 }
 
+void initial_checks(Request& req)
+{
+	if (req.gettransferstat() == 1 &&  req.gettransferchunks() == 0)
+		throw Response::HttpMethodNotSupported();
+	if (req.gettransferstat() == 0 &&  req.getcontentlenght().empty() && req.get_method() == "POST")
+		throw Response::BadRequest();
+	std::string uri_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=%";
+	std::string request_uri = req.get_requestur();
+	int request_uri_size = request_uri.size();
+	for (int i = 0; i < request_uri_size; i++)
+	{
+		if (uri_chars.find(req.get_requestur()[i]) == std::string::npos)
+			throw Response::BadRequest();
+	}
+	if (request_uri_size > 2048)
+		throw Response::RequestUriTooLong();
+}
+
+void check_request_body_size(Request& req, Location& location)
+{
+	if (!req.get_pathbody().empty())
+	{
+		std::string path_body = req.get_pathbody();
+		int path_body_size = get_file_size(path_body);
+		if (path_body_size > location.get_bodySizeLimit())
+			throw Response::RequestEntityTooLarge();
+	}
+}
+
 Response server_response(Request& req, Server& server)
 {
 	Response res;
@@ -603,11 +640,13 @@ Response server_response(Request& req, Server& server)
 
 	try
 	{
+		initial_checks(req);
 		check_http_version(req.get_httpversion());
 		check_supported_methods(req.get_method());
 		std::string req_uri = remove_query_string(req.get_requestur());
 		std::vector<Location> server_locations = server.get_locations();
 		Location location = find_matched_location(req_uri, server_locations);
+		check_request_body_size(req, location);
 		std::vector<std::string> allowed_methods_in_location = location.get_allowed_methods();
 		std::string request_method = req.get_method();
 		check_allowed_methods(res, request_method, allowed_methods_in_location);

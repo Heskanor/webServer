@@ -69,7 +69,7 @@ std::string get_querrystring(std::string path)
 void Cgi::envMaker(Request *request, Location &location)
 {
     //std::string scriptname = location.get_root() + _path;
-	std::string scriptname = "/Users/hmahjour/Desktop/test.php";
+	std::string scriptname = "/Users/hmahjour/Desktop/up.php";
 
     //setenv("AUTH_TYPE", "", 1);
     setenv("CONTENT_LENGTH", (request->getcontentlenght()).c_str(), 1);
@@ -151,8 +151,8 @@ void Cgi::executer(Request *request, Response *response, Location &location)
     response_fd = open(response->_tmp_file_path.c_str(), O_WRONLY);
     const char *parm[3];
     parm[0] = _path.c_str();
-    parm[0] = path.c_str(); 
-    parm[1] = NULL;
+    parm[1] = path.c_str(); 
+    parm[2] = NULL;
     pid_t cgi_pid;
 	
     pid_t pid = fork();
