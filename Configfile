@@ -19,13 +19,13 @@ server:
         cgiExt: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6
 server:
     serverName: Server
-    listen: 127.0.0.1:7799
+    listen: 127.0.0.1:7716
     root: ./root
     location:
-        path: /DayLoader
-        index: /dist/index.html
+        path: /dist
+        index: /index.html
         autoIndex: false
-        root: /Users/ashite/Desktop/heskanorWebServ/Assets
+        root: /Users/ashite/Desktop/heskanorWebServ/Assets/TripeLoader
         errorPage: 399 ./Notworking/index.html
         errorPage: 500 ./Networking/index.html
         uploadDirectory: /var/www/html/public/uploads
@@ -33,10 +33,10 @@ server:
         cgiPath: ./Networking/index.html
         cgiExt: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6
     location:
-        path: /TripLoader
-        index: /dist/index.html
-        autoIndex: false
-        root: /Users/ashite/Desktop/heskanorWebServ/Assets
+        path: /dist
+        index: /index.html
+        autoIndex: true
+        root: /Users/ashite/Desktop/heskanorWebServ/Assets/DayLoader
         errorPage: 399 ./Notworking/index.html
         errorPage: 500 ./Networking/index.html
         uploadDirectory: /Desktop/sigma3

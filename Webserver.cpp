@@ -186,7 +186,7 @@ void Webserver::Runmywebserver()
                     if (Responsemap[i]._Responecomplete == 0)
                     {
                         size_t sent_bytes;
-						if ( (sent_bytes = write(i, Responsemap[i].lop.c_str(), Responsemap[i].lop.size())) >= 0)
+						if ( (sent_bytes = write(i, Responsemap[i].lop.c_str(), Responsemap[i].lop.size())) <= 0)
 						{
 							FD_CLR(i, &master2);
 							close(i);

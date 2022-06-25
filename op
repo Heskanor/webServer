@@ -286,7 +286,7 @@ void				Webserver::webservbuild()
 		ser.addrlen = addrlen;
 		lopserver[sockfd] = ser;
 		bind(sockfd, (struct sockaddr*)&address, sizeof(address));
-		listen(sockfd, 3);
+		listen(sockfd, 1024);
 		c++;
 	}
 
