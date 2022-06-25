@@ -101,6 +101,7 @@ void				Webserver::Runmywebserver()
 		readsfds =  master ;
 		writefds = master2;
 		//max_sd =  sockfd;
+		//haha15
 
 		activ = select(max_sd + 1, &readsfds, &writefds, NULL, NULL);
 		for (int i =0; i < max_sd + 1; i++)

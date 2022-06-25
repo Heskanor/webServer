@@ -47,13 +47,14 @@ class Response
 		size_t totallength;
 		bool _Responecomplete;
 		size_t neededtoberight;
+		std::string lop;
 		size_t homuchiwrite;
 		std::string _special_headers;
 		std::string _body_path;
 		std::string _status_code;
 		std::string _content_type;
 		std::string _tmp_file_path;
-		int _content_length;
+		long long  _content_length;
 		bool sentheader;
 
 		long long headersize;
