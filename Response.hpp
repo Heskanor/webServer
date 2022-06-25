@@ -49,7 +49,7 @@ class Response
 		bool _Responecomplete;
 		size_t neededtoberight;
 		std::string lop;
-		size_t homuchiwrite;
+		long long homuchiwrite;
 		std::string _special_headers;
 		std::string _body_path;
 		std::string _status_code;

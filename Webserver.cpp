@@ -45,11 +45,11 @@ Webserver &Webserver::operator=(Webserver const &rhs)
     return *this;
 }
 
-std::ostream &operator<<(std::ostream &o, Webserver const &i)
-{
-    // o << "Value = " << i.getValue();
-    return o;
-}
+// std::ostream &operator<<(std::ostream &o, Webserver const &i)
+// {
+//     // o << "Value = " << i.getValue();
+//     return o;
+// }
 
 /*
  ** --------------------------------- METHODS ----------------------------------
@@ -81,14 +81,13 @@ void Webserver::Runmywebserver()
     int valread = 0;
     std::string lop;
     int fd = -1;
-    ;
     FD_ZERO(&readsfds);
     FD_ZERO(&writefds);
     int new_socket;
-    char *buffer4;
-    int po;
+    // char *buffer4;
+    // int po;
     Request req;
-    int checker = 0;
+    // int checker = 0;
     int activ;
     int max_sd = -1;
     std::map<int, Myserver>::iterator it;
@@ -224,12 +223,10 @@ std::string     Webserver::checkingpath(Response &res)
 }
 int Webserver::checkingservers(std::vector<Server> lop, Request req)
 {
-    std::vector<int> op;
-    int i = 0;
-    int size = 0;
-    int storingi = -1;
+    std::vector<size_t> op;
+    // int storingi = -1;
 
-    for (int i = 0; i < lop.size(); i++)
+    for (size_t i = 0; i < lop.size(); i++)
     {
         if (lop[i].get_listenAddress() == req.get_ip() && std::to_string(lop[i].get_listenPort()) == req.get_port())
         {
@@ -243,15 +240,15 @@ int Webserver::checkingservers(std::vector<Server> lop, Request req)
     }
     if (op.empty() == false)
     {
-        for (int i = 0; i < op.size(); i++)
+        for (size_t i = 0; i < op.size(); i++)
         {
-            for (int j = 0; j < lop.size(); j++)
+            for (size_t j = 0; j < lop.size(); j++)
             {
                 if (op[i] == j)
                 {
                     if (lop[i].get_server_name().empty() == false)
                     {
-                        for (int c = 0; c < lop[i].get_server_name().size(); c++)
+                        for (size_t c = 0; c < lop[i].get_server_name().size(); c++)
                         {
                             if (lop[i].get_server_name()[c] == req.get_ip())
                             {
@@ -274,13 +271,13 @@ void Webserver::webservbuild()
     r = parser.Rootparser(path);
     Server ser;
     servers = r.get_servers();
-    int new_socket;
+    // int new_socket;
     int addrlen;
     int sockfd;
     struct sockaddr_in address;
     fd_set readsfds;
     int c = 0;
-    int valread = 0;
+    // int valread = 0;
     FD_ZERO(&readsfds); // change master
     for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); ++it)
     {

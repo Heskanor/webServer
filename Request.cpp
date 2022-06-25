@@ -75,16 +75,34 @@ Request &				Request::operator=( Request const & rhs )
 	return *this;
 }
 
-std::ostream &			operator<<( std::ostream & o, Request const & i )
-{
-	//o << "Value = " << i.getValue();
-	return o;
-}
+// std::ostream &			operator<<( std::ostream & o, Request const & i )
+// {
+// 	//o << "Value = " << i.getValue();
+// 	return o;
+// }
 
 
 /*
  ** --------------------------------- METHODS ----------------------------------
  */
+int sstoi(std::string &line)
+{
+	int size;
+	std::stringstream ss;
+        ss << line;
+        ss >> size;
+	return size;
+}
+
+unsigned long unsigned_stoi(std::string &line)
+{
+	unsigned long size;
+	std::stringstream ss;
+        ss  <<line;
+        ss >> size;
+	return size;
+}
+
 bool			Request::IsHex(const std::string& str) 
 {
   return (str.find_first_not_of("0123456789abcdefABCDEF", 0) == std::string::npos);
@@ -226,14 +244,15 @@ void					Request::setunchunkedbody()
 		//std::cout<<data<<std::endl;
 	//	filediscriptor = open(pathbody.c_str(), O_CREAT | O_RDWR | O_APPEND, 0666);
 		////std::cout<<" size : "<<bodylenght + data.size() <<" content lentgh "<<stoi(content_lenght)<<std::endl;
-		if ((bodylenght + data.size()) <= stoi(content_lenght))
+		
+		if ((bodylenght + data.size()) <= unsigned_stoi(content_lenght))
 		{
 			bodylenght += data.size();
 		//	//std::cout<< "" the file discriptor "<<std::endl;
 			write(filediscriptor,data.c_str(),data.size());
 			data.erase();
 		}
-		if (bodylenght == stoi(content_lenght))
+		if (bodylenght == sstoi(content_lenght))
 		{
 			requeststatus = 200;
 			requestcomplete = 1;
@@ -249,7 +268,7 @@ void					Request::setunchunkedbody()
 
 void					Request::setchunckedbody()
 {
-	int found = 0;
+	unsigned long found = 0;
 	std::string printstring;
 	int printingnum = 0;
 	backup += data;
@@ -293,12 +312,12 @@ void					Request::setchunckedbody()
 				chunkcomplete = true;
 				return;
 			}
-			size_t t = backup.size();
-			if (backup.size() >= chunksize + 2)
+			int t = backup.size();
+			if (t >= chunksize + 2)
 			{
 				printingnum =  write(filediscriptor,backup.substr(0,chunksize).c_str(),chunksize);
 				chunkcomplete = 1;
-				if (backup.size() >= chunksize + 2)
+				if (t >= chunksize + 2)
 				{
 					backup = backup.substr(chunksize + 2);
 				}
@@ -403,7 +422,7 @@ int 					Request::parserequest(char *buffer, int size)
 				{
 					MimeType op;
 					std::string   lop;
-					std::string &lop1 = content_type;
+					// std::string &lop1 = content_type;
 					std::string name = getrandomname() ;
 					name +=  op.get_extension(content_type);
 					pathbody = name;
@@ -448,7 +467,7 @@ int					Request::handleheaders(std::string data2)
 	tmp = data2.substr(0,data2.find("\r\n"));
 	if (findfirstline(tmp) != -1)
 	{
-		for(int i = 0; i < tmp.size(); i++)
+		for(size_t i = 0; i < tmp.size(); i++)
 		{
 			if (tmp[i] != ' ')
 			{
@@ -470,7 +489,7 @@ int					Request::handleheaders(std::string data2)
 		}
 		data2 = data2.substr(data2.find("\n") + 1);
 		////std::cout<<data2<<std::endl;
-		int p = 0;
+		size_t p = 0;
 		int f = 0;
 		int cc = 0;
 		while (((p = data2.find("\n")) != std::string::npos || (p =  data2.find("\r\n\r\n")) != std::string::npos))

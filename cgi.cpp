@@ -66,7 +66,7 @@ std::string get_querrystring(std::string path)
 	return querrystring;
 }
 
-void Cgi::envMaker(Request *request, Location &location)
+void Cgi::envMaker(Request *request)
 {
     //std::string scriptname = location.get_root() + _path;
 	std::string scriptname = "/Users/hmahjour/Desktop/up.php";
@@ -119,7 +119,7 @@ void cgi_reader(Response *resp, int fd)
     char buf[1024];
     int ret;
     std::string bd;
-    int body_size;
+    int body_size = 0;
 
     while ((ret = read(fd, buf, 1024)) > 0)
     {
@@ -157,7 +157,7 @@ void Cgi::executer(Request *request, Response *response, Location &location)
     //long long time = timeer();
 	
     pid_t pid = fork();
-    envMaker(request, location);
+    envMaker(request);
     if (pid == -1)
     {
         //response->set_status(200);

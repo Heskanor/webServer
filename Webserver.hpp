@@ -56,6 +56,6 @@ class Webserver
 
 };
 
-std::ostream &			operator<<( std::ostream & o, Webserver const & i );
+// std::ostream &			operator<<( std::ostream & o, Webserver const & i );
 
 #endif /* ******************************************************* WEBSERVER_H */

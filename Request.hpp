@@ -114,6 +114,6 @@ class Request
 }; 
 
 int  findfirstline(std::string data);
-std::ostream &			operator<<( std::ostream & o, Request const & i );
+// std::ostream &			operator<<( std::ostream & o, Request const & i );
 
 #endif /* ********************************************************* REQUEST_H */

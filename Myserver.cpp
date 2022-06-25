@@ -38,11 +38,11 @@ Myserver &				Myserver::operator=( Myserver const & rhs )
 	return *this;
 }
 
-std::ostream &			operator<<( std::ostream & o, Myserver const & i )
-{
-	//o << "Value = " << i.getValue();
-	return o;
-}
+// std::ostream &			operator<<( std::ostream & o)
+// {
+// 	//o << "Value = " << i.getValue();
+// 	return o;
+// }
 
 
 /*

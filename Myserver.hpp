@@ -26,6 +26,6 @@ class Myserver
 
 };
 
-std::ostream &			operator<<( std::ostream & o, Myserver const & i );
+//std::ostream &			operator<<( std::ostream & o, Myserver const & i );
 
 #endif /* ******************************************************** MYSERVER_H */
