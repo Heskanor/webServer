@@ -14,6 +14,7 @@ server:
         errorPage: 399 ./Notworking/index.html
         errorPage: 500 ./Networking/index.html
         uploadDirectory: /var/www/html/public/uploads
+        return: 301 http://www.codeforces.com
         allowedMethods: POST GET DELETE
         cgiPath: ./Networking/index.html
         cgiExt: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6
@@ -33,12 +34,13 @@ server:
         cgiExt: .php
     location:
         path: /Desktop
-        index: test.php
-        autoIndex: true
+        index: index.html
+        autoIndex: false
         root: /Users/ashite
         errorPage: 399 ./Notworking/index.html
         errorPage: 500 ./Networking/index.html
         uploadDirectory: /var/www/html/public/uploads
+        return: 301 http://www.codeforces.com
         allowedMethods: POST GET DELETE
-        cgiPath: /usr/bin/php
-        cgiExt: .php
+        cgiPath: ./Networking/index.html
+        cgiExt: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6
