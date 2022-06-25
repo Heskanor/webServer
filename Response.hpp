@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sstream>
+#include "cgi.hpp"
 
 #include "Request.hpp"
 #include "location.hpp"
@@ -155,10 +156,34 @@ class Response
 				return "500";
 			}
 		};
+		class BadRequest : public std::exception
+		{
+			virtual const char* what() const throw()
+			{
+				return "400";
+			}
+		};
+		class RequestUriTooLong : public std::exception
+		{
+			virtual const char* what() const throw()
+			{
+				return "414";
+			}
+		};
+		class RequestEntityTooLarge : public std::exception
+		{
+			virtual const char* what() const throw()
+			{
+				return "413";
+			}
+		};
 };
 
 
 
+std::string remove_query_string(std::string str);
 Response server_response(Request& req, Server& server);
+int get_file_size(std::string& file_path);
+std::string better_to_string(int value);
 
 #endif

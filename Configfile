@@ -8,9 +8,9 @@ server:
     root: ./root
     location:
         path: /Desktop
-        index: testindex.txt
+        index: index.html
         autoIndex: false
-        root: /Users/aali-mou
+        root: /Users/ashite
         errorPage: 399 ./Notworking/index.html
         errorPage: 500 ./Networking/index.html
         uploadDirectory: /var/www/html/public/uploads
@@ -22,13 +22,23 @@ server:
     listen: 127.0.0.1:3030
     root: ./root
     location:
-        path: /Desktop
-        index: testindex.txt
+        path: /dist
+        index: index.html
         autoIndex: false
-        root: /Users/aali-mou
+        root: /Users/ashite/Desktop/triper
         errorPage: 399 ./Notworking/index.html
         errorPage: 500 ./Networking/index.html
-        uploadDirectory: /Desktop/sigma3
         allowedMethods: POST GET DELETE
-        cgiPath: ./Networking/index.html
-        cgiExt: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6
+        cgiPath: /Users/ashite/Desktop/php-cgi
+        cgiExt: .php
+    location:
+        path: /Desktop
+        index: test.php
+        autoIndex: true
+        root: /Users/ashite
+        errorPage: 399 ./Notworking/index.html
+        errorPage: 500 ./Networking/index.html
+        uploadDirectory: /var/www/html/public/uploads
+        allowedMethods: POST GET DELETE
+        cgiPath: /usr/bin/php
+        cgiExt: .php

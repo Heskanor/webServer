@@ -10,6 +10,18 @@ std::string create_tmp_file_name(std::string path, std::string file_name, std::s
 	return (path + time_since1970_string + "_" + file_name + extension);
 }
 
+std::string remove_query_string(std::string str)
+{
+	std::cout << "str: " << str << std::endl; 
+	std::string::size_type pos = str.find('?');
+	if (pos != std::string::npos)
+	{
+		str = str.substr(0, pos);
+	}
+	std::cout << "str: " << str << std::endl;
+	return str;
+}
+
 std::string create_temporary_file(std::string path, std::string file_name, std::string extension)
 {
 	std::string tmp_file_path = create_tmp_file_name(path, file_name, extension);
@@ -36,24 +48,24 @@ std::string set_date_header()
 int get_file_size(std::string& file_path)
 {
 	struct stat st;
+	std::cout <<"FilePath ------------>" << file_path << std::endl;
 	stat(file_path.c_str(), &st);
-
-	std::cerr << "FilePath ----->" << file_path << std::endl;
-	std::cerr << "FileSize ----->" << st.st_size << std::endl;
-
+	std::cout << "FileSize ----------->" << st.st_size << std::endl;
 	return st.st_size;
 }
 
 void set_content_type_and_length(Request& req, Response& res, std::string& file_path)
 {
+	std::cout << "trying to set content type and length" << std::endl;
 	MimeType mime_type;
 	if (file_path.find_last_of(".") != std::string::npos)
 	{
-		std::string extension = file_path.substr(file_path.find_last_of("."));
-		res._content_type = mime_type.get_mime_type(extension);
+		std::string file_extension = file_path.substr(file_path.find_last_of("."));
+		res._content_type = mime_type.get_mime_type(file_extension);
 	}
 	else
 		res._content_type = "text/plain";
+	
 	res._content_length = get_file_size(file_path);
 }
 
@@ -95,6 +107,7 @@ void init_code_map(Response& res)
 
 void set_response_headers(Request& req, Response& res)
 {
+	std::cout << "setting response headers" << std::endl;
 	res._headers += "HTTP/1.1 " + res.http_code_map[res._status_code] + "\r\n";
 	res._headers += "Server: Webserver/1.0\r\n";
 	res._headers += "Date: " + set_date_header() + "\r\n";
@@ -139,27 +152,25 @@ void check_supported_methods(std::string method)
 }
 
 
-int find_matched_location(Location& loc, std::string& path, std::vector<Location>& locations)
+Location find_matched_location(std::string& path, std::vector<Location>& locations)
 {
 	if (path != "")
 	{
 		int nbr_locations = locations.size();
 		for (int i = 0; i < nbr_locations; i++)
 		{
+			//std::cout << "Checking if " << path << " matches " << locations[i].get_path() << std::endl;
 			if (locations[i].get_path() == path)
-			{
-				loc = locations[i];
-				return 0;
-			}
+				return locations[i];
 		}
 		size_t found = path.find_last_of("/");
 		if (found != std::string::npos)
 		{
 			std::string path_without_last_slash = path.substr(0, found);
-			return find_matched_location(loc, path_without_last_slash, locations);
+			return find_matched_location(path_without_last_slash, locations);
 		}
 	}
-	return 1;
+	throw Response::NoMatchedLocation();
 }
 
 void check_allowed_methods(Response& res, std::string method, std::vector<std::string>& allowed_methods)
@@ -186,22 +197,52 @@ void redirect_response(std::string& redirection_code, std::string& redirection_p
 	std::string new_status_code = redirection_code;
 	std::string new_location = redirection_path;
 	std::string location_header = "Location: " + new_location + "\r\n";
-		// std::string location_header = "Location: " + new_location + "\r\n";
-
 	res._special_headers += location_header;
 	res._status_code = new_status_code;
 	set_response_headers(req, res);
 }
 
+void redirect_directory(Request& req, Response& res)
+{
+    std::string new_status_code = "301";
+    std::string new_location = req.get_requestur() + "/";
+    std::string location_header = "Location: " + new_location + "\r\n";
+    res._special_headers += location_header;
+    res._status_code = new_status_code;
+    set_response_headers(req, res);
+}
+
+void run_cgi_script(Request& req, Response& res, Location& location, std::string& path)
+{
+	std::string cgi_path = location.get_cgi_path();
+	std::vector<std::string> cgi_extensions = location.get_cgi_ext();
+	std::cout << cgi_path << " " << cgi_extensions[0] << std::endl;
+	// std::string file_extension = path.substr(path.find_last_of("."));
+	std::string tmp_file = create_temporary_file("/tmp/", "_cgi_output", ".html");
+	res._tmp_file_path = tmp_file;
+	Cgi the_cgi(cgi_path, cgi_extensions);
+	the_cgi.executer(&req, &res, location);
+	if (res._status_code == "500")
+		throw Response::InternalServerError();
+	if (res._headers == "")
+	{
+		res._status_code = "200";
+		set_content_type_and_length(req, res, res._tmp_file_path);
+		set_response_headers(req, res);
+	}
+}
+
 bool check_if_cgi_is_applicable(Location& location, std::string& path)
 {
-	std::string file_extension = path.substr(path.find_last_of("."));
-	// check for query string
-	std::vector<std::string> cgi_extensions = location.get_cgi_ext();
-	int nbr_cgi_extensions = cgi_extensions.size();
-	for (int i = 0; i < nbr_cgi_extensions; i++)
+	if (path.find_last_of(".") != std::string::npos)
+	{
+		std::string file_extension = path.substr(path.find_last_of("."));
+		std::vector<std::string> cgi_extensions = location.get_cgi_ext();
+		int nbr_cgi_extensions = cgi_extensions.size();
+		for (int i = 0; i < nbr_cgi_extensions; i++)
 		if (cgi_extensions[i] == file_extension)
 			return true;
+	}
 	return false;
 }
 
@@ -238,7 +279,7 @@ void create_autoindex_file(std::string directory, std::vector<std::string>& enti
 	set_response_headers(req, res);
 }
 
-bool check_for_autoindex(std::string directory, Request& req, Response& res)
+void check_for_autoindex(std::string directory, Request& req, Response& res)
 {
 	DIR *dir;
 	struct dirent *ent;
@@ -272,7 +313,13 @@ bool check_for_index_file(Request& req, Location& location, std::string& resourc
 				continue;
 			if (index_code == FILECODE && access(index_file_path.c_str(), R_OK) == 0)
 			{
+				std::cout << "file code correct" << std::endl;
 				// check if location has cgi
+				if (check_if_cgi_is_applicable(location, resource))
+				{
+					run_cgi_script(req, res, location, resource);
+					return true;
+				}
 				res._body_path = index_file_path;
 				res._status_code = "200";
 				set_content_type_and_length(req, res, index_file_path);
@@ -328,10 +375,11 @@ int requested_resource_by_get(std::string& resource, Location& location, Request
 		{
 			if (resource.back() != '/')
 			{
+				std::cout << "resource " << resource << std::endl;
 				resource += "/";
-				// res._status_code = "301";
-				// redirect_response(res._status_code, directory, req, res);
-				// return REDIRECTCODE;
+				res._status_code = "301";
+				redirect_directory(req, res);
+				return REDIRECTCODE;
 			}
 			if (access(resource.c_str(), R_OK))
 				throw Response::ForbiddenPath();
@@ -346,6 +394,7 @@ int requested_resource_by_get(std::string& resource, Location& location, Request
 	}
 	else
 		throw Response::NoMatchedLocation();
+	return 0;
 }
 
 int requested_resource_by_post(std::string& resource, Location& location, Request& req, Response& res)
@@ -358,9 +407,9 @@ int requested_resource_by_post(std::string& resource, Location& location, Reques
 			if (resource.back() != '/')
 			{
 				resource += "/";
-				// res._status_code = "301";
-				// redirect_response(res._status_code, resource, req, res);
-				// return REDIRECTCODE;
+				res._status_code = "301";
+				redirect_directory(req, res);
+				return REDIRECTCODE;
 			}
 			if (access(resource.c_str(), R_OK))
 				throw Response::ForbiddenPath();
@@ -375,6 +424,7 @@ int requested_resource_by_post(std::string& resource, Location& location, Reques
 	}
 	else
 		throw Response::NoMatchedLocation();
+	return 0;
 }
 
 void requested_resource_by_error_page(std::string& error_page_path, Location& error_location, Response& res)
@@ -456,7 +506,8 @@ bool check_for_upload_directory(Response& res, Request& req, Location& location)
 			throw Response::ForbiddenPath();
 		}
 		res._status_code = "201";
-		res._tmp_file_path = tmp_file_name;
+		//change to _body_path
+		res._body_path = tmp_file_name;
 		set_content_type_and_length(req, res, res._tmp_file_path);
 		set_response_headers(req, res);
 		return true;
@@ -468,7 +519,7 @@ void response_to_post(Response& res, Request& req, Location& location)
 {
 	if (!check_for_upload_directory(res, req, location))
 	{
-		std::string resource = location.get_root() + req.get_requestur();
+		std::string resource = location.get_root() + remove_query_string(req.get_requestur());
 		int resource_code = requested_resource_by_post(resource, location, req, res);
 
 		if (resource_code == REDIRECTCODE)
@@ -483,7 +534,8 @@ void response_to_post(Response& res, Request& req, Location& location)
 			// check if location has cgi
 			if (check_if_cgi_is_applicable(location, resource))
 			{
-				
+				run_cgi_script(req, res, location, resource);
+				return;
 			}
 			else
 				throw Response::ForbiddenPath();
@@ -493,7 +545,7 @@ void response_to_post(Response& res, Request& req, Location& location)
 
 void response_to_delete(Response& res, Request& req, Location& location)
 {
-	std::string resource = location.get_root() + req.get_requestur();
+	std::string resource = location.get_root() + remove_query_string(req.get_requestur());
 	int resource_code = requested_resource_by_delete(resource, location, res);
 
 	if (resource_code == DIRCODE)
@@ -516,9 +568,9 @@ void response_to_delete(Response& res, Request& req, Location& location)
 
 void response_to_get(Response& res, Request& req, Location& location)
 {
-	std::string resource = location.get_root() + req.get_requestur();
+	std::string resource = location.get_root() + remove_query_string(req.get_requestur());
 	int resource_code = requested_resource_by_get(resource, location, req, res);
-
+	std::cout << "resource code: " << resource_code << std::endl;
 	if (resource_code == REDIRECTCODE)
 		return;
 	if (resource_code == DIRCODE)
@@ -526,7 +578,12 @@ void response_to_get(Response& res, Request& req, Location& location)
 	else if (resource_code == FILECODE)
 	{
 		// check if location has cgi
-		// set content type and length
+		if (check_if_cgi_is_applicable(location, resource))
+		{
+			std::cout << "cgi script is applicable" << std::endl;
+			run_cgi_script(req, res, location, resource);
+			return;
+		}
 		res._status_code = "200";
 		res._body_path = resource;
 		set_content_type_and_length(req, res, resource);
@@ -547,10 +604,7 @@ Response custom_and_default_error_pages(Request& req, Response& res, Server& ser
 		}
 		std::string error_page = error_map[error_code];
 		std::vector<Location> server_locations = server.get_locations();
-		Location error_location;
-		int loc = find_matched_location(error_location, error_page, server_locations);
-		if (loc)
-			throw Response::NoMatchedLocation();
+		Location error_location = find_matched_location(error_page, server_locations);
 		std::vector<std::string> allowed_methods_in_location = error_location.get_allowed_methods();
 		std::string get_error_method = "GET";
 		check_allowed_methods(res, get_error_method, allowed_methods_in_location);
@@ -572,6 +626,35 @@ Response custom_and_default_error_pages(Request& req, Response& res, Server& ser
 	}
 }
 
+void initial_checks(Request& req)
+{
+	// if (req.gettransferstat() == 1 &&  req.gettransferchunks() == 0)
+	// 	throw Response::HttpMethodNotSupported();
+	if (req.gettransferstat() == 0 &&  req.getcontentlenght().empty() && req.get_method() == "POST")
+		throw Response::BadRequest();
+	std::string uri_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=%";
+	std::string request_uri = req.get_requestur();
+	int request_uri_size = request_uri.size();
+	for (int i = 0; i < request_uri_size; i++)
+	{
+		if (uri_chars.find(req.get_requestur()[i]) == std::string::npos)
+			throw Response::BadRequest();
+	}
+	if (request_uri_size > 2048)
+		throw Response::RequestUriTooLong();
+}
+
+void check_request_body_size(Request& req, Location& location)
+{
+	if (!req.get_pathbody().empty())
+	{
+		std::string path_body = req.get_pathbody();
+		int path_body_size = get_file_size(path_body);
+		if (path_body_size > location.get_bodySizeLimit())
+			throw Response::RequestEntityTooLarge();
+	}
+}
+
 Response server_response(Request& req, Server& server)
 {
 	Response res;
@@ -584,15 +667,14 @@ Response server_response(Request& req, Server& server)
 
 	try
 	{
+		initial_checks(req);
 		check_http_version(req.get_httpversion());
 		check_supported_methods(req.get_method());
-		std::string req_uri = req.get_requestur();
+		std::string req_uri = remove_query_string(req.get_requestur());
 		std::vector<Location> server_locations = server.get_locations();
-		Location location;
-		int loc = find_matched_location(location, req_uri, server_locations);
-		
-		if (loc)
-			throw Response::NoMatchedLocation();
+		Location location = find_matched_location(req_uri, server_locations);
+		std::cout << "Matched location: " << location.get_path() << std::endl;
+		check_request_body_size(req, location);
 		std::vector<std::string> allowed_methods_in_location = location.get_allowed_methods();
 		std::string request_method = req.get_method();
 		check_allowed_methods(res, request_method, allowed_methods_in_location);
@@ -610,7 +692,7 @@ Response server_response(Request& req, Server& server)
 	catch (std::exception& e)
 	{
 		std::string error_code = e.what();
-		std::cout << "fuuuuu " << error_code << std::endl;
+		std::cout << error_code << std::endl;
 		return custom_and_default_error_pages(req, res, server, error_code);
 	}
 }

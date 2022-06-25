@@ -626,7 +626,7 @@ Root ConfigParser::Rootparser(std::string file)
                 {
                     if (token == (this->_rootkeys)[j])
                     {
-                        if (rootAdminer.find(token) != rootAdminer.end() && token != "errorPage:")
+                        if (rootAdminer.find(token) != rootAdminer.end() && token != "errorPage:"&& token != "path:")
                         {
                             std::cout << "Error: repeated directive" << std::endl;
                             exit(1);
@@ -665,6 +665,7 @@ Root ConfigParser::Rootparser(std::string file)
                         server.add_location(location);
                         root.add_server(server);
                         serverAdminer.clear();
+                        locationAdminer.clear();
                         location.clear(server);
                         server.clear(root);
                         action = -1;
@@ -673,6 +674,7 @@ Root ConfigParser::Rootparser(std::string file)
                     else if (token == "location:")
                     {
                         server.add_location(location);
+                         locationAdminer.clear();
                         location.clear(server);
                         action = 7;
                         continue;
@@ -685,7 +687,7 @@ Root ConfigParser::Rootparser(std::string file)
                             {
                                 if (locationAdminer.find(token) != locationAdminer.end() && token != "errorPage:")
                                 {
-                                    std::cout << "Error: repeated directive" << std::endl;
+                                    std::cout << "Error: repeated directive["<< token<<"]" << std::endl;
                                     exit(1);
                                 }
                                 locationAdminer[token] = 1;
@@ -703,12 +705,14 @@ Root ConfigParser::Rootparser(std::string file)
                 if (action != -1 && action != 7)
                 {
                     server.add_location(location);
+                     locationAdminer.clear();
                 }
                 location.clear(server);
             }
             else if(token == "server:")
             {
                 root.add_server(server);
+                 locationAdminer.clear();
                 serverAdminer.clear();
                 server.clear(root);
             }

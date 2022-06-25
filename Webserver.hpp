@@ -29,7 +29,7 @@ class Webserver
 		Webserver(std::string _path);
 		Webserver( Webserver const & src );
 		~Webserver();
-		int hoole = 0;
+		int hoole;
 		void webservbuild();
 		void Runmywebserver();
 		bool checkifitsfdserver(int i);
