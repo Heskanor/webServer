@@ -8,13 +8,12 @@ server:
     root: ./root
     location:
         path: /Desktop
-        index: index.html
+        index: testindex.txt
         autoIndex: false
-        root: /Users/ashite
+        root: /Users/aali-mou
         errorPage: 399 ./Notworking/index.html
         errorPage: 500 ./Networking/index.html
         uploadDirectory: /var/www/html/public/uploads
-        return: 301 http://www.codeforces.com
         allowedMethods: POST GET DELETE
         cgiPath: ./Networking/index.html
         cgiExt: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6
@@ -23,24 +22,12 @@ server:
     listen: 127.0.0.1:3030
     root: ./root
     location:
-        path: /dist
-        index: index.html
-        autoIndex: false
-        root: /Users/ashite/Desktop/triper
-        errorPage: 399 ./Notworking/index.html
-        errorPage: 500 ./Networking/index.html
-        allowedMethods: POST GET DELETE
-        cgiPath: /Users/ashite/Desktop/php-cgi
-        cgiExt: .php
-    location:
         path: /Desktop
-        index: index.html
-        autoIndex: false
-        root: /Users/ashite
+        autoIndex: true
+        root: /Users/aali-mou
         errorPage: 399 ./Notworking/index.html
         errorPage: 500 ./Networking/index.html
-        uploadDirectory: /var/www/html/public/uploads
-        return: 301 http://www.codeforces.com
+        uploadDirectory: /Desktop/sigma3
         allowedMethods: POST GET DELETE
         cgiPath: ./Networking/index.html
         cgiExt: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6

@@ -57,7 +57,7 @@ class Response
 		std::string _tmp_file_path;
 		long long  _content_length;
 		bool sentheader;
-
+		std::string onlypath;
 		long long headersize;
 
 		std::map<std::string, std::string> http_code_map;
@@ -83,6 +83,7 @@ class Response
 		Response& operator=(const Response& rhs) {
 			if (this != &rhs) {
 				this->headersize = rhs.headersize;
+				onlypath = rhs.onlypath;;
 				//_response_file = rhs._response_file;
 				_Responecomplete = rhs._Responecomplete;
 				totallength = rhs.totallength;
