@@ -80,7 +80,7 @@ void Cgi::envMaker(Request *request, Location &location)
     ///tmp/1656277854__cgi_output.html
     // setenv("PATH_INFO", ((request->get_requestur())).substr(0,request->get_requestur().find_first_of('?')).c_str(), 1); // subtr query string
     setenv("PATH_INFO", ((request->get_requestur())).substr(0,request->get_requestur().find_first_of('?')).c_str(), 1); // subtr query string
-    setenv("PATH_TRANSLATED","/Users/ashite//Desktop/test.php", 1); // dir b7al path info
+    setenv("PATH_TRANSLATED","/Users/ashite/Desktop/test.php", 1); // dir b7al path info
     setenv("QUERY_STRING", get_querrystring(request->get_requestur()).c_str(), 1);// after ?
     setenv("REMOTE_ADDR", "localhost", 1);
     setenv("REMOTE_HOST", "localhost", 1);// maybe like remote address
@@ -167,7 +167,7 @@ void Cgi::executer(Request *request, Response *response, Location &location)
     //long long time = timeer();
 	
     pid_t pid = fork();
-   
+    time_t	begin = time(NULL);
     if (pid == -1)
     {
         //response->set_status(200);
@@ -208,23 +208,31 @@ void Cgi::executer(Request *request, Response *response, Location &location)
     //     return;
     // }
     int state;
-    int status = waitpid(cgi_pid, &state, 0);
-    std::cout << "sdfasdFDSfasdf" << std::endl;
-    //usleep(500);
-     std::cout <<"\n\n\n\n\n1\n\n\n\n\n"<< std::endl;
-    if (status == -1) {
-       throw Response::InternalServerError();
-    }
-    else if (status != 0)
-    {
-         std::cout << "\n\n\n\n\n2\n\n\n\n\n"<< std::endl;
-        // if (WIFEXITED(state) == 0)
-        // {
-        //      std::cout << "\n\n\n\n\n3\n\n\n\n\n"<< std::endl;
-        //     throw Response::InternalServerError();
-        // }
-         std::cout << "\n\n\n\n\n4\n\n\n\n\n"<< std::endl;
-        cgi_reader(response,response_fd);
-        //close response tmp file
-    }
+    bool timout(true);
+    
+	while (difftime(time(NULL), begin) <= 5)
+	{
+		int ret = waitpid(pid, &status, WNOHANG);
+
+		if (ret == pid)
+		{
+			if (status != 0)
+                throw Response::InternalServerError();
+				this->IServerError = true;
+			if ( WIFEXITED(status) ) {
+				const int es = WEXITSTATUS(status);
+				if (es != 0)
+					throw Response::InternalServerError();
+			}
+			timout = false;
+			break;
+		}
+	}
+	if (timout)
+	{
+		kill(9,pid);
+		//this->IsTimeOut = true;
+	}
+	// delete_file(request->get_body_filename());
+    //----------------
 }
