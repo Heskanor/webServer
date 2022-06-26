@@ -118,7 +118,7 @@ Root parser(std::string file)
                         {
                             if (token.find("true") == std::string::npos && token.find("false") == std::string::npos)
                             {
-                                std::cout << "Error: Auto-Index must be true or false" << std::endl;
+                                //std::cout << "Error: Auto-Index must be true or false" << std::endl;
                                 exit(1);
                             }
                             else if (token.find("true") != std::string::npos)
@@ -135,7 +135,7 @@ Root parser(std::string file)
                         root.set_bodySizeLimit(std::stoi(token));
                     else
                     {
-                        std::cout << "Error: BodySizeLimit must be a number" << std::endl;
+                        //std::cout << "Error: BodySizeLimit must be a number" << std::endl;
                         exit(1);
                     }
                 }
@@ -146,7 +146,7 @@ Root parser(std::string file)
                         root.set_root(token);
                     else
                     {
-                        std::cout << "Error: Root must be a string" << std::endl;
+                        //std::cout << "Error: Root must be a string" << std::endl;
                         exit(1);
                     }
                 }
@@ -165,7 +165,7 @@ Root parser(std::string file)
                                 server.set_port(std::stoi(token));
                             else
                             {
-                                std::cout << "Error: Port must be a number" << std::endl;
+                                //std::cout << "Error: Port must be a number" << std::endl;
                                 exit(1);
                             }
                         }
@@ -176,7 +176,7 @@ Root parser(std::string file)
                                 server.set_root(token);
                             else
                             {
-                                std::cout << "Error: Root must be a string" << std::endl;
+                                //std::cout << "Error: Root must be a string" << std::endl;
                                 exit(1);
                             }
                         }
@@ -198,7 +198,7 @@ Root parser(std::string file)
                                 {
                                     if (token.find("true") == std::string::npos && token.find("false") == std::string::npos)
                                     {
-                                        std::cout << "Error: Auto-Index must be true or false" << std::endl;
+                                        //std::cout << "Error: Auto-Index must be true or false" << std::endl;
                                         exit(1);
                                     }
                                 }
@@ -211,7 +211,7 @@ Root parser(std::string file)
                                 server.set_server_name(token);
                             else
                             {
-                                std::cout << "Error: Server Name must be a string" << std::endl;
+                                //std::cout << "Error: Server Name must be a string" << std::endl;
                                 exit(1);
                             }
                         }
@@ -222,7 +222,7 @@ Root parser(std::string file)
                                 server.set_bodySizeLimit(std::stoi(token));
                             else
                             {
-                                std::cout << "Error: BodySizeLimit must be a number" << std::endl;
+                                //std::cout << "Error: BodySizeLimit must be a number" << std::endl;
                                 exit(1);
                             }
                         }

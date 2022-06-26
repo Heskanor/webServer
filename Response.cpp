@@ -12,13 +12,13 @@ std::string create_tmp_file_name(std::string path, std::string file_name, std::s
 
 std::string remove_query_string(std::string str)
 {
-	std::cout << "str: " << str << std::endl; 
+	//std::cout << "str: " << str << std::endl; 
 	std::string::size_type pos = str.find('?');
 	if (pos != std::string::npos)
 	{
 		str = str.substr(0, pos);
 	}
-	std::cout << "str: " << str << std::endl;
+	//std::cout << "str: " << str << std::endl;
 	return str;
 }
 
@@ -48,15 +48,15 @@ std::string set_date_header()
 int get_file_size(std::string& file_path)
 {
 	struct stat st;
-	std::cout <<"FilePath ------------>" << file_path << std::endl;
+	//std::cout <<"FilePath ------------>" << file_path << std::endl;
 	stat(file_path.c_str(), &st);
-	std::cout << "FileSize ----------->" << st.st_size << std::endl;
+	//std::cout << "FileSize ----------->" << st.st_size << std::endl;
 	return st.st_size;
 }
 // void set_content_type_and_length(Request& req, Response& res, std::string& file_path)
 void set_content_type_and_length(Response& res, std::string& file_path)
 {
-	std::cout << "trying to set content type and length" << std::endl;
+	//std::cout << "trying to set content type and length" << std::endl;
 	MimeType mime_type;
 	if (file_path.find_last_of(".") != std::string::npos)
 	{
@@ -107,7 +107,7 @@ void init_code_map(Response& res)
 // void set_response_headers(Request& req, Response& res)
 void set_response_headers(Response& res)
 {
-	std::cout << "setting response headers" << std::endl;
+	//std::cout << "setting response headers" << std::endl;
 	res._headers += "HTTP/1.1 " + res.http_code_map[res._status_code] + "\r\n";
 	res._headers += "Server: Webserver/1.0\r\n";
 	res._headers += "Date: " + set_date_header() + "\r\n";
@@ -123,7 +123,7 @@ void set_response_headers(Response& res)
 
 int check_if_entity_exists(std::string path)
 {
-	std::cout << "Checking if entity exists: " << path << std::endl;
+	//std::cout << "Checking if entity exists: " << path << std::endl;
 	struct stat st;
 	if (stat(path.c_str(), &st) == 0)
 	{
@@ -159,7 +159,7 @@ Location find_matched_location(std::string& path, std::vector<Location>& locatio
 		int nbr_locations = locations.size();
 		for (int i = 0; i < nbr_locations; i++)
 		{
-			//std::cout << "Checking if " << path << " matches " << locations[i].get_path() << std::endl;
+			////std::cout << "Checking if " << path << " matches " << locations[i].get_path() << std::endl;
 			if (locations[i].get_path() == path)
 				return locations[i];
 		}
@@ -219,7 +219,7 @@ void run_cgi_script(Request& req, Response& res, Location& location)
 {
 	std::string cgi_path = location.get_cgi_path();
 	std::vector<std::string> cgi_extensions = location.get_cgi_ext();
-	std::cout << cgi_path << " " << cgi_extensions[0] << std::endl;
+	//std::cout << cgi_path << " " << cgi_extensions[0] << std::endl;
 	// std::string file_extension = path.substr(path.find_last_of("."));
 	std::string tmp_file = create_temporary_file("/tmp/", "_cgi_output", ".html");
 	res._tmp_file_path = tmp_file;
@@ -316,12 +316,12 @@ bool check_for_index_file(Request& req, Location& location, std::string& resourc
 		{
 			std::string index_file_path = resource + index_files[i];
 			int index_code = check_if_entity_exists(index_file_path);
-			std::cout << "index_code : "<< index_code << std::endl;
+			//std::cout << "index_code : "<< index_code << std::endl;
 			if (!index_code)
 				continue;
 			if (index_code == FILECODE && access(index_file_path.c_str(), R_OK) == 0)
 			{
-				std::cout << "file code correct" << std::endl;
+				//std::cout << "file code correct" << std::endl;
 				// check if location has cgi
 				if (check_if_cgi_is_applicable(location, resource))
 				{
@@ -345,7 +345,7 @@ bool check_for_index_file(Request& req, Location& location, std::string& resourc
 void check_directory_resource(std::string& resource, Location& location, Request& req, Response& res)
 {
 	bool index_file = check_for_index_file(req, location, resource, res);
-	std::cout << "index_file: " << index_file << std::endl;
+	//std::cout << "index_file: " << index_file << std::endl;
 	if (!index_file && location.get_auto_index())
 		check_for_autoindex(resource, res);
 	else if (!index_file && !location.get_auto_index())
@@ -384,7 +384,7 @@ int requested_resource_by_get(std::string& resource, Request& req, Response& res
 		{
 			if (resource.back() != '/')
 			{
-				std::cout << "resource " << resource << std::endl;
+				//std::cout << "resource " << resource << std::endl;
 				resource += "/";
 				res._status_code = "301";
 				redirect_directory(req, res);
@@ -497,21 +497,21 @@ bool check_for_upload_directory(Response& res, Request& req, Location& location)
 		if (upload_directory.back() != '/')
 			upload_directory += "/";
 		int check_code = check_if_entity_exists(upload_directory);
-		std::cout << "check_code: " << check_code << std::endl; 
+		//std::cout << "check_code: " << check_code << std::endl; 
 		if (check_code != DIRCODE)
 			throw Response::NoMatchedLocation();
 		if (access(upload_directory.c_str(), W_OK))
 			throw Response::ForbiddenPath();
 		std::string file_name = "uploaded_file";
 		MimeType mime_type;
-		std::cout << req.getcontent_type() << std::endl;
+		//std::cout << req.getcontent_type() << std::endl;
 		std::string file_extension = mime_type.get_extension(req.getcontent_type());
-		std::cout << file_extension << std::endl;
+		//std::cout << file_extension << std::endl;
 		std::string tmp_file_name = create_tmp_file_name(upload_directory, file_name, file_extension);
 		if (rename(req.get_pathbody().c_str(), tmp_file_name.c_str()))
 		{
-			std::cout << "rename failed" << std::endl;
-			std::cout << req.get_pathbody() << " " << tmp_file_name << std::endl;
+			//std::cout << "rename failed" << std::endl;
+			//std::cout << req.get_pathbody() << " " << tmp_file_name << std::endl;
 			throw Response::ForbiddenPath();
 		}
 		res._status_code = "201";
@@ -582,7 +582,7 @@ void response_to_get(Response& res, Request& req, Location& location)
 {
 	std::string resource = location.get_root() + remove_query_string(req.get_requestur());
 	int resource_code = requested_resource_by_get(resource, req, res);
-	std::cout << "resource code: " << resource_code << std::endl;
+	//std::cout << "resource code: " << resource_code << std::endl;
 	if (resource_code == REDIRECTCODE)
 		return;
 	if (resource_code == DIRCODE)
@@ -592,7 +592,7 @@ void response_to_get(Response& res, Request& req, Location& location)
 		// check if location has cgi
 		if (check_if_cgi_is_applicable(location, resource))
 		{
-			std::cout << "cgi script is applicable" << std::endl;
+			//std::cout << "cgi script is applicable" << std::endl;
 			run_cgi_script(req, res, location);
 			return;
 		}
@@ -633,7 +633,7 @@ Response custom_and_default_error_pages(Response& res, Server& server, std::stri
 	catch (std::exception& e)
 	{
 		std::string second_error_code = e.what();
-		std::cout << second_error_code << std::endl;
+		//std::cout << second_error_code << std::endl;
 		res._status_code = second_error_code;
 		default_error_page(res);
 		return res;
@@ -687,7 +687,7 @@ Response server_response(Request& req, Server& server)
 		std::string req_uri = remove_query_string(req.get_requestur());
 		std::vector<Location> server_locations = server.get_locations();
 		Location location = find_matched_location(req_uri, server_locations);
-		std::cout << "Matched location: " << location.get_path() << std::endl;
+		//std::cout << "Matched location: " << location.get_path() << std::endl;
 		check_request_body_size(req, location);
 		std::vector<std::string> allowed_methods_in_location = location.get_allowed_methods();
 		std::string request_method = req.get_method();
@@ -706,7 +706,7 @@ Response server_response(Request& req, Server& server)
 	catch (std::exception& e)
 	{
 		std::string error_code = e.what();
-		std::cout << error_code << std::endl;
+		//std::cout << error_code << std::endl;
 		return custom_and_default_error_pages(res, server, error_code);
 	}
 }

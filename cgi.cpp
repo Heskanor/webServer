@@ -193,7 +193,7 @@ void Cgi::executer(Request *request, Response *response, Location &location)
     }
     // while(((timeer() - time) >500))
     // {
-    //     std::cout<<"Cgi TimeOut"<<std::endl;
+    //     //std::cout<<"Cgi TimeOut"<<std::endl;
     //     response->_status_code = "500";
     //     return;
     // }

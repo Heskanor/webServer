@@ -98,9 +98,15 @@ void Webserver::Runmywebserver()
     }
     while (true)
     {
+        std::cout<<" a zaaaaaaaaaabo"<<std::endl;
         readsfds = master;
         writefds = master2;
-        activ = select(max_sd + 1, &readsfds, &writefds, NULL, NULL);
+       if ( (activ = select(max_sd + 1, &readsfds, &writefds, NULL, NULL)) == -1)
+       {
+            std::cout <<"Aaaaay  Zeeeeeeeeekiiiiiiiiiii"<<std::endl;
+            continue;
+       }
+
         for (int i = 0; i < max_sd + 1; i++)
         {
             if (FD_ISSET(i, &readsfds) || FD_ISSET(i, &writefds))
@@ -108,7 +114,7 @@ void Webserver::Runmywebserver()
                 if (checkifisserver(i) == true)
                 {
                     new_socket = accept(lopserver[i].fd, (struct sockaddr *)&lopserver[i].address, (socklen_t *)&lopserver[i].addrlen);
-                    std::cout << "cnx fd : " << new_socket << std::endl;
+                    //std::cout << "cnx fd : " << new_socket << std::endl;
                     req.set_socketid(new_socket);
                     Requestsmap[new_socket] = req;
                     FD_SET(new_socket, &master);
@@ -140,7 +146,7 @@ void Webserver::Runmywebserver()
                                     it->second.parserequest(buffer, valread);
                                     if (it->second.get_requestiscomplete() == true)
                                     {
-                                        std::cout << Requestsmap[i].get_requestur() << std::endl;
+                                        //std::cout << Requestsmap[i].get_requestur() << std::endl;
                                         Response resp;
                                         resp = server_response(it->second, servers[2]);
                                         Responsemap[it->first] = resp;
@@ -163,7 +169,7 @@ void Webserver::Runmywebserver()
                             Responsemap[i].onlypath = checkingpath(Responsemap[i]);
                             Responsemap[i]._content_length += Responsemap[i].lop.size();
                             if (Responsemap[i].onlypath.empty() == false)
-                                fd = open(Responsemap[i].onlypath.c_str(), O_RDONLY, 0666);
+                                Responsemap[i].fd = open(Responsemap[i].onlypath.c_str(), O_RDONLY, 0666);
 
                         }
                         else
@@ -172,20 +178,27 @@ void Webserver::Runmywebserver()
                             {
                                 Responsemap[i]._Responecomplete = 1;
 				    			FD_CLR(i, &master2);
-				    			Responsemap.erase(i);
-				    			FD_SET(i, &master);
-				    			 close(fd);
+				    			if (Responsemap[i].onlypath.empty() == false)
+				    			     close(Responsemap[i].fd);
+                                 Responsemap.erase(i);
+                                 close (i);
                                 std::cerr << " ###### : " << fd << std::endl;
                             }
                             else if ((Responsemap[i]._content_length > Responsemap[i].homuchiwrite))
                             {
                                 char  *buffer4 = (char*)malloc(BUFFERSIZE + 1);
-				    			int n = read(fd, buffer4, BUFFERSIZE);
+				    			int n = read(Responsemap[i].fd, buffer4, BUFFERSIZE);
+                                std::cout<<"aloooooooooooooooooo"<<std::endl;
 				    			if (n >= 0)
-                                    buffer4[n] = '\0';
+                                {
+                             std::cout<<"aloooooooooooooooooo22"<<std::endl;
+
+                                         buffer4[n] = '\0';
 				    			std::string tmp(buffer4, n);
 				    			Responsemap[i].lop += tmp;
 				    			free(buffer4);
+                                }
+                           
                             }   
                         }
                         if (Responsemap[i]._Responecomplete == 0)
@@ -194,13 +207,14 @@ void Webserver::Runmywebserver()
 				    		if ( (sent_bytes = write(i, Responsemap[i].lop.c_str(), Responsemap[i].lop.size())) <= 0)
 				    		{
 				    			FD_CLR(i, &master2);
-				    			//close(i);
-				    			Responsemap.erase(i);
+				    			close(i);
+				    			
 				    			if (Responsemap[i].onlypath.empty() == false)
                                 {
-                                    std::cerr << " If cond : " << fd << std::endl; 
-				    				 close(fd);
+                                    std::cerr << " If cond : " <<Responsemap[i].fd<< std::endl; 
+				    				 close(Responsemap[i].fd);
                                 }
+                                Responsemap.erase(i);
 				    		}
                             if (sent_bytes < Responsemap[i].lop.size())
 				    		{
@@ -239,11 +253,11 @@ int Webserver::checkingservers(std::vector<Server> lop, Request req)
     {
         if (lop[i].get_listenAddress() == req.get_ip() && std::to_string(lop[i].get_listenPort()) == req.get_port())
         {
-            // std::cout<<"----"<<i<<"---"<<std::endl;
-            // std::cout<<lop[i].get_listenAddress()<<std::endl;
-            // std::cout<<lop[i].get_listenPort()<<std::endl;
-            // std::cout<<req.get_port()<<std::endl;
-            // std::cout<< req.get_ip()<<std::endl;
+            // //std::cout<<"----"<<i<<"---"<<std::endl;
+            // //std::cout<<lop[i].get_listenAddress()<<std::endl;
+            // //std::cout<<lop[i].get_listenPort()<<std::endl;
+            // //std::cout<<req.get_port()<<std::endl;
+            // //std::cout<< req.get_ip()<<std::endl;
             op.push_back(i);
         }
     }
@@ -295,7 +309,7 @@ void Webserver::webservbuild()
         ser.ipaddress = it->get_listenAddress();
         addrlen = sizeof(address);
         sockfd = socket(PF_INET, SOCK_STREAM, 0);
-        std::cout << "Socketa fd : " << sockfd << std::endl;
+        //std::cout << "Socketa fd : " << sockfd << std::endl;
         ser.fd = sockfd;
         ser.index = c;
         FD_SET(sockfd, &master); // shoukd have a mster readset

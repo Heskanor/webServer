@@ -56,6 +56,7 @@ class Response
 		std::string _content_type;
 		std::string _tmp_file_path;
 		long long  _content_length;
+		int fd;
 		bool sentheader;
 		std::string onlypath;
 		long long headersize;
@@ -87,6 +88,7 @@ class Response
 				//_response_file = rhs._response_file;
 				_Responecomplete = rhs._Responecomplete;
 				totallength = rhs.totallength;
+				fd = rhs.fd;
 				sentheader = rhs.sentheader;
 				homuchiwrite = rhs.homuchiwrite;
 				neededtoberight = rhs.neededtoberight;

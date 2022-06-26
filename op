@@ -97,7 +97,7 @@ void				Webserver::Runmywebserver()
 	while (true)
 	{
 
-		//	//std::cout << "DBG__MAIN__LOOP" << std::endl;
+		//	////std::cout << "DBG__MAIN__LOOP" << std::endl;
 		readsfds =  master ;
 		writefds = master2;
 		//max_sd =  sockfd;
@@ -115,11 +115,11 @@ void				Webserver::Runmywebserver()
 					req.set_timeout(time_now());
 					for(std::map<int,Myserver>::iterator it = lopserver.begin(); it != lopserver.end(); it++)
 					{
-						std::cout<<"i really here"<<std::endl;
+						//std::cout<<"i really here"<<std::endl;
 						if (it->second.fd == i)
 						{
 							req.setserver_fd(it->second.index);
-							std::cout<<it->second.index<<"|||||||||||"<<std::endl;
+							//std::cout<<it->second.index<<"|||||||||||"<<std::endl;
 						}
 						//if (it->second.fd > max_sd)
 						//max_sd = it->second.fd;
@@ -135,11 +135,11 @@ void				Webserver::Runmywebserver()
 					if (FD_ISSET(i, &readsfds))
 					{
 						valread = read( i , buffer, BUFFERSIZE);
-						std::cout<<valread<<std::endl;
+						//std::cout<<valread<<std::endl;
 						buffer[valread] = '\0';
 						std::string op;
 						op.append(buffer);
-						std::cout<<buffer<<std::endl;
+						//std::cout<<buffer<<std::endl;
 						if (valread == -1)
 						{
 
@@ -150,11 +150,11 @@ void				Webserver::Runmywebserver()
 
 						//else if(valread == 0)
 						//{
-						//	std::cout<<"sadsadasD"<<std::endl;
+						//	//std::cout<<"sadsadasD"<<std::endl;
 						//}
 						else if(valread == 0  && ((time_now() - Requestsmap[i].get_timeout()) >5000))
 						{
-							std::cout<<" im here  6666 "<<std::endl;
+							//std::cout<<" im here  6666 "<<std::endl;
 							//
 							FD_CLR(i,&readsfds);
 							close(i); 
@@ -170,16 +170,16 @@ void				Webserver::Runmywebserver()
 									Requestsmap[i].set_timeout(time_now());
 									if (it->second.get_requestiscomplete() == true)
 									{
-										std::cout<<" im here "<<std::endl;
-										std::cout<<Requestsmap[i].get_requestur()<<std::endl;
+										//std::cout<<" im here "<<std::endl;
+										//std::cout<<Requestsmap[i].get_requestur()<<std::endl;
 										Response resp;
-										std::cout<<"|||||||||||||||||||||||||||||||||6"<<std::endl;
-										//	std::cout<<req.getserver_fd()<<std::endl;
+										//std::cout<<"|||||||||||||||||||||||||||||||||6"<<std::endl;
+										//	//std::cout<<req.getserver_fd()<<std::endl;
 
-										std::cout<<"server fd :"<<Requestsmap[i].getserver_fd()<<std::endl;
+										//std::cout<<"server fd :"<<Requestsmap[i].getserver_fd()<<std::endl;
 
 										resp = server_response(it->second,servers[Requestsmap[i].getserver_fd()]);
-										//std::cout<<"im hereeee |||||||||||||||||"<<std::endl;
+										////std::cout<<"im hereeee |||||||||||||||||"<<std::endl;
 										Responsemap[it->first] = resp;
 									//	FD_CLR(it->first, &master);
 										FD_CLR(it->first,&readsfds);
@@ -187,14 +187,14 @@ void				Webserver::Runmywebserver()
 										Requestsmap.erase(i);
 										std::string lop1;
 										lop1 = Responsemap[i]._headers;
-										std::cout << "headers: " << lop1 << std::endl;
-										std::cout<<"|||||||||||||||||||||||||||||||||7"<<std::endl;
+										//std::cout << "headers: " << lop1 << std::endl;
+										//std::cout<<"|||||||||||||||||||||||||||||||||7"<<std::endl;
 									//	while (1);
 											//	Requestsmap.erase(i);
 
 									}
 									//	it->second.adddata(buffer, valread);
-									//	//std::cout<<" i m heree ------------ "<< sd<<std::endl;
+									//	////std::cout<<" i m heree ------------ "<< sd<<std::endl;
 									//}
 							}
 						}
@@ -204,7 +204,7 @@ void				Webserver::Runmywebserver()
 				{
 					std::string lop;
 					lop = Responsemap[i]._headers;
-					std::cout << "headers: " << lop << std::endl;
+					//std::cout << "headers: " << lop << std::endl;
 					write(i,lop.c_str(),lop.size());
 					if (!Responsemap[i]._body_path.empty())
 					{
@@ -220,8 +220,8 @@ void				Webserver::Runmywebserver()
 					}
 					else if (!Responsemap[i]._tmp_file_path.empty()){
 						lop.erase();
-						std::cout<<Responsemap[i]._tmp_file_path<<std::endl;
-						std::cout<<Responsemap[i]._content_length<<std::endl;
+						//std::cout<<Responsemap[i]._tmp_file_path<<std::endl;
+						//std::cout<<Responsemap[i]._content_length<<std::endl;
 						char *buffer2 = (char *)malloc(sizeof(char) * (Responsemap[i]._content_length + 1));
 						int fd = open(Responsemap[i]._tmp_file_path.c_str(),  O_RDWR,  0666);
 						read (fd, buffer2,Responsemap[i]._content_length);
@@ -232,7 +232,7 @@ void				Webserver::Runmywebserver()
 
 					}
 					Responsemap.erase(i);
-					std::cout << " yoyoyo" << Responsemap[i]._headers << "lalala" << std::endl;
+					//std::cout << " yoyoyo" << Responsemap[i]._headers << "lalala" << std::endl;
 					//	re								
 					FD_CLR(i,&writefds);
 					FD_SET(i, &readsfds);
@@ -277,7 +277,7 @@ void				Webserver::webservbuild()
 		// shoukd have a mster readset 
 		if (setsockopt(sockfd ,SOL_SOCKET,SO_REUSEADDR, &opt, sizeof(opt)) == -1)
 		{
-			std::cout<<"raaayss akbar weld nass "<<std::endl;
+			//std::cout<<"raaayss akbar weld nass "<<std::endl;
 		}
 		address.sin_family = AF_INET;
 		address.sin_addr.s_addr = inet_addr(it->get_listenAddress().c_str());

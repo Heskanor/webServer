@@ -104,7 +104,7 @@ void ConfigParser::intParser(std::string status,std::string line, int &size)
     }    
     else
     {
-        std::cout << "error: bad error Code" << std::endl;
+        //std::cout << "error: bad error Code" << std::endl;
         exit(1);
     }
 }
@@ -159,7 +159,7 @@ void ConfigParser::setRedirection(std::string status,std::string line, Location 
         val = token;
     else
     {
-        std::cout << "Redirection code " << token << " must be between 300 and 599" << std::endl;
+        //std::cout << "Redirection code " << token << " must be between 300 and 599" << std::endl;
         exit(1);
     }
     line.erase(0,i);
@@ -191,7 +191,7 @@ void ConfigParser::setRedirection(std::string status,std::string line, Server &r
         val = token;
     else
     {
-        std::cout << "Redirection code " << token << " must be between 300 and 599" << std::endl;
+        //std::cout << "Redirection code " << token << " must be between 300 and 599" << std::endl;
         exit(1);
     }
     line.erase(0,i);
@@ -242,7 +242,7 @@ void ConfigParser::setErrors(std::string status,std::string line, Root &root)
         val = token;
     else
     {
-        std::cout << "Error code " << token << " must be between 300 and 599" << std::endl;
+        //std::cout << "Error code " << token << " must be between 300 and 599" << std::endl;
         exit(1);
     }
     line.erase(0,i);
@@ -271,7 +271,7 @@ void ConfigParser::setErrors(std::string status,std::string line, Server &root)
         val = token;
     else
     {
-        std::cout << "Error code " << token << " must be between 300 and 599" << std::endl;
+        //std::cout << "Error code " << token << " must be between 300 and 599" << std::endl;
         exit(1);
     }
     line.erase(0,i);
@@ -300,7 +300,7 @@ void ConfigParser::setErrors(std::string status,std::string line, Location &root
         val = token;
     else
     {
-        std::cout << "Error code " << token << " must be between 300 and 599" << std::endl;
+        //std::cout << "Error code " << token << " must be between 300 and 599" << std::endl;
         exit(1);
     }
     line.erase(0,i);
@@ -331,7 +331,7 @@ void ConfigParser::setListen(std::string token,std::string line, Server &lvl)
         
         if (line[j] == ' ')
         {
-            std::cout << "error: listen address is not valid" << std::endl;
+            //std::cout << "error: listen address is not valid" << std::endl;
             exit(1);
         }
         else
@@ -346,7 +346,7 @@ void ConfigParser::setListen(std::string token,std::string line, Server &lvl)
                 lvl.set_listenPort(token);
             else
             {
-                std::cout << "error: listen port is not valid" << std::endl;
+                //std::cout << "error: listen port is not valid" << std::endl;
                 exit(1);
             }
         }
@@ -378,7 +378,7 @@ void ConfigParser::setBodySizeLimit(std::string status,std::string line, Root &l
     intParser(status, line, size);
     if (size <= 0)
     {
-        std::cout << "error: bodySizeLimit is not valid" << std::endl;
+        //std::cout << "error: bodySizeLimit is not valid" << std::endl;
         exit(1);
     }
     lvl.set_bodySizeLimit(size);
@@ -389,7 +389,7 @@ void ConfigParser::setBodySizeLimit(std::string status,std::string line, Server 
     intParser(status, line, size);
     if (size <= 0)
     {
-        std::cout << "error: bodySizeLimit is not valid" << std::endl;
+        //std::cout << "error: bodySizeLimit is not valid" << std::endl;
         exit(1);
     }
     lvl.set_bodySizeLimit(size);
@@ -400,7 +400,7 @@ void ConfigParser::setBodySizeLimit(std::string status,std::string line, Locatio
     intParser(status, line, size);
     if (size <= 0)
     {
-        std::cout << "error: bodySizeLimit is not valid" << std::endl;
+        //std::cout << "error: bodySizeLimit is not valid" << std::endl;
         exit(1);
     }
     lvl.set_bodySizeLimit(size);
@@ -416,7 +416,7 @@ void ConfigParser::setAutoIndex(std::string status,std::string line, Root &lvl)
         lvl.set_auto_index(false);
     else
     {
-        std::cout << "error: bad autoIndex value" << std::endl;
+        //std::cout << "error: bad autoIndex value" << std::endl;
         exit(1);
     }
 }
@@ -430,7 +430,7 @@ void ConfigParser::setAutoIndex(std::string status,std::string line, Server &lvl
         lvl.set_auto_index(false);
     else
     {
-        std::cout << "error: bad autoIndex value" << std::endl;
+        //std::cout << "error: bad autoIndex value" << std::endl;
         exit(1);
     }
 }
@@ -444,7 +444,7 @@ void ConfigParser::setAutoIndex(std::string status,std::string line, Location &l
         lvl.set_auto_index(false);
     else
     {
-        std::cout << "error: bad autoIndex value" << std::endl;
+        //std::cout << "error: bad autoIndex value" << std::endl;
         exit(1);
     }
 }
@@ -479,7 +479,7 @@ void ConfigParser::setAllowedMethods(std::string status,std::string line, Root &
             lvl.add_allowed_method(*it);
         else
         {
-            std::cout << "error: bad allowedMethod value" << std::endl;
+            //std::cout << "error: bad allowedMethod value" << std::endl;
             exit(1);
         }
     }
@@ -495,7 +495,7 @@ void ConfigParser::setAllowedMethods(std::string status,std::string line, Server
             lvl.add_allowed_method(*it);
         else
         {
-            std::cout << "error: bad allowedMethod value" << std::endl;
+            //std::cout << "error: bad allowedMethod value" << std::endl;
             exit(1);
         }
     }
@@ -511,7 +511,7 @@ void ConfigParser::setAllowedMethods(std::string status,std::string line, Locati
             lvl.add_allowed_method(*it);
         else
         {
-            std::cout << "error: bad allowedMethod value" << std::endl;
+            //std::cout << "error: bad allowedMethod value" << std::endl;
             exit(1);
         }
     }
@@ -552,7 +552,7 @@ void ConfigParser::root_checker(Root root)
     
     if (s.empty())
     {
-        std::cout << "Error : you have to set a server";
+        //std::cout << "Error : you have to set a server";
         exit(1);
     }
     else
@@ -561,7 +561,7 @@ void ConfigParser::root_checker(Root root)
         {
             if (it->check_empty())
             {
-                std::cout << "Error : Missing server directive or location";
+                //std::cout << "Error : Missing server directive or location";
                 exit(1);
             }
             else
@@ -571,7 +571,7 @@ void ConfigParser::root_checker(Root root)
                 {
                     if (it2->check_lempty())
                     {
-                        std::cout << "Error : Missing location directive";
+                        //std::cout << "Error : Missing location directive";
                         exit(1);
                     }
                 }
@@ -611,7 +611,7 @@ Root ConfigParser::Rootparser(std::string file)
             }
             if (action == 0)
             {
-                std::cout << "Error: invalid key" << std::endl;
+                //std::cout << "Error: invalid key" << std::endl;
                 exit(1);
             }
             while (getline(ifs, line))
@@ -628,7 +628,7 @@ Root ConfigParser::Rootparser(std::string file)
                     {
                         if (rootAdminer.find(token) != rootAdminer.end() && token != "errorPage:"&& token != "path:")
                         {
-                            std::cout << "Error: repeated directive" << std::endl;
+                            //std::cout << "Error: repeated directive" << std::endl;
                             exit(1);
                         }
                         rootAdminer[token] = 1;
@@ -639,7 +639,7 @@ Root ConfigParser::Rootparser(std::string file)
                 }
                 if (action == 0)
                 {
-                    std::cout << "Error: invalid key" << std::endl;
+                    //std::cout << "Error: invalid key" << std::endl;
                     exit(1);
                 }
             }
@@ -687,7 +687,7 @@ Root ConfigParser::Rootparser(std::string file)
                             {
                                 if (locationAdminer.find(token) != locationAdminer.end() && token != "errorPage:")
                                 {
-                                    std::cout << "Error: repeated directive["<< token<<"]" << std::endl;
+                                    //std::cout << "Error: repeated directive["<< token<<"]" << std::endl;
                                     exit(1);
                                 }
                                 locationAdminer[token] = 1;
@@ -698,7 +698,7 @@ Root ConfigParser::Rootparser(std::string file)
                     }
                     if (action == 0)
                     {
-                        std::cout << "Error: invalid location key near :" << token<<std::endl;
+                        //std::cout << "Error: invalid location key near :" << token<<std::endl;
                         exit(1);
                     }
                 }
@@ -724,7 +724,7 @@ Root ConfigParser::Rootparser(std::string file)
                     {
                         if (serverAdminer.find(token) != serverAdminer.end() && token != "errorPage:")
                         {
-                            std::cout << "Error: repeated directive" << std::endl;
+                            //std::cout << "Error: repeated directive" << std::endl;
                             exit(1);
                         }
                         serverAdminer[token] = 1;
@@ -734,7 +734,7 @@ Root ConfigParser::Rootparser(std::string file)
                 }
                 if (action == 0)
                 {
-                    std::cout << "Error: invalid server key" << std::endl;
+                    //std::cout << "Error: invalid server key" << std::endl;
                     exit(1);
                 }
             }
@@ -744,7 +744,7 @@ Root ConfigParser::Rootparser(std::string file)
         {
             if (it->get_server_name() == server.get_server_name()&& it->get_listenAddress() == server.get_listenAddress() && it->get_listenPort() == server.get_listenPort())
             {
-                std::cout << "Error: duplicated server" << std::endl;
+                //std::cout << "Error: duplicated server" << std::endl;
                 exit(1);
             }
         }

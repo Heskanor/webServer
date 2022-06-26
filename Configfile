@@ -1,45 +1,45 @@
-server:
-    serverName: saf
-    listen: 127.0.0.1:4040
-    root: ./root
-server:
-    serverName: Server1
-    listen: 127.0.0.1:2020
-    root: ./root
-    location:
-        path: /Desktop
-        index: index.html
-        autoIndex: false
-        root: /Users/ashite
-        errorPage: 399 ./Notworking/index.html
-        errorPage: 500 ./Networking/index.html
-        uploadDirectory: /var/www/html/public/uploads
-        allowedMethods: POST GET DELETE
-        cgiPath: ./Networking/index.html
-        cgiExt: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6
-server:
-    serverName: Server
-    listen: 127.0.0.1:7799
-    root: ./root
-    location:
-        path: /dist
-        index: /index.html
-        autoIndex: false
-        root: /Users/ashite/Desktop/heskanorWebServ/Assets/TripeLoader
-        errorPage: 399 ./Notworking/index.html
-        errorPage: 500 ./Networking/index.html
-        uploadDirectory: /var/www/html/public/uploads
-        allowedMethods: POST GET DELETE
-        cgiPath: ./Networking/index.html
-        cgiExt: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6
-    location:
-        path: /dist
-        index: /index.html
-        autoIndex: false
-        root: /Users/ashite/Desktop/heskanorWebServ/Assets/DayLoader
-        errorPage: 399 ./Notworking/index.html
-        errorPage: 500 ./Networking/index.html
-        uploadDirectory: /Desktop/sigma3
-        allowedMethods: POST GET DELETE
-        cgiPath: ./Networking/index.html
-        cgiExt: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6
+    server:
+        serverName: saf
+        listen: 127.0.0.1:4040
+        root: ./root
+    server:
+        serverName: Server1
+        listen: 127.0.0.1:2020
+        root: ./root
+        location:
+            path: /Desktop
+            index: index.html
+            autoIndex: false
+            root: /Users/aali-mou
+            errorPage: 399 ./Notworking/index.html
+            errorPage: 500 ./Networking/index.html
+            uploadDirectory: /var/www/html/public/uploads
+            allowedMethods: POST GET DELETE
+            cgiPath: ./Networking/index.html
+            cgiExt: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6
+    server:
+        serverName: Server
+        listen: 127.0.0.1:4040
+        root: /Users/aali-mou/
+        location:
+            path: /Desktop
+            index: index.html
+            autoIndex: true
+            root: /Users/aali-mou/
+            errorPage: 399 ./Notworking/index.html
+            errorPage: 500 ./Networking/index.html
+            uploadDirectory: /Desktop/sigma3
+            allowedMethods: POST GET DELETE
+            cgiPath: ./Networking/index.html
+            cgiExt: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6
+        location:
+            path: /dist
+            index: index.html
+            autoIndex: false
+            root: /Users/aali-mou/Desktop/checkthis/Assets/TripeLoader
+            errorPage: 399 ./Notworking/index.html
+            errorPage: 500 ./Networking/index.html
+            uploadDirectory: /Desktop/sigma3
+            allowedMethods: POST GET DELETE
+            cgiPath: ./Networking/index.html
+            cgiExt: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6

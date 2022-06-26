@@ -26,7 +26,7 @@ int  findfirstline(std::string data)
 
 	std::string tmp;
 	tmp = data.substr(0,data.find(" "));
-	////std::cout<<tmp<<std::endl;
+	//////std::cout<<tmp<<std::endl;
 
 	for (int i = 0; i <= 2 ; i++)
 	{
@@ -43,7 +43,7 @@ int  findfirstline(std::string data)
 int main(int argc, char **argv){
 	// if (!argv[1])
 	// {
-	// 	std::cout << argc<< std::endl;
+	// 	//std::cout << argc<< std::endl;
 	// 	return (1);
 	// }
 	argc = 1;
@@ -88,7 +88,7 @@ int main(int argc, char **argv){
 	//listen(sockfd, 3);
 	//while (true)
 	//{
-	////	//std::cout << "DBG__MAIN__LOOP" << std::endl;
+	////	////std::cout << "DBG__MAIN__LOOP" << std::endl;
 	//	FD_ZERO(&readsfds);
 	//	FD_SET(sockfd, &readsfds);
 	//	max_sd =  sockfd;
@@ -112,11 +112,11 @@ int main(int argc, char **argv){
 	//		buffer[valread] = '\0';
 	//		std::string str;
 	//		str.append(buffer);
-	//	//	//std::cout<<str;
+	//	//	////std::cout<<str;
 	//		if (req.get_requestiscomplete() == true)
 	//							break;
 	//		req.parserequest(buffer, valread);
-	//		////std::cout<<"im hereeeeeeeeeee"<<std::endl;
+	//		//////std::cout<<"im hereeeeeeeeeee"<<std::endl;
 	//		Requestsmap[new_socket] = req;
 	//		//printf("Hello message sent\n");
 	//			for(int i = 0 ;i < 30;i++)
@@ -132,13 +132,13 @@ int main(int argc, char **argv){
 	//	
 	//    for (int i = 0; i < 30; i++)  
     //    {  
-	//		////std::cout << "DBG__FOR__LOOP" << std::endl;
+	//		//////std::cout << "DBG__FOR__LOOP" << std::endl;
     //        
 	//		sd = clientsocket[i];  
-	//			////std::cout<<"allo"<<std::endl;
+	//			//////std::cout<<"allo"<<std::endl;
     //        if (FD_ISSET( sd , &readsfds))  
     //        {  
-	//			////std::cout << "CONDITION__00" << std::endl;
+	//			//////std::cout << "CONDITION__00" << std::endl;
 	//			std::map<int, Request>::iterator it;
     //            //Check if it was for closing , and also read the 
     //            //incoming message 
@@ -146,11 +146,11 @@ int main(int argc, char **argv){
     //            // if ((valread = read( sd , buffer, BUFFERSIZE)) == 0)  
     //            valread = read( sd , buffer, BUFFERSIZE);
 	//			buffer[valread] = '\0';
-    //            //std::cout << "RET_READ : " << valread << std::endl;
+    //            ////std::cout << "RET_READ : " << valread << std::endl;
 	//			if (valread < 10)
-	//				//std::cout << "EXCEPTION : [" << buffer << "]" << std::endl;
+	//				////std::cout << "EXCEPTION : [" << buffer << "]" << std::endl;
 	//			readpo += valread;
-	//			 //std::cout << "ALL SIZR: " << readpo<< std::endl;
+	//			 ////std::cout << "ALL SIZR: " << readpo<< std::endl;
 	//			if (valread == 0)  
     //            {  
 	//				
@@ -168,9 +168,9 @@ int main(int argc, char **argv){
     //            }  
     //            else 
     //            {  
-	//			////std::cout << "CONDITION__01" << std::endl;
+	//			//////std::cout << "CONDITION__01" << std::endl;
 	//				std::string str2;
-	//		////std::cout<<str2.append(buffer)<<std::endl;
+	//		//////std::cout<<str2.append(buffer)<<std::endl;
 	//			//	write(wahedl9laoui,buffer,valread);
     //                buffer[valread] = '\0';  
 	//				for (std::map<int, Request>::iterator it = Requestsmap.begin(); it != Requestsmap.end(); ++it)
@@ -181,7 +181,7 @@ int main(int argc, char **argv){
 	//						if (it->second.get_requestiscomplete() == true)
 	//							break;
 	//					//	it->second.adddata(buffer, valread);
-	//					//	//std::cout<<" i m heree ------------ "<< sd<<std::endl;
+	//					//	////std::cout<<" i m heree ------------ "<< sd<<std::endl;
 	//						it->second.parserequest(buffer, valread);
 	//					}
 	//				}
@@ -189,7 +189,7 @@ int main(int argc, char **argv){
     //                //send(sd , buffer , strlen(buffer) , 0 );
 	//		  
     //            }
-	//			////std::cout << "CONDITION__02" << std::endl;
+	//			//////std::cout << "CONDITION__02" << std::endl;
 	//			close(wahedl9laoui);
     //        }  
     //    } 
