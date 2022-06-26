@@ -44,8 +44,8 @@ std::string set_date_header()
 	std::string date = std::string(dt);
 	return (date.substr(0, date.size() - 1));
 }
-
-int get_file_size(std::string& file_path)
+//int get_file_size(std::string& file_path) Edited by escanor
+long long get_file_size(std::string& file_path)
 {
 	struct stat st;
 	//std::cout <<"FilePath ------------>" << file_path << std::endl;
@@ -67,6 +67,7 @@ void set_content_type_and_length(Response& res, std::string& file_path)
 		res._content_type = "text/plain";
 	
 	res._content_length = get_file_size(file_path);
+	std::cout << res._content_length << std::endl;
 }
 
 void default_error_page(Response& res)
@@ -664,6 +665,7 @@ void check_request_body_size(Request& req, Location& location)
 	{
 		std::string path_body = req.get_pathbody();
 		int path_body_size = get_file_size(path_body);
+		std::cout << path_body_size << "_____________---__e"<< location.get_bodySizeLimit()<<std::endl;
 		if (path_body_size > location.get_bodySizeLimit())
 			throw Response::RequestEntityTooLarge();
 	}

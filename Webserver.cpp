@@ -80,7 +80,7 @@ void Webserver::Runmywebserver()
     char *buffer = (char *)malloc(sizeof(char) * (BUFFERSIZE) + 1);
     int valread = 0;
     std::string lop;
-    int fd = -1;
+  //  int fd = -1;
     FD_ZERO(&readsfds);
     FD_ZERO(&writefds);
     int new_socket;
@@ -98,12 +98,12 @@ void Webserver::Runmywebserver()
     }
     while (true)
     {
-        std::cout<<" a zaaaaaaaaaabo"<<std::endl;
+      //  std::cout<<" a zaaaaaaaaaabo"<<std::endl;
         readsfds = master;
         writefds = master2;
        if ( (activ = select(max_sd + 1, &readsfds, &writefds, NULL, NULL)) == -1)
        {
-            std::cout <<"Aaaaay  Zeeeeeeeeekiiiiiiiiiii"<<std::endl;
+           // std::cout <<"Aaaaay  Zeeeeeeeeekiiiiiiiiiii"<<std::endl;
             continue;
        }
 
@@ -124,7 +124,7 @@ void Webserver::Runmywebserver()
                 else 
                 {
                     if (FD_ISSET(i, &readsfds))
-                    {
+                    { 
                         if ((valread = read(i, buffer, BUFFERSIZE)) <= 0)
                         {
                             FD_CLR(i, &master);
@@ -182,16 +182,16 @@ void Webserver::Runmywebserver()
 				    			     close(Responsemap[i].fd);
                                  Responsemap.erase(i);
                                  close (i);
-                                std::cerr << " ###### : " << fd << std::endl;
+                            //    std::cerr << " ###### : " << fd << std::endl;
                             }
                             else if ((Responsemap[i]._content_length > Responsemap[i].homuchiwrite))
                             {
                                 char  *buffer4 = (char*)malloc(BUFFERSIZE + 1);
 				    			int n = read(Responsemap[i].fd, buffer4, BUFFERSIZE);
-                                std::cout<<"aloooooooooooooooooo"<<std::endl;
+                             //   std::cout<<"aloooooooooooooooooo"<<std::endl;
 				    			if (n >= 0)
                                 {
-                             std::cout<<"aloooooooooooooooooo22"<<std::endl;
+                           //  std::cout<<"aloooooooooooooooooo22"<<std::endl;
 
                                          buffer4[n] = '\0';
 				    			std::string tmp(buffer4, n);
@@ -211,7 +211,7 @@ void Webserver::Runmywebserver()
 				    			
 				    			if (Responsemap[i].onlypath.empty() == false)
                                 {
-                                    std::cerr << " If cond : " <<Responsemap[i].fd<< std::endl; 
+                                   // std::cerr << " If cond : " <<Responsemap[i].fd<< std::endl; 
 				    				 close(Responsemap[i].fd);
                                 }
                                 Responsemap.erase(i);
