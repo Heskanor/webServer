@@ -4,6 +4,12 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 #include "cgi.hpp"
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h> 
+#include <signal.h>
+
 
 
 Cgi::Cgi(std::string path, std::vector<std::string> ext)
@@ -207,9 +213,8 @@ void Cgi::executer(Request *request, Response *response, Location &location)
     //     response->_status_code = "500";
     //     return;
     // }
-    int state;
+    int status;
     bool timout(true);
-    
 	while (difftime(time(NULL), begin) <= 5)
 	{
 		int ret = waitpid(pid, &status, WNOHANG);
@@ -218,7 +223,7 @@ void Cgi::executer(Request *request, Response *response, Location &location)
 		{
 			if (status != 0)
                 throw Response::InternalServerError();
-				this->IServerError = true;
+				//this->IServerError = true;
 			if ( WIFEXITED(status) ) {
 				const int es = WEXITSTATUS(status);
 				if (es != 0)
