@@ -36,7 +36,7 @@
             path: /dist
             index: index.html
             autoIndex: false
-            root: /Users/aali-mou/Desktop/checkthis/Assets/TripeLoader
+            root: /Users/aali-mou/Desktop/checkthis/Assets/DayLoader
             errorPage: 399 ./Notworking/index.html
             errorPage: 500 ./Networking/index.html
             uploadDirectory: /Desktop/sigma3
