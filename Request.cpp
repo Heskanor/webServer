@@ -15,6 +15,7 @@ Request::Request()
 	bodylenght = 0;
 	iperfect = 0;
 	igottheend = false;
+	thereistraansfer = 0;
 	headerscopmlete = 0;
 	requeststatus = 0;
 	chunkcomplete = true;

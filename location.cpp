@@ -80,7 +80,7 @@ void Location::set_cgi_ext(std::vector<std::string> cgi_ext)
 void Location::clear(Server &src)
 {
     // Server::clear();
-    _path = "";
+    _path = "/";
     _cgi_path = "";
     _cgi_ext.clear();
     _index = src.get_index();

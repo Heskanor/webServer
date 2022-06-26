@@ -44,6 +44,7 @@ class Server : public virtual Root
         std::vector<Location> get_locations();
         void add_location(Location &location);
         Location get_location(int index);
+		void insert_location(Location &location);
 };
 
 #endif

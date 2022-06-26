@@ -127,3 +127,8 @@ bool Server::check_empty()
     else
         return false;
 }
+
+void Server::insert_location(Location &location)
+{
+	_locations.insert(_locations.begin(), location);
+}

@@ -5,12 +5,14 @@ server:
 server:
     serverName: Server1
     listen: 127.0.0.1:2020
-    root: ./root
+    root: /Users/hmahjour
+    index: test.txt
+    allowedMethods: POST GET DELETE
     location:
         path: /Desktop
-        index: index.html
-        autoIndex: false
-        root: /Users/ashite
+        index: nginx.txt
+        autoIndex: true
+        root: /Users/hmahjour
         errorPage: 399 ./Notworking/index.html
         errorPage: 500 ./Networking/index.html
         uploadDirectory: /var/www/html/public/uploads

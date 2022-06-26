@@ -46,16 +46,17 @@ int main(int argc, char **argv){
 	// 	//std::cout << argc<< std::endl;
 	// 	return (1);
 	// }
-	argc = 1;
-	// else
-	// {
+	//argc = 1;
+	if (argc == 2)
+	 {
 		signal(SIGPIPE,SIG_IGN);
 		std::string lop;
 		lop.append(argv[1]);
 		Webserver op(lop);
 		op.webservbuild();
 		op.Runmywebserver();
-	// }
+	 }
+	// else
 	// return (0);
 	//signal(SIGPIPE, SIG_IGN);
 	//char *buffer = (char *)malloc(sizeof(char) * BUFFERSIZE + 1);

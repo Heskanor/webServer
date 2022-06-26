@@ -609,7 +609,7 @@ Root ConfigParser::Rootparser(std::string file)
     std::map<std::string, int> rootAdminer;
     std::map<std::string, int> serverAdminer;
     std::map<std::string, int> locationAdminer;
-    
+    Location defaultLocation;
     if (ifs.is_open())
     {
         getline(ifs, line);
@@ -628,7 +628,7 @@ Root ConfigParser::Rootparser(std::string file)
             }
             if (action == 0)
             {
-                //std::cout << "Error: invalid key" << std::endl;
+                std::cout << "Error: invalid key" << std::endl;
                 exit(1);
             }
             while (getline(ifs, line))
@@ -645,7 +645,7 @@ Root ConfigParser::Rootparser(std::string file)
                     {
                         if (rootAdminer.find(token) != rootAdminer.end() && token != "errorPage:"&& token != "path:")
                         {
-                            //std::cout << "Error: repeated directive" << std::endl;
+                            std::cout << "Error: repeated directive" << std::endl;
                             exit(1);
                         }
                         rootAdminer[token] = 1;
@@ -656,7 +656,7 @@ Root ConfigParser::Rootparser(std::string file)
                 }
                 if (action == 0)
                 {
-                    //std::cout << "Error: invalid key" << std::endl;
+                    std::cout << "Error: invalid key" << std::endl;
                     exit(1);
                 }
             }
@@ -680,6 +680,9 @@ Root ConfigParser::Rootparser(std::string file)
                     if (token == "server:")
                     {
                         server.add_location(location);
+
+						defaultLocation.clear(server);
+						server.insert_location(defaultLocation);
                         root.add_server(server);
                         serverAdminer.clear();
                         locationAdminer.clear();
@@ -704,7 +707,7 @@ Root ConfigParser::Rootparser(std::string file)
                             {
                                 if (locationAdminer.find(token) != locationAdminer.end() && token != "errorPage:")
                                 {
-                                    //std::cout << "Error: repeated directive["<< token<<"]" << std::endl;
+                                    std::cout << "Error: repeated directive["<< token<<"]" << std::endl;
                                     exit(1);
                                 }
                                 locationAdminer[token] = 1;
@@ -715,7 +718,7 @@ Root ConfigParser::Rootparser(std::string file)
                     }
                     if (action == 0)
                     {
-                        //std::cout << "Error: invalid location key near :" << token<<std::endl;
+                        std::cout << "Error: invalid location key near :" << token<<std::endl;
                         exit(1);
                     }
                 }
@@ -728,8 +731,10 @@ Root ConfigParser::Rootparser(std::string file)
             }
             else if(token == "server:")
             {
+				defaultLocation.clear(server);
+				server.insert_location(defaultLocation);
                 root.add_server(server);
-                 locationAdminer.clear();
+                locationAdminer.clear();
                 serverAdminer.clear();
                 server.clear(root);
             }
@@ -741,7 +746,7 @@ Root ConfigParser::Rootparser(std::string file)
                     {
                         if (serverAdminer.find(token) != serverAdminer.end() && token != "errorPage:")
                         {
-                            //std::cout << "Error: repeated directive" << std::endl;
+                            std::cout << "Error: repeated directive" << std::endl;
                             exit(1);
                         }
                         serverAdminer[token] = 1;
@@ -751,7 +756,7 @@ Root ConfigParser::Rootparser(std::string file)
                 }
                 if (action == 0)
                 {
-                    //std::cout << "Error: invalid server key" << std::endl;
+                    std::cout << "Error: invalid server key" << std::endl;
                     exit(1);
                 }
             }
@@ -761,10 +766,12 @@ Root ConfigParser::Rootparser(std::string file)
         {
             if (it->get_server_name() == server.get_server_name()&& it->get_listenAddress() == server.get_listenAddress() && it->get_listenPort() == server.get_listenPort())
             {
-                //std::cout << "Error: duplicated server" << std::endl;
+                std::cout << "Error: duplicated server" << std::endl;
                 exit(1);
             }
         }
+		defaultLocation.clear(server);
+		server.insert_location(defaultLocation);
         root.add_server(server);
         serverAdminer.clear();
         server.clear(root);

@@ -650,8 +650,8 @@ Response custom_and_default_error_pages(Response& res, Server& server, std::stri
 
 void initial_checks(Request& req)
 {
-	// if (req.gettransferstat() == 1 &&  req.gettransferchunks() == 0)
-	// 	throw Response::HttpMethodNotSupported();
+	if (req.gettransferstat() == 1 &&  req.gettransferchunks() == 0)
+		throw Response::HttpMethodNotSupported();
 	if (req.gettransferstat() == 0 &&  req.getcontentlenght().empty() && req.get_method() == "POST")
 		throw Response::BadRequest();
 	std::string uri_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=%";
