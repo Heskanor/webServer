@@ -1,5 +1,4 @@
 #include "root.hpp"
-#include "server.hpp"
 #include "location.hpp"
 
 Root::Root()

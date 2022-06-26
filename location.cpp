@@ -28,7 +28,14 @@ Location::Location(Server &src)
 
 Location &Location::operator=(Location const & rhs)
 {
-    Server::operator=(rhs);
+    _index = rhs._index;
+   _root = rhs._root;
+   _bodySizeLimit = rhs._bodySizeLimit;
+   _autoIndex = rhs._autoIndex;
+   _error_map = rhs._error_map;
+   _uploadDirectory = rhs._uploadDirectory;
+   _allowedMethods = rhs._allowedMethods;
+   _redirection = rhs._redirection;
     _path = rhs._path;
     _cgi_path = rhs._cgi_path;
     _cgi_ext = rhs._cgi_ext;
@@ -70,12 +77,20 @@ void Location::set_cgi_ext(std::vector<std::string> cgi_ext)
 {
     _cgi_ext = cgi_ext;
 }
-void Location::clear()
+void Location::clear(Server &src)
 {
     // Server::clear();
     _path = "";
     _cgi_path = "";
     _cgi_ext.clear();
+    _index = src.get_index();
+    _root = src.get_root();
+    _bodySizeLimit = src.get_bodySizeLimit();
+    _autoIndex = src.get_auto_index();
+    _error_map = src.get_errors_map();
+    _uploadDirectory = src.get_upload_directory();
+    _allowedMethods = src.get_allowed_methods();
+    _redirection = src.get_redirection();
 }
 bool Location::check_lempty()
 {

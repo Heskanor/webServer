@@ -25,12 +25,7 @@ Server::~Server()
 
 }
 
-Server::Server(const Server &src):
-    _server_name(src._server_name),
-    _listenPort(src._listenPort),
-    _listenAddress(src._listenAddress),
-    _locations(src._locations),
-    _redirection(src._redirection)
+Server::Server(const Server &src)
 {
     *this = src;
 }
@@ -108,7 +103,7 @@ Location Server::get_location(int index)
     return _locations[index];
 }
 
-void Server::clear()
+void Server::clear(Root &src)
 {
     _server_name.clear();
     _listenAddress.clear();
@@ -116,6 +111,13 @@ void Server::clear()
     _locations.clear();
     _redirection.first.clear();
     _redirection.second.clear();
+    _index = src.get_index();
+    _root = src.get_root();
+    _bodySizeLimit = src.get_bodySizeLimit();
+    _autoIndex = src.get_auto_index();
+    _error_map = src.get_errors_map();
+    _uploadDirectory = src.get_upload_directory();
+    _allowedMethods = src.get_allowed_methods();
 }
 
 bool Server::check_empty()

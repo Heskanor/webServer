@@ -155,11 +155,11 @@ void ConfigParser::setRedirection(std::string status,std::string line, Location 
         token += line[i];
         i++;
     }
-    if (token.find_first_not_of("0123456789") == std::string::npos)
+    if (token.find_first_not_of("0123456789") == std::string::npos && token.length() == 3 && token >= "300" && token <= "599")
         val = token;
     else
     {
-        std::cout << "error: bad error Code" << std::endl;
+        std::cout << "Redirection code " << token << " must be between 300 and 599" << std::endl;
         exit(1);
     }
     line.erase(0,i);
@@ -187,11 +187,11 @@ void ConfigParser::setRedirection(std::string status,std::string line, Server &r
         token += line[i];
         i++;
     }
-    if (token.find_first_not_of("0123456789") == std::string::npos)
+    if (token.find_first_not_of("0123456789") == std::string::npos && token.length() == 3 && token >= "300" && token <= "599")
         val = token;
     else
     {
-        std::cout << "error: bad error Code" << std::endl;
+        std::cout << "Redirection code " << token << " must be between 300 and 599" << std::endl;
         exit(1);
     }
     line.erase(0,i);
@@ -237,11 +237,12 @@ void ConfigParser::setErrors(std::string status,std::string line, Root &root)
         token += line[i];
         i++;
     }
-    if (token.find_first_not_of("0123456789") == std::string::npos && token.length() == 3 && token >= "500" && token <= "599")
+
+    if (token.find_first_not_of("0123456789") == std::string::npos && token.length() == 3 && token >= "300" && token <= "599")
         val = token;
     else
     {
-        std::cout << "error code" << token << "must be between 300 and 599" << std::endl;
+        std::cout << "Error code " << token << " must be between 300 and 599" << std::endl;
         exit(1);
     }
     line.erase(0,i);
@@ -252,7 +253,6 @@ void ConfigParser::setErrors(std::string status,std::string line, Root &root)
         value += line[i];
         i++;
     }
-    //std::cout << "haha15 : " << value << std::endl;
     root.add_error_map(val, value);
 }
 void ConfigParser::setErrors(std::string status,std::string line, Server &root)
@@ -262,7 +262,7 @@ void ConfigParser::setErrors(std::string status,std::string line, Server &root)
     std::string val;
     unsigned int i = 0;
     skipFirstToken(line, status.length());
-    while (line[i] != ' '&& line[i]!= '\n' && i < line.length() && token.length() == 3 && token >= "500" && token <= "599")
+    while (line[i] != ' '&& line[i]!= '\n' && i < line.length()  && token.length() == 3 && token >= "300" && token <= "599")
     {
         token += line[i];
         i++;
@@ -271,7 +271,7 @@ void ConfigParser::setErrors(std::string status,std::string line, Server &root)
         val = token;
     else
     {
-        std::cout << "error code" << token << "must be between 300 and 599" << std::endl;
+        std::cout << "Error code " << token << " must be between 300 and 599" << std::endl;
         exit(1);
     }
     line.erase(0,i);
@@ -282,7 +282,6 @@ void ConfigParser::setErrors(std::string status,std::string line, Server &root)
         value += line[i];
         i++;
     }
-    //std::cout << "haha15 : " << value << std::endl;
     root.add_error_map(val, value);
 }
 void ConfigParser::setErrors(std::string status,std::string line, Location &root)
@@ -297,11 +296,11 @@ void ConfigParser::setErrors(std::string status,std::string line, Location &root
         token += line[i];
         i++;
     }
-    if (token.find_first_not_of("0123456789") == std::string::npos && token.length() == 3 && token >= "500" && token <= "599")
+    if (token.find_first_not_of("0123456789") == std::string::npos && token.length() == 3 && token >= "300" && token <= "599")
         val = token;
     else
     {
-        std::cout << "error code" << token << "must be between 300 and 599" << std::endl;
+        std::cout << "Error code " << token << " must be between 300 and 599" << std::endl;
         exit(1);
     }
     line.erase(0,i);
@@ -312,7 +311,6 @@ void ConfigParser::setErrors(std::string status,std::string line, Location &root
         value += line[i];
         i++;
     }
-    //std::cout << "haha15 : " << value << std::endl;
     root.add_error_map(val, value);
 }
 
@@ -359,7 +357,6 @@ void ConfigParser::setRoot(std::string status,std::string line, Root &lvl)
 {
     std::string tko;
     strParser(status, line, tko);
-    // std::cout << tko <<"haha15"<< std::endl;
     lvl.set_root(tko);
 }
 void ConfigParser::setRoot(std::string status,std::string line, Server &lvl)
@@ -486,7 +483,6 @@ void ConfigParser::setAllowedMethods(std::string status,std::string line, Root &
             exit(1);
         }
     }
-    //lvl.set_allowed_methods(meth);
 }
 void ConfigParser::setAllowedMethods(std::string status,std::string line, Server &lvl)
 {
@@ -503,7 +499,6 @@ void ConfigParser::setAllowedMethods(std::string status,std::string line, Server
             exit(1);
         }
     }
-    //lvl.set_allowed_methods(meth);
 }
 void ConfigParser::setAllowedMethods(std::string status,std::string line, Location &lvl)
 {
@@ -594,7 +589,6 @@ Root ConfigParser::Rootparser(std::string file)
     Location location;
     Server server;
     std::string token;
-    int locationsCounter = 0;
     std::map<std::string, int> rootAdminer;
     std::map<std::string, int> serverAdminer;
     std::map<std::string, int> locationAdminer;
@@ -632,7 +626,7 @@ Root ConfigParser::Rootparser(std::string file)
                 {
                     if (token == (this->_rootkeys)[j])
                     {
-                        if (rootAdminer.find(token) != rootAdminer.end() && token != "errorPage:")
+                        if (rootAdminer.find(token) != rootAdminer.end() && token != "errorPage:"&& token != "path:")
                         {
                             std::cout << "Error: repeated directive" << std::endl;
                             exit(1);
@@ -653,13 +647,12 @@ Root ConfigParser::Rootparser(std::string file)
         while (getline(ifs, line))
         {
             action = 0;
-            locationsCounter = 0;
             skipSpaces(line);
             std::stringstream Y(line);
             getline(Y, token,' ');
             if (token == "location:")
             {
-                location.clear();
+                location.clear(server);
                 locationAdminer.clear();
                 while (getline(ifs, line))
                 {
@@ -672,15 +665,17 @@ Root ConfigParser::Rootparser(std::string file)
                         server.add_location(location);
                         root.add_server(server);
                         serverAdminer.clear();
-                        location.clear();
-                        server.clear();
+                        locationAdminer.clear();
+                        location.clear(server);
+                        server.clear(root);
                         action = -1;
                         break;
                     }
                     else if (token == "location:")
                     {
                         server.add_location(location);
-                        location.clear();
+                         locationAdminer.clear();
+                        location.clear(server);
                         action = 7;
                         continue;
                     }
@@ -692,7 +687,7 @@ Root ConfigParser::Rootparser(std::string file)
                             {
                                 if (locationAdminer.find(token) != locationAdminer.end() && token != "errorPage:")
                                 {
-                                    std::cout << "Error: repeated directive" << std::endl;
+                                    std::cout << "Error: repeated directive["<< token<<"]" << std::endl;
                                     exit(1);
                                 }
                                 locationAdminer[token] = 1;
@@ -710,14 +705,16 @@ Root ConfigParser::Rootparser(std::string file)
                 if (action != -1 && action != 7)
                 {
                     server.add_location(location);
+                     locationAdminer.clear();
                 }
-                location.clear();
+                location.clear(server);
             }
             else if(token == "server:")
             {
                 root.add_server(server);
+                 locationAdminer.clear();
                 serverAdminer.clear();
-                server.clear();
+                server.clear(root);
             }
             else
             {
@@ -742,9 +739,18 @@ Root ConfigParser::Rootparser(std::string file)
                 }
             }
         }
+        std::vector<Server> s = root.get_servers();
+        for (std::vector<Server>::iterator it = s.begin(); it != s.end(); ++it)
+        {
+            if (it->get_server_name() == server.get_server_name()&& it->get_listenAddress() == server.get_listenAddress() && it->get_listenPort() == server.get_listenPort())
+            {
+                std::cout << "Error: duplicated server" << std::endl;
+                exit(1);
+            }
+        }
         root.add_server(server);
         serverAdminer.clear();
-        server.clear();
+        server.clear(root);
     }
     serverAdminer.clear();
     root_checker(root);

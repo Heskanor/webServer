@@ -29,12 +29,9 @@ class ConfigParser
         Root Rootparser(std::string file);
         void root_checker(Root root);
     private:
-    
         void strTabParser(std::string status,std::string line, std::vector<std::string> &str);
         void strParser(std::string status,std::string line, std::string &root);
         void intParser(std::string status,std::string line, int &size);
-        //void mapParser(std::string status,std::string line, Root &root);
-        // void mapErrParser(std::string status,std::string line, Root &root);
         void setIndex(std::string status,std::string line, Root &root);
         void setRoot(std::string status,std::string line, Root &root);
         void setErrors(std::string status,std::string line, Root &root);
