@@ -1,7 +1,7 @@
 NAME =		webserver
 
-CXXFLAGS +=	-Wall -Wextra -Werror -std=c++98 -fsanitize=address -g
-
+CXXFLAGS +=	-Wall -Wextra -Werror -std=c++98
+# CXXFLAGS +=	-Wall -Wextra -Werror -std=c++98 -fsanitize=address -g
 CXX =		clang++
 
 SRCS =		$(wildcard *.cpp)

@@ -8,14 +8,14 @@
 
 Cgi::Cgi(std::string path, std::vector<std::string> ext)
 {
-    int fd; 
+    // int fd; 
     
-    fd = open(path.c_str(), O_RDONLY);
-    if (fd == -1)
-        throw std::runtime_error("Cgi::Cgi: open failed");
-    close(fd);
-    if (ext.size() == 0)
-        throw std::runtime_error("Cgi::Cgi: no extension");
+    // fd = open(path.c_str(), O_RDONLY);
+    // if (fd == -1)
+    //     throw std::runtime_error("Cgi::Cgi: open failed");
+    // close(fd);
+    // if (ext.size() == 0)
+    //     throw std::runtime_error("Cgi::Cgi: no extension");
     
     _path = path;
     _ext = ext;
@@ -66,17 +66,21 @@ std::string get_querrystring(std::string path)
 	return querrystring;
 }
 
-void Cgi::envMaker(Request *request)
+void Cgi::envMaker(Request *request, Location &location)
 {
-    //std::string scriptname = location.get_root() + _path;
-	std::string scriptname = "/Users/hmahjour/Desktop/up.php";
+    // std::string scriptname = _path;
+    // std::cout <<scriptname;
+	std::string scriptname = "/Users/ashite//Desktop/test.php";
+    (void)location;;
 
     //setenv("AUTH_TYPE", "", 1);
     setenv("CONTENT_LENGTH", (request->getcontentlenght()).c_str(), 1);
     setenv("CONTENT_TYPE", (request->getcontent_type()).c_str(), 1); // need content type geter
     setenv("GATEWAY_INTERFACE", "CGI/1.1", 1);
+    ///tmp/1656277854__cgi_output.html
+    // setenv("PATH_INFO", ((request->get_requestur())).substr(0,request->get_requestur().find_first_of('?')).c_str(), 1); // subtr query string
     setenv("PATH_INFO", ((request->get_requestur())).substr(0,request->get_requestur().find_first_of('?')).c_str(), 1); // subtr query string
-    setenv("PATH_TRANSLATED", ((request->get_requestur())).substr(0,request->get_requestur().find_first_of('?')).c_str(), 1); // dir b7al path info
+    setenv("PATH_TRANSLATED","/Users/ashite/Desktop/test.php", 1); // dir b7al path info
     setenv("QUERY_STRING", get_querrystring(request->get_requestur()).c_str(), 1);// after ?
     setenv("REMOTE_ADDR", "localhost", 1);
     setenv("REMOTE_HOST", "localhost", 1);// maybe like remote address
@@ -88,6 +92,7 @@ void Cgi::envMaker(Request *request)
     setenv("SERVER_PORT", (request->get_port()).c_str(), 1);
     setenv("SERVER_PROTOCOL", "HTTP/1.1", 1);
     setenv("SERVER_SOFTWARE", "webserver/1.1", 1);
+    setenv("REDIRECT_STATUS", "200", 1);
     // setenv("HTTP_ACCEPT", (request->getaccept()).c_str(), 1);
     // setenv("HTTP_USER_AGENT", (request->getuseragent()).c_str(), 1);
     // setenv("HTTP_ACCEPT_LANGUAGE", (request->getacceptlanguage()).c_str(), 1);
@@ -119,7 +124,8 @@ void cgi_reader(Response *resp, int fd)
     char buf[1024];
     int ret;
     std::string bd;
-    int body_size = 0;
+    long long body_size = 0;
+
 
     while ((ret = read(fd, buf, 1024)) > 0)
     {
@@ -130,13 +136,16 @@ void cgi_reader(Response *resp, int fd)
     if(resp->_status_code != "500")
         resp->_status_code = "200";
     std::string headers = bd.substr(0, bd.find("\r\n\r\n") + 4);
-    resp->_headers = headers;
+    //resp->_headers = "Content-Length:  5\r\n" ; 
+    resp->_headers += headers; 
+    // + better_to_string(res._content_length) + "\r\n";;
     close (fd);
     struct stat st;
     if (stat(resp->_tmp_file_path.c_str(), &st) == 0)
         body_size = st.st_size;
     int cgiHeaderSize = headers.size();
     resp->_content_length = body_size - cgiHeaderSize;
+    std::cout << resp->_content_length<< "\n\n\n\n\n\n\n\n\n\n"<< std::endl;
 }
 
 void Cgi::executer(Request *request, Response *response, Location &location)
@@ -153,21 +162,22 @@ void Cgi::executer(Request *request, Response *response, Location &location)
     parm[0] = _path.c_str();
     parm[1] = path.c_str(); 
     parm[2] = NULL;
+    std::cout << parm[0] << " " << parm[1]<<std::endl;
     pid_t cgi_pid;
     //long long time = timeer();
 	
     pid_t pid = fork();
-    envMaker(request);
+    time_t	begin = time(NULL);
     if (pid == -1)
     {
         //response->set_status(200);
-        response->_status_code = "500";
-        return;
+        throw Response::InternalServerError();
     }
     if (pid == 0)
     {
 		write(2, methode.c_str(), 4);
-        
+         envMaker(request, location);
+         //system("printenv");
         close(STDERR_FILENO);
         if (methode == "POST" || methode == "DELETE")
         {//write(2, methode.c_str(), 4);
@@ -198,19 +208,31 @@ void Cgi::executer(Request *request, Response *response, Location &location)
     //     return;
     // }
     int state;
-    int status = waitpid(cgi_pid, &state, WNOHANG);
-    if (status == -1) {
-        response->_status_code = "500";
-        return;
-    }
-    else if (status != 0)
-    {
-        if (WIFEXITED(state) == 0)
-        {
-            response->_status_code = "500";
-            return;
-        }
-        cgi_reader(response,response_fd);
-        //close response tmp file
-    }
+    bool timout(true);
+    
+	while (difftime(time(NULL), begin) <= 5)
+	{
+		int ret = waitpid(pid, &status, WNOHANG);
+
+		if (ret == pid)
+		{
+			if (status != 0)
+                throw Response::InternalServerError();
+				this->IServerError = true;
+			if ( WIFEXITED(status) ) {
+				const int es = WEXITSTATUS(status);
+				if (es != 0)
+					throw Response::InternalServerError();
+			}
+			timout = false;
+			break;
+		}
+	}
+	if (timout)
+	{
+		kill(9,pid);
+		//this->IsTimeOut = true;
+	}
+	// delete_file(request->get_body_filename());
+    //----------------
 }
