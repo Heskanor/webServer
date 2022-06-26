@@ -4,7 +4,7 @@
 Root::Root()
 {
     _autoIndex = false;
-    _bodySizeLimit = 125;
+    _bodySizeLimit = 40122284800;
 }
 
 Root::~Root()
@@ -65,13 +65,13 @@ bool Root::get_auto_index()
     return _autoIndex;
 }
 
-int Root::get_bodySizeLimit()
+long long Root::get_bodySizeLimit()
 {
     
     return _bodySizeLimit;
 }
 
-void Root::set_bodySizeLimit(int bodySizeLimit)
+void Root::set_bodySizeLimit(long long bodySizeLimit)
 {
     
     _bodySizeLimit = bodySizeLimit;

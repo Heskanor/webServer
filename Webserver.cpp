@@ -98,12 +98,12 @@ void Webserver::Runmywebserver()
     }
     while (true)
     {
-        std::cout<<" a zaaaaaaaaaabo"<<std::endl;
+        // std::cout<<" a zaaaaaaaaaabo"<<std::endl;
         readsfds = master;
         writefds = master2;
        if ( (activ = select(max_sd + 1, &readsfds, &writefds, NULL, NULL)) == -1)
        {
-            std::cout <<"Aaaaay  Zeeeeeeeeekiiiiiiiiiii"<<std::endl;
+            // std::cout <<"Aaaaay  Zeeeeeeeeekiiiiiiiiiii"<<std::endl;
             continue;
        }
 
@@ -188,10 +188,10 @@ void Webserver::Runmywebserver()
                             {
                                 char  *buffer4 = (char*)malloc(BUFFERSIZE + 1);
 				    			int n = read(Responsemap[i].fd, buffer4, BUFFERSIZE);
-                                std::cout<<"aloooooooooooooooooo"<<std::endl;
+                                // std::cout<<"aloooooooooooooooooo"<<std::endl;
 				    			if (n >= 0)
                                 {
-                             std::cout<<"aloooooooooooooooooo22"<<std::endl;
+                            //  std::cout<<"aloooooooooooooooooo22"<<std::endl;
 
                                          buffer4[n] = '\0';
 				    			std::string tmp(buffer4, n);

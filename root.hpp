@@ -19,7 +19,7 @@ class Root
     protected:
         std::vector<std::string> _index;
         std::string _root;
-        int _bodySizeLimit;
+        long long _bodySizeLimit;
         bool _autoIndex;
         std::map<std::string, std::string>  _error_map;
         std::string _uploadDirectory;
@@ -38,8 +38,8 @@ class Root
         virtual void add_index(std::string index);
         virtual bool get_auto_index();
         virtual void set_auto_index(bool autoIndex);
-        virtual int get_bodySizeLimit();
-        virtual void set_bodySizeLimit(int bodySizeLimit);
+        virtual long long get_bodySizeLimit();
+        virtual void set_bodySizeLimit(long long bodySizeLimit);
         virtual std::vector<Server> get_servers();
         virtual Server get_server(int index);
         virtual void set_servers(std::vector<Server> servers);
