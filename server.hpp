@@ -7,8 +7,8 @@
 #include <vector>
 #include <string>
 #include <map>
-
 #include "root.hpp"
+
 class Location;
 
 class Server : public virtual Root

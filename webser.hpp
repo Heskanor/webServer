@@ -8,6 +8,7 @@
 #include "location.hpp"
 #include "MimeType.hpp"
 #include <unistd.h>
+#include <sstream>
 
 
 

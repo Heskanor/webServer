@@ -1,0 +1,300 @@
+#include "Webserver.hpp"
+#define BUFFERSIZE 15000
+#include <stdio.h> 
+#include <string.h>   //strlen 
+#include <stdlib.h> 
+#include <errno.h> 
+#include <unistd.h>   //close 
+#include <arpa/inet.h>    //close 
+#include <sys/types.h> 
+#include <sys/socket.h> 
+#include <netinet/in.h> 
+#include <sys/time.h>
+/*
+ ** ------------------------------- CONSTRUCTOR --------------------------------
+ */
+
+Webserver::Webserver(std::string _path)
+{
+	path = _path;
+}
+
+Webserver::Webserver( const Webserver & src )
+{
+	*this = src;
+}
+
+
+/*
+ ** -------------------------------- DESTRUCTOR --------------------------------
+ */
+
+Webserver::~Webserver()
+{
+}
+
+
+/*
+ ** --------------------------------- OVERLOAD ---------------------------------
+ */
+
+Webserver &				Webserver::operator=( Webserver const & rhs )
+{
+	lopserver = rhs.lopserver;
+	Requestsmap = rhs.Requestsmap;
+	master = rhs.master;
+	master2 = rhs.master2;
+	path = rhs.path;
+	return *this;
+}
+
+std::ostream &			operator<<( std::ostream & o, Webserver const & i )
+{
+	//o << "Value = " << i.getValue();
+	return o;
+}
+
+
+/*
+ ** --------------------------------- METHODS ----------------------------------
+ */
+bool 				Webserver::checkifisserver(int i)
+{
+	for(std::map<int,Myserver>::iterator it = lopserver.begin(); it != lopserver.end(); it++)
+	{
+		if (it->second.fd == i)
+			return true;
+	}
+	return(false);
+}
+bool				Webserver::checkifitsfdserver(int i)
+{
+	for(std::map<int,Myserver>::iterator it = lopserver.begin(); it != lopserver.end(); it++)
+	{
+		if (it->second.fd == i)
+			return true;
+	}
+	return false;
+}
+void				Webserver::Runmywebserver()
+{
+	fd_set readsfds;
+	fd_set writefds;
+	char *buffer = (char *)malloc(sizeof(char) * (BUFFERSIZE + 1));
+	int valread = 0;
+	FD_ZERO(&readsfds);
+	FD_ZERO(&writefds);
+	int new_socket ;
+	Request req;
+	int activ;
+	int max_sd = -1;
+	std::map<int,Myserver>::iterator it;
+	for(std::map<int,Myserver>::iterator it = lopserver.begin(); it != lopserver.end(); it++)
+	{
+		if (it->second.fd > max_sd)
+			max_sd = it->second.fd;
+	}
+	while (true)
+	{
+
+		//	//std::cout << "DBG__MAIN__LOOP" << std::endl;
+		readsfds =  master ;
+		writefds = master2;
+		//max_sd =  sockfd;
+		//haha15
+
+		activ = select(max_sd + 1, &readsfds, &writefds, NULL, NULL);
+		for (int i =0; i < max_sd + 1; i++)
+		{
+			if (FD_ISSET(i, &readsfds) || FD_ISSET(i,&writefds))
+			{
+				if (checkifisserver(i) == true)
+				{
+					new_socket = accept(lopserver[i].fd, (struct sockaddr*)&lopserver[i].address, (socklen_t*)&lopserver[i].addrlen);
+					req.set_socketid(new_socket);
+					req.set_timeout(time_now());
+					for(std::map<int,Myserver>::iterator it = lopserver.begin(); it != lopserver.end(); it++)
+					{
+						std::cout<<"i really here"<<std::endl;
+						if (it->second.fd == i)
+						{
+							req.setserver_fd(it->second.index);
+							std::cout<<it->second.index<<"|||||||||||"<<std::endl;
+						}
+						//if (it->second.fd > max_sd)
+						//max_sd = it->second.fd;
+					}
+					//req.setserver_fd(i);
+					Requestsmap[new_socket] = req;
+					FD_SET(new_socket,&master);
+					if (new_socket > max_sd)
+						max_sd = new_socket;
+				}
+				else
+				{
+					if (FD_ISSET(i, &readsfds))
+					{
+						valread = read( i , buffer, BUFFERSIZE);
+						std::cout<<valread<<std::endl;
+						buffer[valread] = '\0';
+						std::string op;
+						op.append(buffer);
+						std::cout<<buffer<<std::endl;
+						if (valread == -1)
+						{
+
+							FD_CLR(i,&readsfds);
+							FD_CLR(i,&master);
+							close(i);
+						}
+
+						//else if(valread == 0)
+						//{
+						//	std::cout<<"sadsadasD"<<std::endl;
+						//}
+						else if(valread == 0  && ((time_now() - Requestsmap[i].get_timeout()) >5000))
+						{
+							std::cout<<" im here  6666 "<<std::endl;
+							//
+							FD_CLR(i,&readsfds);
+							close(i); 
+						}
+						else
+						{
+							for (std::map<int, Request>::iterator it = Requestsmap.begin(); it != Requestsmap.end(); ++it)
+							{
+								if (it->first == i)
+								{
+									//	if (it->second.)
+									it->second.parserequest(buffer, valread);
+									Requestsmap[i].set_timeout(time_now());
+									if (it->second.get_requestiscomplete() == true)
+									{
+										std::cout<<" im here "<<std::endl;
+										std::cout<<Requestsmap[i].get_requestur()<<std::endl;
+										Response resp;
+										std::cout<<"|||||||||||||||||||||||||||||||||6"<<std::endl;
+										//	std::cout<<req.getserver_fd()<<std::endl;
+
+										std::cout<<"server fd :"<<Requestsmap[i].getserver_fd()<<std::endl;
+
+										resp = server_response(it->second,servers[Requestsmap[i].getserver_fd()]);
+										//std::cout<<"im hereeee |||||||||||||||||"<<std::endl;
+										Responsemap[it->first] = resp;
+									//	FD_CLR(it->first, &master);
+										FD_CLR(it->first,&readsfds);
+										FD_SET(it->first, &writefds);
+										Requestsmap.erase(i);
+										std::string lop1;
+										lop1 = Responsemap[i]._headers;
+										std::cout << "headers: " << lop1 << std::endl;
+										std::cout<<"|||||||||||||||||||||||||||||||||7"<<std::endl;
+									//	while (1);
+											//	Requestsmap.erase(i);
+
+									}
+									//	it->second.adddata(buffer, valread);
+									//	//std::cout<<" i m heree ------------ "<< sd<<std::endl;
+									//}
+							}
+						}
+						//}
+				}
+				if (FD_ISSET(i, &writefds))
+				{
+					std::string lop;
+					lop = Responsemap[i]._headers;
+					std::cout << "headers: " << lop << std::endl;
+					write(i,lop.c_str(),lop.size());
+					if (!Responsemap[i]._body_path.empty())
+					{
+						lop.erase();
+						char *buffer2 = (char *)malloc(sizeof(char) * (Responsemap[i]._content_length + 1));
+						int fd = open(Responsemap[i]._body_path.c_str(),  O_RDWR,  0666);
+						read (fd, buffer2,Responsemap[i]._content_length);
+						write(i,buffer2, Responsemap[i]._content_length);
+						//Responsemap.erase()
+						close(fd);
+						free(buffer2);
+						//write(i,)
+					}
+					else if (!Responsemap[i]._tmp_file_path.empty()){
+						lop.erase();
+						std::cout<<Responsemap[i]._tmp_file_path<<std::endl;
+						std::cout<<Responsemap[i]._content_length<<std::endl;
+						char *buffer2 = (char *)malloc(sizeof(char) * (Responsemap[i]._content_length + 1));
+						int fd = open(Responsemap[i]._tmp_file_path.c_str(),  O_RDWR,  0666);
+						read (fd, buffer2,Responsemap[i]._content_length);
+						write(i,buffer2, Responsemap[i]._content_length);
+						close(fd);
+						free(buffer2);
+						//remove(Responsemap[i]._tmp_file_path.c_str());
+
+					}
+					Responsemap.erase(i);
+					std::cout << " yoyoyo" << Responsemap[i]._headers << "lalala" << std::endl;
+					//	re								
+					FD_CLR(i,&writefds);
+					FD_SET(i, &readsfds);
+				}
+			}
+
+
+		}
+	}
+}
+
+}
+}
+
+
+void				Webserver::webservbuild()
+{
+	ConfigParser parser;
+	Root r;
+	int opt = 1;
+	r = parser.Rootparser(path);
+	Server ser;
+	servers = r.get_servers();
+	int new_socket;
+	int addrlen;
+	int sockfd;
+	struct sockaddr_in address;
+	fd_set readsfds;
+	int c = 0;
+	int valread = 0; 
+	FD_ZERO(&readsfds);          // change master 
+	for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); ++it)
+	{
+		Myserver ser;
+		ser.port = it->get_listenPort();
+		ser.ipaddress = it->get_listenAddress();
+		addrlen = sizeof(address);
+		sockfd = socket(PF_INET,SOCK_STREAM,0); 
+		ser.fd = sockfd;
+		ser.index = c;
+		FD_SET(sockfd, &master);
+		// shoukd have a mster readset 
+		if (setsockopt(sockfd ,SOL_SOCKET,SO_REUSEADDR, &opt, sizeof(opt)) == -1)
+		{
+			std::cout<<"raaayss akbar weld nass "<<std::endl;
+		}
+		address.sin_family = AF_INET;
+		address.sin_addr.s_addr = inet_addr(it->get_listenAddress().c_str());
+		address.sin_port = htons(it->get_listenPort());
+		ser.address = address;
+		ser.addrlen = addrlen;
+		lopserver[sockfd] = ser;
+		bind(sockfd, (struct sockaddr*)&address, sizeof(address));
+		listen(sockfd, 3);
+		c++;
+	}
+
+}			
+
+/*
+ ** --------------------------------- ACCESSOR ---------------------------------
+ */
+
+
+/* ************************************************************************** */

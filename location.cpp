@@ -28,7 +28,14 @@ Location::Location(Server &src)
 
 Location &Location::operator=(Location const & rhs)
 {
-    Server::operator=(rhs);
+    _index = rhs._index;
+   _root = rhs._root;
+   _bodySizeLimit = rhs._bodySizeLimit;
+   _autoIndex = rhs._autoIndex;
+   _error_map = rhs._error_map;
+   _uploadDirectory = rhs._uploadDirectory;
+   _allowedMethods = rhs._allowedMethods;
+   _redirection = rhs._redirection;
     _path = rhs._path;
     _cgi_path = rhs._cgi_path;
     _cgi_ext = rhs._cgi_ext;

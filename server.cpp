@@ -25,12 +25,7 @@ Server::~Server()
 
 }
 
-Server::Server(const Server &src):
-    _server_name(src._server_name),
-    _listenPort(src._listenPort),
-    _listenAddress(src._listenAddress),
-    _locations(src._locations),
-    _redirection(src._redirection)
+Server::Server(const Server &src)
 {
     *this = src;
 }
