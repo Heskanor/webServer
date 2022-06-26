@@ -58,12 +58,12 @@ long long get_file_size(std::string& file_path)
 // void set_content_type_and_length(Request& req, Response& res, std::string& file_path)
 void set_content_type_and_length(Response& res, std::string& file_path)
 {
-	//std::cout << "trying to set content type and length" << std::endl;
 	MimeType mime_type;
 	if (file_path.find_last_of(".") != std::string::npos)
 	{
 		std::string file_extension = file_path.substr(file_path.find_last_of("."));
 		res._content_type = mime_type.get_mime_type(file_extension);
+		std::cout << "trying to set content type and length" << res._content_type << std::endl;
 	}
 	else
 		res._content_type = "text/plain";
@@ -227,6 +227,7 @@ void run_cgi_script(Request& req, Response& res, Location& location)
 	std::string tmp_file = create_temporary_file("/tmp/", "_cgi_output", ".html");
 	res._tmp_file_path = tmp_file;
 	Cgi the_cgi(cgi_path, cgi_extensions);
+	// the_cgi(cgi_path, cgi_extensions);
 	the_cgi.executer(&req, &res, location);
 	if (res._status_code == "500")
 		throw Response::InternalServerError();
@@ -235,6 +236,7 @@ void run_cgi_script(Request& req, Response& res, Location& location)
 		res._status_code = "200";
 		// set_content_type_and_length(req, res, res._tmp_file_path);
 		set_content_type_and_length(res, res._tmp_file_path);
+		std::cout << "running CGI $$$$$$$$$$$$$$$$$$$$$>>" << std::endl;
 		set_response_headers(res);
 		// set_response_headers(req, res);
 	}
@@ -245,11 +247,13 @@ bool check_if_cgi_is_applicable(Location& location, std::string& path)
 	if (path.find_last_of(".") != std::string::npos)
 	{
 		std::string file_extension = path.substr(path.find_last_of("."));
+	
 		std::vector<std::string> cgi_extensions = location.get_cgi_ext();
 		int nbr_cgi_extensions = cgi_extensions.size();
 		for (int i = 0; i < nbr_cgi_extensions; i++)
 		if (cgi_extensions[i] == file_extension)
 			return true;
+		//std::cout << "running CGI $$$$$$$$$$$$$$$$$$$$$ :-( >> "<< cgi_extensions[0] << std::endl;
 	}
 	return false;
 }
@@ -317,15 +321,17 @@ bool check_for_index_file(Request& req, Location& location, std::string& resourc
 		int nbr_indexes = index_files.size();
 		for (int i = 0; i < nbr_indexes; i++)
 		{
+			
 			std::string index_file_path = resource + index_files[i];
 			int index_code = check_if_entity_exists(index_file_path);
 			//std::cout << "index_code : "<< index_code << std::endl;
 			if (!index_code)
 				continue;
+				
 			if (index_code == FILECODE && access(index_file_path.c_str(), R_OK) == 0)
 			{
-				//std::cout << "file code correct" << std::endl;
 				// check if location has cgi
+				
 				if (check_if_cgi_is_applicable(location, resource))
 				{
 					run_cgi_script(req, res, location);
@@ -595,7 +601,7 @@ void response_to_get(Response& res, Request& req, Location& location)
 		// check if location has cgi
 		if (check_if_cgi_is_applicable(location, resource))
 		{
-			//std::cout << "cgi script is applicable" << std::endl;
+			std::cout << "cgi script is applicable" << std::endl;
 			run_cgi_script(req, res, location);
 			return;
 		}

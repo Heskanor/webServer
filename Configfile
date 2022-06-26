@@ -30,18 +30,17 @@ server:
         errorPage: 500 ./Networking/index.html
         uploadDirectory: /var/www/html/public/uploads
         allowedMethods: POST GET DELETE
-        cgiPath: ./Networking/index.html
+        cgiPath: /usr/bin/p
         cgiExt: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6
     location:
         path: /Desktop
-        index: /index.html
+        index: /inde2x.html
         autoIndex: false
         root: /Users/ashite/
         errorPage: 399 ./Notworking/index.html
         errorPage: 500 ./Networking/index.html
-        uploadDirectory: /Desktop/sigma3
         allowedMethods: POST GET DELETE
-        cgiPath: ./Networking/index.html
+        cgiPath: /Users/ashite/Desktop/php-cgi
         cgiExt: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6
     location:
         path: /dist
