@@ -44,14 +44,15 @@ std::string set_date_header()
 	std::string date = std::string(dt);
 	return (date.substr(0, date.size() - 1));
 }
-//int get_file_size(std::string& file_path) Edited by escanor
 long long get_file_size(std::string& file_path)
 {
 	struct stat st;
-	//std::cout <<"FilePath ------------>" << file_path << std::endl;
-	stat(file_path.c_str(), &st);
-	//std::cout << "FileSize ----------->" << st.st_size << std::endl;
-	return st.st_size;
+	std::cout <<"FilePath ------------>" << file_path << std::endl;
+	if (stat(file_path.c_str(), &st) == 0)
+		return st.st_size;
+	return 0;
+	std::cout << "FileSize ----------->" << st.st_size << std::endl;
+	
 }
 // void set_content_type_and_length(Request& req, Response& res, std::string& file_path)
 void set_content_type_and_length(Response& res, std::string& file_path)
@@ -67,7 +68,7 @@ void set_content_type_and_length(Response& res, std::string& file_path)
 		res._content_type = "text/plain";
 	
 	res._content_length = get_file_size(file_path);
-	std::cout << res._content_length << std::endl;
+	std::cout <<"Content length : "<< res._content_length << "<<<<<<<<" << std::endl;
 }
 
 void default_error_page(Response& res)
@@ -664,8 +665,9 @@ void check_request_body_size(Request& req, Location& location)
 	if (!req.get_pathbody().empty())
 	{
 		std::string path_body = req.get_pathbody();
-		int path_body_size = get_file_size(path_body);
-		std::cout << path_body_size << "_____________---__e"<< location.get_bodySizeLimit()<<std::endl;
+		long long path_body_size = get_file_size(path_body);
+		std::cout <<"PathBodySize : "<< path_body_size << "<<<<<<<<" << std::endl;
+		std::cout <<"BodySizeLimit : "<< location.get_bodySizeLimit() << "<<<<<<<<" << std::endl;
 		if (path_body_size > location.get_bodySizeLimit())
 			throw Response::RequestEntityTooLarge();
 	}

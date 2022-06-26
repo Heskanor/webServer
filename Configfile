@@ -1,10 +1,10 @@
     server:
         serverName: saf
-        listen: 127.0.0.1:4040
+        listen: 127.0.0.1:6060
         root: ./root
     server:
         serverName: Server1
-        listen: 127.0.0.1:2020
+        listen: 127.0.0.1:3030
         root: ./root
         location:
             path: /Desktop
@@ -20,7 +20,7 @@
             cgiExt: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6
     server:
         serverName: Server
-        listen: 127.0.0.1:4040
+        listen: 127.0.0.1:5050
         root: /Users/aali-mou/
         location:
             path: /Desktop
@@ -37,7 +37,7 @@
         location:
             path: /dist
             index: index.html
-            autoIndex: false
+            autoIndex: true
             root: /Users/aali-mou/Desktop/checkthis/Assets/DayLoader
             errorPage: 399 ./Notworking/index.html
             errorPage: 500 ./Networking/index.html

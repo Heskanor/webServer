@@ -49,7 +49,7 @@ Request &				Request::operator=( Request const & rhs )
 	writingchar = rhs.writingchar;
 	chunkcomplete = rhs.chunkcomplete;
 	ipaddress = rhs.ipaddress;
-	port = rhs.	port;
+	port = rhs.port;
 	setsocketid = rhs.setsocketid;
 	thhpversion = rhs.thhpversion;
 	host = rhs.host;
@@ -152,6 +152,17 @@ void					Request::setrequest(std::string me)
 void					Request::sethost(std::string ho)
 {
 	host = ho;
+	if (ho.find(":") != std::string::npos)
+	{
+		std::cout<<ho.substr(0,ho.find(":"))<<std::endl;
+		if (ho.substr(0,ho.find(":")) == "localhost")
+		{
+			set_ip("127.0.0.1");
+		}
+		else
+			set_ip(ho.substr(0,ho.find(":")));
+		set_port(ho.substr(ho.find(":") + 1));
+	}
 }
 void					Request::setconnection(std::string str)
 {

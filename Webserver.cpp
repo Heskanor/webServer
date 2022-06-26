@@ -98,12 +98,12 @@ void Webserver::Runmywebserver()
     }
     while (true)
     {
-      //  std::cout<<" a zaaaaaaaaaabo"<<std::endl;
+        // std::cout<<" a zaaaaaaaaaabo"<<std::endl;
         readsfds = master;
         writefds = master2;
        if ( (activ = select(max_sd + 1, &readsfds, &writefds, NULL, NULL)) == -1)
        {
-           // std::cout <<"Aaaaay  Zeeeeeeeeekiiiiiiiiiii"<<std::endl;
+            // std::cout <<"Aaaaay  Zeeeeeeeeekiiiiiiiiiii"<<std::endl;
             continue;
        }
 
@@ -148,7 +148,9 @@ void Webserver::Runmywebserver()
                                     {
                                         //std::cout << Requestsmap[i].get_requestur() << std::endl;
                                         Response resp;
-                                        resp = server_response(it->second, servers[2]);
+                                        int c = checkingservers(servers, Requestsmap[i]);
+                                       // c = 2;
+                                        resp = server_response(it->second, servers[c]);
                                         Responsemap[it->first] = resp;
                                      //   Requestsmap.erase(it->first);
                                         FD_CLR(i, &master);
@@ -188,10 +190,10 @@ void Webserver::Runmywebserver()
                             {
                                 char  *buffer4 = (char*)malloc(BUFFERSIZE + 1);
 				    			int n = read(Responsemap[i].fd, buffer4, BUFFERSIZE);
-                             //   std::cout<<"aloooooooooooooooooo"<<std::endl;
+                                // std::cout<<"aloooooooooooooooooo"<<std::endl;
 				    			if (n >= 0)
                                 {
-                           //  std::cout<<"aloooooooooooooooooo22"<<std::endl;
+                            //  std::cout<<"aloooooooooooooooooo22"<<std::endl;
 
                                          buffer4[n] = '\0';
 				    			std::string tmp(buffer4, n);
@@ -248,16 +250,21 @@ int Webserver::checkingservers(std::vector<Server> lop, Request req)
 {
     std::vector<size_t> op;
     // int storingi = -1;
+  //  int i = 0;
+          //  std::cout<<"server listening port : "<<lop[i].get_listenAddress() << "request listening port : "<<req.get_port()<<std::endl;
+    std::cout<<"request listening port : "<<req.get_port()<<"request listening address"<<req.get_ip()<<std::endl;
 
     for (size_t i = 0; i < lop.size(); i++)
     {
+        std::cout<<"server listening port : "<<lop[i].get_listenAddress() << "request listening port : "<<req.get_port()<<std::endl;
+
         if (lop[i].get_listenAddress() == req.get_ip() && std::to_string(lop[i].get_listenPort()) == req.get_port())
         {
-            // //std::cout<<"----"<<i<<"---"<<std::endl;
-            // //std::cout<<lop[i].get_listenAddress()<<std::endl;
-            // //std::cout<<lop[i].get_listenPort()<<std::endl;
-            // //std::cout<<req.get_port()<<std::endl;
-            // //std::cout<< req.get_ip()<<std::endl;
+            std::cout<<"----"<<i<<"---"<<std::endl;
+            std::cout<<lop[i].get_listenAddress()<<std::endl;
+            std::cout<<lop[i].get_listenPort()<<std::endl;
+            std::cout<<req.get_port()<<std::endl;
+            std::cout<< req.get_ip()<<std::endl;
             op.push_back(i);
         }
     }

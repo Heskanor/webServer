@@ -4,7 +4,7 @@
 Root::Root()
 {
     _autoIndex = false;
-    _bodySizeLimit = 0;
+    _bodySizeLimit = 40122284800;
 }
 
 Root::~Root()
