@@ -612,11 +612,20 @@ void response_to_get(Response& res, Request& req, Location& location)
 	}
 }
 
-Response custom_and_default_error_pages(Response& res, Server& server, std::string error_code)
+Response custom_and_default_error_pages(Response& res, std::string error_code, Location& location)
 {
 	try
 	{
-		std::map<std::string, std::string> error_map = server.get_errors_map();
+		std::map<std::string, std::string> error_map = location.get_errors_map();
+		std::cout << "error_code: " << error_code << std::endl;
+		if (error_map.empty())
+			std::cout << "error_map is empty" << std::endl;
+		std::map<std::string, std::string>::iterator it;
+		for (it = error_map.begin(); it != error_map.end(); it++)
+		{
+			std::cout << "x.first: " << (*it).first << std::endl;
+			std::cout << "x.second: " << (*it).second << std::endl;
+		}
 		if (error_map.find(error_code) == error_map.end())
 		{
 			res._status_code = error_code;
@@ -624,12 +633,13 @@ Response custom_and_default_error_pages(Response& res, Server& server, std::stri
 			return res;
 		}
 		std::string error_page = error_map[error_code];
-		std::vector<Location> server_locations = server.get_locations();
-		Location error_location = find_matched_location(error_page, server_locations);
-		std::vector<std::string> allowed_methods_in_location = error_location.get_allowed_methods();
-		std::string get_error_method = "GET";
-		check_allowed_methods(res, get_error_method, allowed_methods_in_location);
-		std::string error_page_path = error_location.get_root() + error_page;
+		// std::vector<Location> server_locations = server.get_locations();
+		// Location error_location = find_matched_location(error_page, server_locations);
+		// std::vector<std::string> allowed_methods_in_location = error_location.get_allowed_methods();
+		// std::string get_error_method = "GET";
+		// check_allowed_methods(res, get_error_method, allowed_methods_in_location);
+		std::string error_page_path = location.get_root() + error_page;
+		//std::cout << "error page: " << error_page_path << std::endl;
 		requested_resource_by_error_page(error_page_path);
 		res._status_code = error_code;
 		res._body_path = error_page_path;
@@ -652,7 +662,9 @@ void initial_checks(Request& req)
 {
 	if (req.gettransferstat() == 1 &&  req.gettransferchunks() == 0)
 		throw Response::HttpMethodNotSupported();
-	if (req.gettransferstat() == 0 &&  req.getcontentlenght().empty() && req.get_method() == "POST")
+	if (req.gettransferstat() == 0 && !req.getcontentlenght().empty() && req.get_method() == "POST")
+		throw Response::BadRequest();
+	if (req.gettransferstat() == 1 && !req.getcontentlenght().empty())
 		throw Response::BadRequest();
 	std::string uri_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=%";
 	std::string request_uri = req.get_requestur();
@@ -688,7 +700,7 @@ Response server_response(Request& req, Server& server)
 	methods_arr.push_back("POST");
 	methods_arr.push_back("DELETE");
 	void (*methods_ptr[])(Response&, Request&, Location&) = {response_to_get, response_to_post, response_to_delete};
-
+	Location location = server.get_locations()[0];
 	try
 	{
 		initial_checks(req);
@@ -696,8 +708,13 @@ Response server_response(Request& req, Server& server)
 		check_supported_methods(req.get_method());
 		std::string req_uri = remove_query_string(req.get_requestur());
 		std::vector<Location> server_locations = server.get_locations();
-		Location location = find_matched_location(req_uri, server_locations);
-		//std::cout << "Matched location: " << location.get_path() << std::endl;
+		int len = server_locations.size();
+		for (int i = 0; i < len; i++)
+		{
+			std::cout << "location path: " << server_locations[i].get_path() << std::endl; 
+		}
+		location = find_matched_location(req_uri, server_locations);
+		std::cout << "Matched location: " << location.get_path() << std::endl;
 		check_request_body_size(req, location);
 		std::vector<std::string> allowed_methods_in_location = location.get_allowed_methods();
 		std::string request_method = req.get_method();
@@ -717,7 +734,7 @@ Response server_response(Request& req, Server& server)
 	{
 		std::string error_code = e.what();
 		//std::cout << error_code << std::endl;
-		return custom_and_default_error_pages(res, server, error_code);
+		return custom_and_default_error_pages(res, error_code, location);
 	}
 }
 

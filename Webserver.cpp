@@ -181,7 +181,13 @@ void Webserver::Runmywebserver()
                                 Responsemap[i]._Responecomplete = 1;
 				    			FD_CLR(i, &master2);
 				    			if (Responsemap[i].onlypath.empty() == false)
+								{
 				    			     close(Responsemap[i].fd);
+									 if (Responsemap[i]._tmp_file_path.empty() == false)
+									 {
+										remove(Responsemap[i]._tmp_file_path.c_str());
+									 }
+								}
                                  Responsemap.erase(i);
                                  close (i);
                             //    std::cerr << " ###### : " << fd << std::endl;
@@ -214,6 +220,10 @@ void Webserver::Runmywebserver()
 				    			if (Responsemap[i].onlypath.empty() == false)
                                 {
                                    // std::cerr << " If cond : " <<Responsemap[i].fd<< std::endl; 
+								  	if (Responsemap[i]._tmp_file_path.empty() == false)
+									 {
+										remove(Responsemap[i]._tmp_file_path.c_str());
+									 }
 				    				 close(Responsemap[i].fd);
                                 }
                                 Responsemap.erase(i);

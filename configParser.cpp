@@ -247,19 +247,17 @@ void ConfigParser::setErrors(std::string status,std::string line, Root &root)
     std::string value;
     std::string val;
     unsigned int i = 0;
-
     skipFirstToken(line, status.length());
     while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
     {
         token += line[i];
         i++;
     }
-
     if (token.find_first_not_of("0123456789") == std::string::npos && token.length() == 3 && token >= "300" && token <= "599")
         val = token;
     else
     {
-        //std::cout << "Error code " << token << " must be between 300 and 599" << std::endl;
+        std::cout << "Error code " << token << " must be between 300 and 599" << std::endl;
         exit(1);
     }
     line.erase(0,i);
@@ -279,16 +277,16 @@ void ConfigParser::setErrors(std::string status,std::string line, Server &root)
     std::string val;
     unsigned int i = 0;
     skipFirstToken(line, status.length());
-    while (line[i] != ' '&& line[i]!= '\n' && i < line.length()  && token.length() == 3 && token >= "300" && token <= "599")
+    while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
     {
         token += line[i];
         i++;
     }
-    if (token.find_first_not_of("0123456789") == std::string::npos)
+    if (token.find_first_not_of("0123456789") == std::string::npos && token.length() == 3 && token >= "300" && token <= "599")
         val = token;
     else
     {
-        //std::cout << "Error code " << token << " must be between 300 and 599" << std::endl;
+        std::cout << "Error code " << token << " must be between 300 and 599" << std::endl;
         exit(1);
     }
     line.erase(0,i);
@@ -317,7 +315,7 @@ void ConfigParser::setErrors(std::string status,std::string line, Location &root
         val = token;
     else
     {
-        //std::cout << "Error code " << token << " must be between 300 and 599" << std::endl;
+        std::cout << "Error code " << token << " must be between 300 and 599" << std::endl;
         exit(1);
     }
     line.erase(0,i);
