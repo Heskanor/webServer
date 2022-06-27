@@ -11,7 +11,6 @@ Server::Server()
 
 Server::Server(Root &src)
 {
-    
     _index = src.get_index();
     _root = src.get_root();
     _bodySizeLimit = src.get_bodySizeLimit();

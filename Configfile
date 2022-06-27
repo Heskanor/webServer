@@ -5,7 +5,7 @@ server:
     listen: 127.0.0.1:4040
     root: ./root
 server:
-    serverName: server
+    serverName: hamid
     listen: 127.0.0.1:2020
     root: /Users/ashite/Desktop/ErrorPages/dist
     errorPage: 404 /404.html
@@ -21,7 +21,7 @@ server:
         cgiPath: ./Networking/index.html
         cgiExt: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6
 server:
-    serverName: localhost
+    serverName: Mohmad
     listen: 127.0.0.1:2020
     root: /Users/ashite
     location:

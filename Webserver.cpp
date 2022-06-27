@@ -263,42 +263,57 @@ int Webserver::checkingservers(std::vector<Server> lop, Request req)
   //  int i = 0;
           //  std::cout<<"server listening port : "<<lop[i].get_listenAddress() << "request listening port : "<<req.get_port()<<std::endl;
   //  std::cout<<"request listening port : "<<req.get_port()<<"request listening address"<<req.get_ip()<<std::endl;
-
+    std::vector<Server> lopp;
     for (size_t i = 0; i < lop.size(); i++)
     {
         ///std::cout<<"server listening port : "<<lop[i].get_listenAddress() << "request listening port : "<<req.get_port()<<std::endl;
-
-        if (lop[i].get_listenAddress() == req.get_ip() && std::to_string(lop[i].get_listenPort()) == req.get_port())
+        std::cout<<req.get_ip()<<"|"<<req.get_server_name()<<std::endl;
+        if ( std::to_string(lop[i].get_listenPort()) == req.get_port())
         {
          //   std::cout<<"----"<<i<<"---"<<std::endl;
           //  std::cout<<lop[i].get_listenAddress()<<std::endl;
           //  std::cout<<lop[i].get_listenPort()<<std::endl;
          //   std::cout<<req.get_port()<<std::endl;
           //  std::cout<< req.get_ip()<<std::endl;
+          lopp.push_back(lop[i]);
             op.push_back(i);
         }
     }
     if (op.empty() == false)
     {
-        for (size_t i = 0; i < op.size(); i++)
+     
+        if (req.get_ip().compare("localhost") == 0 || req.get_ip().compare("127.0.0.1") == 0 || req.get_ip().compare("0.0.0.0") == 0 )
+            return op[0];
+        else
         {
-            for (size_t j = 0; j < lop.size(); j++)
+            for (size_t i = 0; i < lopp.size(); i++)
             {
-                if (op[i] == j)
+                if (lopp[i].get_server_name()[0] == req.get_server_name()&& req.get_port() == std::to_string(lopp[i].get_listenPort()))
                 {
-                    if (lop[i].get_server_name().empty() == false)
-                    {
-                        for (size_t c = 0; c < lop[i].get_server_name().size(); c++)
-                        {
-                            if (lop[i].get_server_name()[c] == req.get_server_name())
-                            {
-                                return op[i];
-                            }
-                        }
-                    }
+                    return op[i];
                 }
             }
         }
+        // for (size_t i = 0; i < op.size(); i++)
+        // {          // std::cout<<"------------------ "<<req.get_server_name()<<std::endl;
+        //     for (size_t j = 0; j < lop.size(); j++)
+        //     {
+        //         if (op[i] == j)
+        //         {
+        //             if (lop[i].get_server_name().empty() == false)
+        //             {
+        //                 for (size_t c = 0; c < lop[i].get_server_name().size(); c++)
+        //                 {
+        //                     std::cout<<"------------------ "<<req.get_server_name()<< "|"<<lop[i].get_server_name()[c]<<std::endl;
+        //                     if (lop[i].get_server_name()[c] == req.get_server_name()&& req.get_port() == std::to_string(lop[i].get_listenPort()))
+        //                     {
+        //                         return op[i];
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
         return op[0];
     }
     return 0;
