@@ -483,8 +483,8 @@ int					Request::handleheaders(std::string data2)
 	int count2 = 0;
 	std::string tmp;
 	tmp = data2.substr(0,data2.find("\r\n"));
-	if (findfirstline(tmp) != -1)
-	{
+	//if (findfirstline(tmp) != -1)
+	//{
 		for(size_t i = 0; i < tmp.size(); i++)
 		{
 			if (tmp[i] != ' ')
@@ -562,7 +562,7 @@ int					Request::handleheaders(std::string data2)
 				data2 += "\n";
 			} 
 		}   
-	}
+	//}
 	return 1;
 }
 

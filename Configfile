@@ -6,7 +6,7 @@ server:
     root: ./root
 server:
     serverName: hamid
-    listen: localhost:2021
+    listen: localhost:2025
     root: /Users/ashite/Desktop/ErrorPages/dist
     errorPage: 404 /404.html
     allowedMethods: POST GET DELETE
@@ -38,11 +38,12 @@ server:
         path: /Desktop
         index: index.html
         autoIndex: false
+        bodySizeLimit: 12
         root: /Users/ashite
-        return: http://www.codeforces.com
         errorPage: 399 ./Notworking/index.html
         errorPage: 500 ./Networking/index.html
+        return: http://www.youtube.com
         uploadDirectory: /Desktop/sigma3
         allowedMethods: POST GET DELETE
-        cgiPath: ./Networking/index.html
+        cgiPath: /Users/ashite/Desktop/php-cgi
         cgiExt: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6
