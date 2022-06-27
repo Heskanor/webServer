@@ -116,6 +116,7 @@ void Webserver::Runmywebserver()
                     new_socket = accept(lopserver[i].fd, (struct sockaddr *)&lopserver[i].address, (socklen_t *)&lopserver[i].addrlen);
                     //std::cout << "cnx fd : " << new_socket << std::endl;
                     req.set_socketid(new_socket);
+                    req.set_ip(lopserver[i].ipaddress);
                     Requestsmap[new_socket] = req;
                     FD_SET(new_socket, &master);
                     if (new_socket > max_sd)
@@ -148,9 +149,10 @@ void Webserver::Runmywebserver()
                                     {
                                         //std::cout << Requestsmap[i].get_requestur() << std::endl;
                                         Response resp;
-                                        int c = checkingservers(servers, Requestsmap[i]);
-                                       // c = 2;
-                                        resp = server_response(it->second, servers[c]);
+                                       // int c = checkingservers(servers, Requestsmap[i]);
+                                        Server ser;
+                                        ser = checkingservers(servers, Requestsmap[i]);
+                                        resp = server_response(it->second, ser);
                                         Responsemap[it->first] = resp;
                                      //   Requestsmap.erase(it->first);
                                         FD_CLR(i, &master);
@@ -256,68 +258,111 @@ std::string     Webserver::checkingpath(Response &res)
 	}
     return path;
 }
-int Webserver::checkingservers(std::vector<Server> lop, Request req)
+Server Webserver::checkingservers(std::vector<Server> lop, Request req)
 {
     std::vector<size_t> op;
+    std::vector<Server> opp;
     // int storingi = -1;
   //  int i = 0;
           //  std::cout<<"server listening port : "<<lop[i].get_listenAddress() << "request listening port : "<<req.get_port()<<std::endl;
   //  std::cout<<"request listening port : "<<req.get_port()<<"request listening address"<<req.get_ip()<<std::endl;
-    std::vector<Server> lopp;
+
     for (size_t i = 0; i < lop.size(); i++)
     {
         ///std::cout<<"server listening port : "<<lop[i].get_listenAddress() << "request listening port : "<<req.get_port()<<std::endl;
-        std::cout<<req.get_ip()<<"|"<<req.get_server_name()<<std::endl;
-        if ( std::to_string(lop[i].get_listenPort()) == req.get_port())
+
+        if (lop[i].get_listenAddress() == req.get_ip() && std::to_string(lop[i].get_listenPort()) == req.get_port())
         {
          //   std::cout<<"----"<<i<<"---"<<std::endl;
           //  std::cout<<lop[i].get_listenAddress()<<std::endl;
           //  std::cout<<lop[i].get_listenPort()<<std::endl;
          //   std::cout<<req.get_port()<<std::endl;
           //  std::cout<< req.get_ip()<<std::endl;
-          lopp.push_back(lop[i]);
             op.push_back(i);
+            opp.push_back(lop[i]);
         }
     }
-    if (op.empty() == false)
+    if (opp.empty() == false)
     {
-     
-        if (req.get_ip().compare("localhost") == 0 || req.get_ip().compare("127.0.0.1") == 0 || req.get_ip().compare("0.0.0.0") == 0 )
-            return op[0];
-        else
+        for (size_t i = 0; i < opp.size(); i++)
         {
-            for (size_t i = 0; i < lopp.size(); i++)
+            if (opp[i].get_server_name().empty() == false)
             {
-                if (lopp[i].get_server_name()[0] == req.get_server_name()&& req.get_port() == std::to_string(lopp[i].get_listenPort()))
+                for (size_t c = 0; c < opp[i].get_server_name().size(); c++)
                 {
-                    return op[i];
+                    if (opp[i].get_server_name()[c] == req.get_server_name())
+                    {
+                        return opp[i];
+                    }
                 }
             }
         }
-        // for (size_t i = 0; i < op.size(); i++)
-        // {          // std::cout<<"------------------ "<<req.get_server_name()<<std::endl;
-        //     for (size_t j = 0; j < lop.size(); j++)
-        //     {
-        //         if (op[i] == j)
-        //         {
-        //             if (lop[i].get_server_name().empty() == false)
-        //             {
-        //                 for (size_t c = 0; c < lop[i].get_server_name().size(); c++)
-        //                 {
-        //                     std::cout<<"------------------ "<<req.get_server_name()<< "|"<<lop[i].get_server_name()[c]<<std::endl;
-        //                     if (lop[i].get_server_name()[c] == req.get_server_name()&& req.get_port() == std::to_string(lop[i].get_listenPort()))
-        //                     {
-        //                         return op[i];
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-        return op[0];
+        return opp[0];
     }
-    return 0;
+    return lop[0];
 }
+//int Webserver::checkingservers(std::vector<Server> lop, Request req)
+//{
+//    std::vector<size_t> op;
+//    // int storingi = -1;
+//  //  int i = 0;
+//          //  std::cout<<"server listening port : "<<lop[i].get_listenAddress() << "request listening port : "<<req.get_port()//<<std::endl;
+//  //  std::cout<<"request listening port : "<<req.get_port()<<"request listening address"<<req.get_ip()<<std::endl;
+//    std::vector<Server> lopp;
+//    for (size_t i = 0; i < lop.size(); i++)
+//    {
+//        ///std::cout<<"server listening port : "<<lop[i].get_listenAddress() << "request listening port : "<<req.get_port()//<<std::endl;
+//        std::cout<<req.get_ip()<<"|"<<req.get_server_name()<<std::endl;
+//        if ( std::to_string(lop[i].get_listenPort()) == req.get_port() &&  )
+//        {
+//         //   std::cout<<"----"<<i<<"---"<<std::endl;
+//          //  std::cout<<lop[i].get_listenAddress()<<std::endl;
+//          //  std::cout<<lop[i].get_listenPort()<<std::endl;
+//         //   std::cout<<req.get_port()<<std::endl;
+//          //  std::cout<< req.get_ip()<<std::endl;
+//          lopp.push_back(lop[i]);
+//            op.push_back(i);
+//        }
+//    }
+//    if (op.empty() == false)
+//    {
+//     
+//        if (req.get_ip().compare("localhost") == 0 || req.get_ip().compare("127.0.0.1") == 0 || req.get_ip().compare("0.0.0.0") == //0 )
+//            return op[0];
+//        else
+//        {
+//            for (size_t i = 0; i < lopp.size(); i++)
+//            {
+//                if (lopp[i].get_server_name()[0] == req.get_server_name()&& req.get_port() == std::to_string(lopp[i].get_listenPort//()))
+//                {
+//                    return op[i];
+//                }
+//            }
+//        }
+//        // for (size_t i = 0; i < op.size(); i++)
+//        // {          // std::cout<<"------------------ "<<req.get_server_name()<<std::endl;
+//        //     for (size_t j = 0; j < lop.size(); j++)
+//        //     {
+//        //         if (op[i] == j)
+//        //         {
+//        //             if (lop[i].get_server_name().empty() == false)
+//        //             {
+//        //                 for (size_t c = 0; c < lop[i].get_server_name().size(); c++)
+//        //                 {
+//        //                     std::cout<<"------------------ "<<req.get_server_name()<< "|"<<lop[i].get_server_name()[c]//<<std::endl;
+//        //                     if (lop[i].get_server_name()[c] == req.get_server_name()&& req.get_port() == std::to_string(lop[i].//get_listenPort()))
+//        //                     {
+//        //                         return op[i];
+//        //                     }
+//        //                 }
+//        //             }
+//        //         }
+//        //     }
+//        // }
+//        return op[0];
+//    }
+//    return 0;
+//}
 void Webserver::webservbuild()
 {
     ConfigParser parser;
@@ -339,6 +384,8 @@ void Webserver::webservbuild()
     {
         Myserver ser;
         ser.port = it->get_listenPort();
+        if (it->get_listenAddress() == "localhost")
+            it->set_listenAddress("127.0.0.1");
         ser.ipaddress = it->get_listenAddress();
         if ((sockfd = socket(PF_INET, SOCK_STREAM, 0)) == 0)
         {

@@ -196,9 +196,9 @@ void check_allowed_methods(Response& res, std::string method, std::vector<std::s
 }
 
 // void redirect_response(std::string& redirection_code, std::string& redirection_path, Request& req, Response& res)
-void redirect_response(std::string& redirection_code, std::string& redirection_path, Response& res)
+void redirect_response(std::string& redirection_path, Response& res)
 {
-	std::string new_status_code = redirection_code;
+	std::string new_status_code = "301";
 	std::string new_location = redirection_path;
 	std::string location_header = "Location: " + new_location + "\r\n";
 	res._special_headers += location_header;
@@ -505,7 +505,7 @@ bool check_for_upload_directory(Response& res, Request& req, Location& location)
 		if (upload_directory.back() != '/')
 			upload_directory += "/";
 		int check_code = check_if_entity_exists(upload_directory);
-		//std::cout << "check_code: " << check_code << std::endl; 
+		std::cout << "check_code: " << check_code << std::endl; 
 		if (check_code != DIRCODE)
 			throw Response::NoMatchedLocation();
 		if (access(upload_directory.c_str(), W_OK))
@@ -516,10 +516,11 @@ bool check_for_upload_directory(Response& res, Request& req, Location& location)
 		std::string file_extension = mime_type.get_extension(req.getcontent_type());
 		//std::cout << file_extension << std::endl;
 		std::string tmp_file_name = create_tmp_file_name(upload_directory, file_name, file_extension);
+
 		if (rename(req.get_pathbody().c_str(), tmp_file_name.c_str()))
 		{
-			//std::cout << "rename failed" << std::endl;
-			//std::cout << req.get_pathbody() << " " << tmp_file_name << std::endl;
+			std::cout << "rename failed" << std::endl;
+			std::cout << req.get_pathbody() << " " << tmp_file_name << std::endl;
 			throw Response::ForbiddenPath();
 		}
 		res._status_code = "201";
@@ -694,6 +695,7 @@ Response server_response(Request& req, Server& server)
 	methods_arr.push_back("POST");
 	methods_arr.push_back("DELETE");
 	void (*methods_ptr[])(Response&, Request&, Location&) = {response_to_get, response_to_post, response_to_delete};
+	std::cout << "server:  " << server.get_server_name()[0] << " " << server.get_listenAddress() << std::endl; 
 	Location location = server.get_locations()[0];
 	try
 	{
@@ -702,13 +704,13 @@ Response server_response(Request& req, Server& server)
 		check_supported_methods(req.get_method());
 		std::string req_uri = remove_query_string(req.get_requestur());
 		std::vector<Location> server_locations = server.get_locations();
-		//int len = server_locations.size();
-		//for (int i = 0; i < len; i++)
-		//{
-		//	std::cout << "location path: " << server_locations[i].get_path() << std::endl; 
-		//}
+		int len = server_locations.size();
+		for (int i = 0; i < len; i++)
+		{
+			std::cout << "location path: " << server_locations[i].get_path() << std::endl; 
+		}
 		location = find_matched_location(req_uri, server_locations);
-		//std::cout << "Matched location: " << location.get_path() << std::endl;
+		std::cout << "Matched location: " << location.get_path() << std::endl;
 		check_request_body_size(req, location);
 		std::vector<std::string> allowed_methods_in_location = location.get_allowed_methods();
 		std::string request_method = req.get_method();
@@ -716,7 +718,8 @@ Response server_response(Request& req, Server& server)
 		std::pair<std::string, std::string> redirection = location.get_redirection();
 		if (redirection.first != "" && redirection.second != "")
 		{
-			redirect_response(redirection.first, redirection.second,res);
+			std::cout << "redirection haha" << std::endl;
+			redirect_response(redirection.second,res);
 			return res;
 		}
 		for (int i = 0; i < 3; i++)

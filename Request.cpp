@@ -164,8 +164,8 @@ void					Request::sethost(std::string ho)
 		//}
 		//else
 		//{
-			set_ip(ho.substr(0,ho.find(":")));
-			set_server_name(ho.substr(0,ho.find(":")));
+			//set_ip(ho.substr(0,ho.find(":")));
+		set_server_name(ho.substr(0,ho.find(":")));
 		set_port(ho.substr(ho.find(":") + 1));
 	}
 }
@@ -440,9 +440,11 @@ int 					Request::parserequest(char *buffer, int size)
 					std::string   lop;
 					// std::string &lop1 = content_type;
 					std::string name = getrandomname() ;
+				//	name += getrandomname() ;
 					name +=  op.get_extension(content_type);
 					pathbody = name;
 				}
+	
 					filediscriptor = open(pathbody.c_str(), O_CREAT | O_RDWR | O_APPEND, 0666);
 					////std::cout<<filediscriptor<<std::endl;
 					point.erase();

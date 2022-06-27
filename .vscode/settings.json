@@ -67,7 +67,8 @@
         "vector": "cpp",
         "__tree": "cpp",
         "map": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "__memory": "cpp"
     },
     "C_Cpp.dimInactiveRegions": false,
     "C_Cpp.errorSquiggles": "Enabled"

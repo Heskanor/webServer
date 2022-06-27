@@ -34,7 +34,7 @@ class Webserver
 		void Runmywebserver();
 		bool checkifitsfdserver(int i);
 		std::string checkingpath(Response &res);
-		int checkingservers(std::vector<Server> lop, Request req);
+		Server checkingservers(std::vector<Server> lop, Request req);
 		bool checkifisserver(int i);
 		long	int	time_now(void)
 		{

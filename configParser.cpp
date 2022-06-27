@@ -161,65 +161,69 @@ void ConfigParser::strTabParser(std::string status,std::string line, std::vector
 // I get to check the case where we can have the redirection path alone
 void ConfigParser::setRedirection(std::string status,std::string line, Location &root)
 {
-    std::string token;
-    std::string value;
-    std::string val;
-    unsigned int i = 0;
+    // std::string token;
+    // std::string value;
+    // std::string val;
+    // unsigned int i = 0;
 
-    skipFirstToken(line, status.length());
-    while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
-    {
-        token += line[i];
-        i++;
-    }
-    if (token.find_first_not_of("0123456789") == std::string::npos && token.length() == 3 && token >= "300" && token <= "599")
-        val = token;
-    else
-    {
-        std::cout << "Redirection code " << token << " must be between 300 and 599" << std::endl;
-        exit(1);
-    }
-    line.erase(0,i);
-    skipSpaces(line);
-    i = 0;
-    while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
-    {
-        value += line[i];
-        i++;
-    }
-    root.set_redirection(val, value);
-    std::pair<std::string, std::string> lord = root.get_redirection();
+    // skipFirstToken(line, status.length());
+    // while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
+    // {
+    //     token += line[i];
+    //     i++;
+    // }
+    // if (token.find_first_not_of("0123456789") == std::string::npos && token.length() == 3 && token >= "300" && token <= "599")
+    //     val = token;
+    // else
+    // {
+    //     std::cout << "Redirection code " << token << " must be between 300 and 599" << std::endl;
+    //     exit(1);
+    // }
+    // line.erase(0,i);
+    // skipSpaces(line);
+    // i = 0;
+    // while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
+    // {
+    //     value += line[i];
+    //     i++;
+    // }
+    // root.set_redirection(val, value);
+    std::string tko;
+    strParser(status, line, tko);
+    root.set_redirection(tko, tko);
 }
 
 void ConfigParser::setRedirection(std::string status,std::string line, Server &root)
 {
-    std::string token;
-    std::string value;
-    std::string val;
-    unsigned int i = 0;
+    // std::string token;
+    // std::string value;
+    // std::string val;
+    // unsigned int i = 0;
 
-    skipFirstToken(line, status.length());
-    while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
-    {
-        token += line[i];
-        i++;
-    }
-    if (token.find_first_not_of("0123456789") == std::string::npos && token.length() == 3 && token >= "300" && token <= "599")
-        val = token;
-    else
-    {
-        std::cout << "Redirection code " << token << " must be between 300 and 599" << std::endl;
-        exit(1);
-    }
-    line.erase(0,i);
-    skipSpaces(line);
-    i = 0;
-    while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
-    {
-        value += line[i];
-        i++;
-    }
-    root.set_redirection(val, value);
+    // skipFirstToken(line, status.length());
+    // while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
+    // {
+    //     token += line[i];
+    //     i++;
+    // }
+    // if (token.find_first_not_of("0123456789") == std::string::npos && token.length() == 3 && token >= "300" && token <= "599")
+    //     val = token;
+    // else
+    // {
+    //     std::cout << "Redirection code " << token << " must be between 300 and 599" << std::endl;
+    //     exit(1);
+    // }
+    // line.erase(0,i);
+    // skipSpaces(line);
+    // i = 0;
+    // while (line[i] != ' '&& line[i]!= '\n' && i < line.length())
+    // {
+    //     value += line[i];
+    //     i++;
+    // }
+    std::string tko;
+    strParser(status, line, tko);
+    root.set_redirection(tko, tko);
 }
 
 void ConfigParser::setIndex(std::string token, std::string line, Root &lvl)
