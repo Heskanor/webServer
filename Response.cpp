@@ -235,7 +235,6 @@ void run_cgi_script(Request& req, Response& res, Location& location)
 		res._status_code = "200";
 		// set_content_type_and_length(req, res, res._tmp_file_path);
 		set_content_type_and_length(res, res._tmp_file_path);
-		std::cout << "running CGI $$$$$$$$$$$$$$$$$$$$$>>" << std::endl;
 		set_response_headers(res);
 		// set_response_headers(req, res);
 	}
@@ -252,7 +251,6 @@ bool check_if_cgi_is_applicable(Location& location, std::string& path)
 		for (int i = 0; i < nbr_cgi_extensions; i++)
 		if (cgi_extensions[i] == file_extension)
 			return true;
-		//std::cout << "running CGI $$$$$$$$$$$$$$$$$$$$$ :-( >> "<< cgi_extensions[0] << std::endl;
 	}
 	return false;
 }
@@ -600,7 +598,7 @@ void response_to_get(Response& res, Request& req, Location& location)
 		// check if location has cgi
 		if (check_if_cgi_is_applicable(location, resource))
 		{
-			std::cout << "cgi script is applicable" << std::endl;
+			//std::cout << "cgi script is applicable" << std::endl;
 			run_cgi_script(req, res, location);
 			return;
 		}

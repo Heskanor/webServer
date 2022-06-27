@@ -76,7 +76,7 @@ void Cgi::envMaker(Request *request, Location &location)
 {
     // std::string scriptname = _path;
     // std::cout <<scriptname;
-	std::string scriptname = "/Users/ashite//Desktop/test.php";
+	std::string scriptname = (location.get_root()+((request->get_requestur())).substr(0,request->get_requestur().find_first_of('?')));
     (void)location;;
 
     //setenv("AUTH_TYPE", "", 1);
@@ -86,7 +86,9 @@ void Cgi::envMaker(Request *request, Location &location)
     ///tmp/1656277854__cgi_output.html
     // setenv("PATH_INFO", ((request->get_requestur())).substr(0,request->get_requestur().find_first_of('?')).c_str(), 1); // subtr query string
     setenv("PATH_INFO", ((request->get_requestur())).substr(0,request->get_requestur().find_first_of('?')).c_str(), 1); // subtr query string
-    setenv("PATH_TRANSLATED","/Users/ashite/Desktop/test.php", 1); // dir b7al path info
+    setenv("PATH_TRANSLATED",scriptname.c_str(), 1); // dir b7al path info
+    //setenv("PATH_TRANSLATED","/Users/ashite/Desktop/test.php", 1); // dir b7al path info
+    // std::cout <<scriptname;
     setenv("QUERY_STRING", get_querrystring(request->get_requestur()).c_str(), 1);// after ?
     setenv("REMOTE_ADDR", "localhost", 1);
     setenv("REMOTE_HOST", "localhost", 1);// maybe like remote address
@@ -151,7 +153,6 @@ void cgi_reader(Response *resp, int fd)
         body_size = st.st_size;
     int cgiHeaderSize = headers.size();
     resp->_content_length = body_size - cgiHeaderSize;
-    std::cout << resp->_content_length<< "\n\n\n\n\n\n\n\n\n\n"<< std::endl;
 }
 
 void Cgi::executer(Request *request, Response *response, Location &location)
@@ -170,8 +171,6 @@ void Cgi::executer(Request *request, Response *response, Location &location)
     parm[2] = NULL;
     std::cout << parm[0] << " " << parm[1]<<std::endl;
     pid_t cgi_pid;
-    //long long time = timeer();
-	
     pid_t pid = fork();
     time_t	begin = time(NULL);
     if (pid == -1)
@@ -182,8 +181,8 @@ void Cgi::executer(Request *request, Response *response, Location &location)
     if (pid == 0)
     {
 		write(2, methode.c_str(), 4);
-         envMaker(request, location);
-         //system("printenv");
+        envMaker(request, location);
+        system("printenv");
         close(STDERR_FILENO);
         if (methode == "POST" || methode == "DELETE")
         {//write(2, methode.c_str(), 4);
@@ -207,15 +206,9 @@ void Cgi::executer(Request *request, Response *response, Location &location)
             close(request_fd);
         cgi_pid = pid;
     }
-    // while(((timeer() - time) >500))
-    // {
-    //     //std::cout<<"Cgi TimeOut"<<std::endl;
-    //     response->_status_code = "500";
-    //     return;
-    // }
     int status;
     bool timout(true);
-	while (difftime(time(NULL), begin) <= 5)
+	while (difftime(time(NULL), begin) <= 3)
 	{
 		int ret = waitpid(pid, &status, WNOHANG);
 
@@ -236,6 +229,8 @@ void Cgi::executer(Request *request, Response *response, Location &location)
 	if (timout)
 	{
 		kill(9,pid);
+        //std::cout << "timeOUT!! " << std::endl;
+        throw Response::InternalServerError();
 		//this->IsTimeOut = true;
 	}
 	// delete_file(request->get_body_filename());

@@ -33,6 +33,7 @@ Location &Location::operator=(Location const & rhs)
    _bodySizeLimit = rhs._bodySizeLimit;
    _autoIndex = rhs._autoIndex;
    _error_map = rhs._error_map;
+   //std::cout << "3aalaaam :"<< _error_map["399"]<<std::endl;
    _uploadDirectory = rhs._uploadDirectory;
    _allowedMethods = rhs._allowedMethods;
    _redirection = rhs._redirection;

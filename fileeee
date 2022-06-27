@@ -1,0 +1,59 @@
+localhost
+request listening port : 7799request listening address127.0.0.1
+server listening port : 127.0.0.1request listening port : 7799
+server listening port : 127.0.0.1request listening port : 7799
+server listening port : 127.0.0.1request listening port : 7799
+----2---
+127.0.0.1
+7799
+7799
+127.0.0.1
+/Users/ashite/Desktop/php-cgi /Users/ashite//Desktop/test.php
+TERM_PROGRAM=vscode
+TERM=xterm-256color
+HOMEBREW_TEMP=/tmp/ashite/Homebrew/Temp
+SHELL=/bin/zsh
+TMPDIR=/var/folders/zz/zyxvpxvq6csfxvn_n000074h0001s4/T/
+Apple_PubSub_Socket_Render=/private/tmp/com.apple.launchd.qrh7wUNsKV/Render
+TERM_PROGRAM_VERSION=1.68.0
+ORIGINAL_XDG_CURRENT_DESKTOP=undefined
+SERVER_PORT=7799
+USER=ashite
+COMMAND_MODE=unix2003
+SCRIPT_NAME=/Users/ashite/Desktop/test.php
+SSH_AUTH_SOCK=/private/tmp/com.apple.launchd.1ZwdfOcMmV/Listeners
+REMOTE_HOST=localhost
+__CF_USER_TEXT_ENCODING=0x724:0x0:0x0
+HOMEBREW_CACHE=/tmp/ashite/Homebrew/Caches
+PATH_INFO=/Desktop/test.php
+PATH=/Users/ashite/goinfre/ashite/.brew/bin:/Users/ashite/goinfre/ashite/.brew/bin:/Users/ashite/goinfre/ashite/.brew/bin:/Users/ashite/.brew/bin:/Users/ashite/goinfre/ashite/.brew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/munki
+_=/usr/bin/printenv
+PWD=/Users/ashite/Desktop/heskanorWebServ
+LANG=en_US.UTF-8
+REDIRECT_STATUS=200
+VSCODE_GIT_ASKPASS_EXTRA_ARGS=--ms-enable-electron-run-as-node
+XPC_FLAGS=0x0
+PATH_TRANSLATED=/Users/ashite//Desktop/test.php
+XPC_SERVICE_NAME=0
+REMOTE_ADDR=localhost
+SERVER_NAME=localhost:7799
+SHLVL=2
+HOME=/Users/ashite
+CONTENT_LENGTH=
+VSCODE_GIT_ASKPASS_MAIN=/Applications/Visual Studio Code.app/Contents/Resources/app/extensions/git/dist/askpass-main.js
+SERVER_SOFTWARE=webserver/1.1
+LOGNAME=ashite
+QUERY_STRING=
+HOME_BREW=/Users/ashite/goinfre/ashite
+VSCODE_GIT_IPC_HANDLE=/var/folders/zz/zyxvpxvq6csfxvn_n000074h0001s4/T/vscode-git-4cbb277497.sock
+GATEWAY_INTERFACE=CGI/1.1
+SERVER_PROTOCOL=HTTP/1.1
+GIT_ASKPASS=/Applications/Visual Studio Code.app/Contents/Resources/app/extensions/git/dist/askpass.sh
+VSCODE_GIT_ASKPASS_NODE=/Applications/Visual Studio Code.app/Contents/Frameworks/Code Helper.app/Contents/MacOS/Code Helper
+CONTENT_TYPE=
+REQUEST_METHOD=GET
+SECURITYSESSIONID=186a8
+COLORTERM=truecolor
+trying to set content type and lengthtext/html
+FilePath ------------>/tmp/1656287615__cgi_output.html
+Content length : 66491<<<<<<<<
