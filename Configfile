@@ -1,3 +1,4 @@
+autoIndex: true
 server:
     serverName: saf
     listen: 127.0.0.1:4040
@@ -6,15 +7,14 @@ server:
     serverName: Server1
     listen: 127.0.0.1:2020
     root: /Users/hmahjour
-    index: test.txt
+    errorPage: 404 /Desktop/ErrorPages/404.html
     allowedMethods: POST GET DELETE
     location:
         path: /Desktop
-        index: nginx.txt
-        autoIndex: true
+        index: nginx.txt 
         root: /Users/hmahjour
-        errorPage: 399 ./Notworking/index.html
-        errorPage: 500 ./Networking/index.html
+        errorPage: 404 /Desktop/ErrorPages/404.html
+        errorPage: 403 /Desktop/ErrorPages/403.html
         uploadDirectory: /var/www/html/public/uploads
         allowedMethods: POST GET DELETE
         cgiPath: ./Networking/index.html
@@ -28,8 +28,6 @@ server:
         index: /index.html
         autoIndex: false
         root: /Users/ashite/Desktop/heskanorWebServ/Assets/DayLoader
-        errorPage: 399 ./Notworking/index.html
-        errorPage: 500 ./Networking/index.html
         uploadDirectory: /var/www/html/public/uploads
         allowedMethods: POST GET DELETE
         cgiPath: /usr/bin/p
