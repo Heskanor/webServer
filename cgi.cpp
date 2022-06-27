@@ -169,7 +169,7 @@ void Cgi::executer(Request *request, Response *response, Location &location)
     parm[0] = _path.c_str();
     parm[1] = path.c_str(); 
     parm[2] = NULL;
-    std::cout << parm[0] << " " << parm[1]<<std::endl;
+    //std::cout << parm[0] << " " << parm[1]<<std::endl;
     pid_t cgi_pid;
     pid_t pid = fork();
     time_t	begin = time(NULL);

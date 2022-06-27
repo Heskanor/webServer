@@ -1,18 +1,19 @@
 autoIndex: true
+root: /Users/ashite
 server:
     serverName: saf
     listen: 127.0.0.1:4040
     root: ./root
 server:
-    serverName: Server1
+    serverName: server
     listen: 127.0.0.1:2020
-    root: /Users/hmahjour
-    errorPage: 404 /Desktop/ErrorPages/404.html
+    root: /Users/ashite/Desktop/ErrorPages/dist
+    errorPage: 404 /404.html
     allowedMethods: POST GET DELETE
     location:
         path: /Desktop
         index: nginx.txt 
-        root: /Users/hmahjour
+        root: /Users/ashite
         errorPage: 404 /Desktop/ErrorPages/404.html
         errorPage: 403 /Desktop/ErrorPages/403.html
         uploadDirectory: /var/www/html/public/uploads
@@ -20,9 +21,9 @@ server:
         cgiPath: ./Networking/index.html
         cgiExt: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6
 server:
-    serverName: Server
-    listen: 127.0.0.1:7799
-    root: ./root
+    serverName: localhost
+    listen: 127.0.0.1:2020
+    root: /Users/ashite
     location:
         path: /dist
         index: /index.html
@@ -39,7 +40,6 @@ server:
         root: /Users/ashite/
         errorPage: 399 ./Notworking/index.html
         errorPage: 500 ./Networking/index.html
-        allowedMethods: POST GET DELETE
         cgiPath: /Users/ashite/Desktop/php-cgi
         cgiExt: .php .php5 .php7 .php-cgi .php3 .php4 .php5 .php6
     location:

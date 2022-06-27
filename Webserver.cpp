@@ -262,19 +262,19 @@ int Webserver::checkingservers(std::vector<Server> lop, Request req)
     // int storingi = -1;
   //  int i = 0;
           //  std::cout<<"server listening port : "<<lop[i].get_listenAddress() << "request listening port : "<<req.get_port()<<std::endl;
-    std::cout<<"request listening port : "<<req.get_port()<<"request listening address"<<req.get_ip()<<std::endl;
+  //  std::cout<<"request listening port : "<<req.get_port()<<"request listening address"<<req.get_ip()<<std::endl;
 
     for (size_t i = 0; i < lop.size(); i++)
     {
-        std::cout<<"server listening port : "<<lop[i].get_listenAddress() << "request listening port : "<<req.get_port()<<std::endl;
+        ///std::cout<<"server listening port : "<<lop[i].get_listenAddress() << "request listening port : "<<req.get_port()<<std::endl;
 
         if (lop[i].get_listenAddress() == req.get_ip() && std::to_string(lop[i].get_listenPort()) == req.get_port())
         {
-            std::cout<<"----"<<i<<"---"<<std::endl;
-            std::cout<<lop[i].get_listenAddress()<<std::endl;
-            std::cout<<lop[i].get_listenPort()<<std::endl;
-            std::cout<<req.get_port()<<std::endl;
-            std::cout<< req.get_ip()<<std::endl;
+         //   std::cout<<"----"<<i<<"---"<<std::endl;
+          //  std::cout<<lop[i].get_listenAddress()<<std::endl;
+          //  std::cout<<lop[i].get_listenPort()<<std::endl;
+         //   std::cout<<req.get_port()<<std::endl;
+          //  std::cout<< req.get_ip()<<std::endl;
             op.push_back(i);
         }
     }
@@ -290,7 +290,7 @@ int Webserver::checkingservers(std::vector<Server> lop, Request req)
                     {
                         for (size_t c = 0; c < lop[i].get_server_name().size(); c++)
                         {
-                            if (lop[i].get_server_name()[c] == req.get_ip())
+                            if (lop[i].get_server_name()[c] == req.get_server_name())
                             {
                                 return op[i];
                             }
@@ -317,6 +317,7 @@ void Webserver::webservbuild()
     struct sockaddr_in address;
     fd_set readsfds;
     int c = 0;
+    int n = 0;
     // int valread = 0;
     FD_ZERO(&readsfds); // change master
     for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); ++it)
@@ -324,21 +325,56 @@ void Webserver::webservbuild()
         Myserver ser;
         ser.port = it->get_listenPort();
         ser.ipaddress = it->get_listenAddress();
-        addrlen = sizeof(address);
-        sockfd = socket(PF_INET, SOCK_STREAM, 0);
-        //std::cout << "Socketa fd : " << sockfd << std::endl;
+        if ((sockfd = socket(PF_INET, SOCK_STREAM, 0)) == 0)
+        {
+            std::cout<<"Failed Creating Master socket "<<std::endl;
+            exit(1);
+        }
         ser.fd = sockfd;
         ser.index = c;
         FD_SET(sockfd, &master); // shoukd have a mster readset
-        setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+        if ((setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt))) < 0)
+        {
+            std::cout<<"failed Setting Master socket "<<std::endl;
+            exit(1);
+        }
         address.sin_family = AF_INET;
         address.sin_addr.s_addr = inet_addr(it->get_listenAddress().c_str());
         address.sin_port = htons(it->get_listenPort());
+        addrlen = sizeof(address);
         ser.address = address;
         ser.addrlen = addrlen;
-        lopserver[sockfd] = ser;
-        bind(sockfd, (struct sockaddr *)&address, sizeof(address));
-        listen(sockfd, 128);
+        if (lopserver.empty() == false)
+        {
+            for(std::map<int, Myserver>::iterator it = lopserver.begin(); it != lopserver.end(); it++)
+			{
+						//std::cout<<"i really here"<<std::endl;
+						if (it->second.port == ser.port && it->second.ipaddress == ser.ipaddress)
+						{
+                            n = 1;
+                            break;
+						}
+                        else
+                             n = 0;
+			}
+        }
+        if (n != 1)
+        {
+            lopserver[sockfd] = ser;
+        if (bind(sockfd, (struct sockaddr *)&address, sizeof(address)) < 0)
+        {
+            std::cout<<"cannot bind "<<std::endl;
+            exit(1);
+        }
+        if (listen(sockfd, 128) < 0)
+        {
+            std::cout<<"listen failed "<<std::endl;
+            exit(1);
+        }
+        }
+        
+        
+        
         c++;
     }
 }

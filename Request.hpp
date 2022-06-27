@@ -31,12 +31,21 @@ class Request
 		std::string get_method();
 		std::string gethost();
 		std::string get_port();
+		std::string server_name;
+		std::string get_server_name()
+		{
+			return server_name;
+		}
+		void set_server_name(std::string name)
+		{
+			 server_name = name;
+		}
 		std::string get_ip();
 		std::string getcontentlenght();
-	std::string	get_pathbody()
-	{
-		return pathbody;
-	}
+		std::string	get_pathbody()
+		{
+			return pathbody;
+		}
 		bool gettransferstat();
 		void settransferstat(bool j);
 		void set_ip(std::string);
@@ -73,7 +82,6 @@ class Request
 		void setunchunkedbody();
 		void setchunckedbody();
 		bool IsHex(const std::string& str);
-	//	void settingbody();
 		int iperfect;
 		std::string	getrandomname();
 		void adddata(char *buffer, int c);

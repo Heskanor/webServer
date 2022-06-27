@@ -155,13 +155,17 @@ void					Request::sethost(std::string ho)
 	host = ho;
 	if (ho.find(":") != std::string::npos)
 	{
-		std::cout<<ho.substr(0,ho.find(":"))<<std::endl;
+		//std::cout<<ho.substr(0,ho.find(":"))<<std::endl;
 		if (ho.substr(0,ho.find(":")) == "localhost")
 		{
 			set_ip("127.0.0.1");
+			set_server_name("localhost");
 		}
 		else
+		{
 			set_ip(ho.substr(0,ho.find(":")));
+			set_server_name(ho.substr(0,ho.find(":")));
+		}
 		set_port(ho.substr(ho.find(":") + 1));
 	}
 }

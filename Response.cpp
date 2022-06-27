@@ -47,11 +47,11 @@ std::string set_date_header()
 long long get_file_size(std::string& file_path)
 {
 	struct stat st;
-	std::cout <<"FilePath ------------>" << file_path << std::endl;
+	//std::cout <<"FilePath ------------>" << file_path << std::endl;
 	if (stat(file_path.c_str(), &st) == 0)
 		return st.st_size;
 	return 0;
-	std::cout << "FileSize ----------->" << st.st_size << std::endl;
+	//std::cout << "FileSize ----------->" << st.st_size << std::endl;
 	
 }
 // void set_content_type_and_length(Request& req, Response& res, std::string& file_path)
@@ -62,13 +62,13 @@ void set_content_type_and_length(Response& res, std::string& file_path)
 	{
 		std::string file_extension = file_path.substr(file_path.find_last_of("."));
 		res._content_type = mime_type.get_mime_type(file_extension);
-		std::cout << "trying to set content type and length" << res._content_type << std::endl;
+	//	std::cout << "trying to set content type and length" << res._content_type << std::endl;
 	}
 	else
 		res._content_type = "text/plain";
 	
 	res._content_length = get_file_size(file_path);
-	std::cout <<"Content length : "<< res._content_length << "<<<<<<<<" << std::endl;
+	//std::cout <<"Content length : "<< res._content_length << "<<<<<<<<" << std::endl;
 }
 
 void default_error_page(Response& res)
@@ -172,7 +172,8 @@ Location find_matched_location(std::string& path, std::vector<Location>& locatio
 			return find_matched_location(path_without_last_slash, locations);
 		}
 	}
-	throw Response::NoMatchedLocation();
+	return (locations[0]);
+	//throw Response::NoMatchedLocation();
 }
 
 void check_allowed_methods(Response& res, std::string method, std::vector<std::string>& allowed_methods)
@@ -275,7 +276,8 @@ void create_autoindex_file(std::string directory, std::vector<std::string>& enti
 	file << "<a href=" << "../" << ">../</a>\n";
 	for (size_t i = 0; i < entities.size(); i++)
 	{
-		file << "<a href=\"" << entities[i] << "\">" << entities[i] << "</a>\n";
+		if (strcmp(entities[i].c_str(), ".") != 0 && strcmp(entities[i].c_str(), "..") != 0) //just added
+			file << "<a href=\"" << entities[i] << "\">" << entities[i] << "</a>\n";
 	}
 	file << "</pre>\n";
 	file << "<hr>\n";
@@ -614,16 +616,10 @@ Response custom_and_default_error_pages(Response& res, std::string error_code, L
 {
 	try
 	{
+	//	std::cout << "error location: " << location.get_path() << std::endl; 
 		std::map<std::string, std::string> error_map = location.get_errors_map();
-		std::cout << "error_code: " << error_code << std::endl;
-		if (error_map.empty())
-			std::cout << "error_map is empty" << std::endl;
+	//	std::cout << "error_code: " << error_code << std::endl;
 		std::map<std::string, std::string>::iterator it;
-		for (it = error_map.begin(); it != error_map.end(); it++)
-		{
-			std::cout << "x.first: " << (*it).first << std::endl;
-			std::cout << "x.second: " << (*it).second << std::endl;
-		}
 		if (error_map.find(error_code) == error_map.end())
 		{
 			res._status_code = error_code;
@@ -660,7 +656,7 @@ void initial_checks(Request& req)
 {
 	if (req.gettransferstat() == 1 &&  req.gettransferchunks() == 0)
 		throw Response::HttpMethodNotSupported();
-	if (req.gettransferstat() == 0 && !req.getcontentlenght().empty() && req.get_method() == "POST")
+	if (req.gettransferstat() == 0 && req.getcontentlenght().empty() && req.get_method() == "POST")
 		throw Response::BadRequest();
 	if (req.gettransferstat() == 1 && !req.getcontentlenght().empty())
 		throw Response::BadRequest();
@@ -682,8 +678,8 @@ void check_request_body_size(Request& req, Location& location)
 	{
 		std::string path_body = req.get_pathbody();
 		long long path_body_size = get_file_size(path_body);
-		std::cout <<"PathBodySize : "<< path_body_size << "<<<<<<<<" << std::endl;
-		std::cout <<"BodySizeLimit : "<< location.get_bodySizeLimit() << "<<<<<<<<" << std::endl;
+	//	std::cout <<"PathBodySize : "<< path_body_size << "<<<<<<<<" << std::endl;
+	//	std::cout <<"BodySizeLimit : "<< location.get_bodySizeLimit() << "<<<<<<<<" << std::endl;
 		if (path_body_size > location.get_bodySizeLimit())
 			throw Response::RequestEntityTooLarge();
 	}
@@ -706,13 +702,13 @@ Response server_response(Request& req, Server& server)
 		check_supported_methods(req.get_method());
 		std::string req_uri = remove_query_string(req.get_requestur());
 		std::vector<Location> server_locations = server.get_locations();
-		int len = server_locations.size();
-		for (int i = 0; i < len; i++)
-		{
-			std::cout << "location path: " << server_locations[i].get_path() << std::endl; 
-		}
+		//int len = server_locations.size();
+		//for (int i = 0; i < len; i++)
+		//{
+		//	std::cout << "location path: " << server_locations[i].get_path() << std::endl; 
+		//}
 		location = find_matched_location(req_uri, server_locations);
-		std::cout << "Matched location: " << location.get_path() << std::endl;
+		//std::cout << "Matched location: " << location.get_path() << std::endl;
 		check_request_body_size(req, location);
 		std::vector<std::string> allowed_methods_in_location = location.get_allowed_methods();
 		std::string request_method = req.get_method();
